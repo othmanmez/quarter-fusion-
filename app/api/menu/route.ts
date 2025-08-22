@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Grouper par catégorie
-    const menuByCategory = menuItems.reduce((acc, item) => {
+    const menuByCategory = menuItems.reduce((acc: any, item: any) => {
       const categoryName = item.category.name;
       if (!acc[categoryName]) {
         acc[categoryName] = [];

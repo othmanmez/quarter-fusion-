@@ -38,7 +38,7 @@ async function getMenuItems(mode: 'click-and-collect' | 'livraison'): Promise<Me
       ],
     });
 
-    return menuItems.map(item => ({
+    return menuItems.map((item: any) => ({
       ...item,
       badge: item.badge === null ? undefined : item.badge,
     }));

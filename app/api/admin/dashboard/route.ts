@@ -121,10 +121,10 @@ export async function GET(request: NextRequest) {
           : 0,
         pendingOrders,
       },
-      recentOrders: recentOrders.map(order => ({
+      recentOrders: recentOrders.map((order: any) => ({
         ...order,
         customerName: order.customerEmail.split('@')[0],
-        items: Array.isArray(order.items) ? order.items.map(item => ({
+        items: Array.isArray(order.items) ? order.items.map((item: any) => ({
           ...item,
           description: item.description || undefined
         })) : [],

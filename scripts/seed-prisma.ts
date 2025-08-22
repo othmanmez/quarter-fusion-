@@ -1,7 +1,58 @@
 import { PrismaClient } from '@prisma/client';
-import { categories, menuItems } from '../data/menuData';
 
 const prisma = new PrismaClient();
+
+// Données d'exemple pour le seeding
+const categories = [
+  { 
+    name: "Burgers", 
+    slug: "burgers",
+    description: "Nos délicieux burgers faits maison" 
+  },
+  { 
+    name: "Frites & Accompagnements", 
+    slug: "frites-accompagnements",
+    description: "Accompagnements croustillants" 
+  },
+  { 
+    name: "Boissons", 
+    slug: "boissons",
+    description: "Boissons fraîches et chaudes" 
+  }
+];
+
+const menuItems = [
+  {
+    categorySlug: "burgers",
+    title: "Quarter Crousty",
+    description: "Burger au poulet croustillant avec salade et sauce spéciale",
+    price: 8.50,
+    badge: "HOT",
+    available: true,
+    availableForClickAndCollect: true,
+    availableForDelivery: true
+  },
+  {
+    categorySlug: "burgers", 
+    title: "Burger Fusion",
+    description: "Notre burger signature avec double steak et sauce fusion",
+    price: 12.90,
+    badge: "NEW",
+    available: true,
+    availableForClickAndCollect: true,
+    availableForDelivery: true
+  },
+  {
+    categorySlug: "frites-accompagnements",
+    title: "Frites Maison",
+    description: "Frites fraîches coupées sur place",
+    price: 4.50,
+    badge: null,
+    available: true,
+    availableForClickAndCollect: true,
+    availableForDelivery: true
+  }
+];
 
 async function main() {
   try {
@@ -27,22 +78,19 @@ async function main() {
 
     console.log(`✅ ${createdCategories.length} catégories créées`);
 
-    // Créer une map pour retrouver les IDs des catégories
+    // Créer une map pour retrouver les IDs des catégories par slug
     const categoryMap = new Map();
     createdCategories.forEach((cat) => {
-      const originalCategory = categories.find(c => c.name === cat.name);
-      if (originalCategory) {
-        categoryMap.set(originalCategory.name, cat.id);
-      }
+      categoryMap.set(cat.slug, cat.id);
     });
 
     // Créer les menus
     console.log('🍽️ Création des menus...');
     const createdMenus = await Promise.all(
       menuItems.map(async (item) => {
-        const categoryId = categoryMap.get(item.category);
+        const categoryId = categoryMap.get(item.categorySlug);
         if (!categoryId) {
-          throw new Error(`Catégorie non trouvée pour le menu: ${item.title}`);
+          throw new Error(`Catégorie non trouvée pour le menu: ${item.title} (slug: ${item.categorySlug})`);
         }
 
         return await prisma.menu.create({
@@ -50,10 +98,11 @@ async function main() {
             title: item.title,
             description: item.description,
             price: item.price,
-            image: '/images/placeholder.svg', // Image par défaut
+            badge: item.badge,
+            image: '/images/placeholder.svg',
             available: item.available,
-            availableForClickAndCollect: true, // Par défaut disponible pour click-and-collect
-            availableForDelivery: true, // Par défaut disponible pour livraison
+            availableForClickAndCollect: item.availableForClickAndCollect,
+            availableForDelivery: item.availableForDelivery,
             categoryId: categoryId,
           },
         });
