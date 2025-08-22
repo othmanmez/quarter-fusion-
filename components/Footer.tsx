@@ -157,6 +157,32 @@ export default function Footer() {
             Restaurant certifié HACCP • Hygiène alimentaire contrôlée • 
             Formation continue du personnel
           </p>
+          
+          {/* Signature développeur */}
+          <div className="mt-4 pt-4 border-t border-gray-800">
+            <p className="text-gray-600">
+              Développement web par{' '}
+              <a 
+                href="https://samy-dev.fr" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-500 hover:text-red-400 transition-colors duration-200"
+              >
+                Samy Ajouid
+              </a>
+              {' & '}
+              <a 
+                href="a-rajouter" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-500 hover:text-red-400 transition-colors duration-200"
+              >
+                Othman Meziane
+              </a>
+              {' • '} 
+              <span className="text-gray-600">Développeurs Full-Stack</span>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
