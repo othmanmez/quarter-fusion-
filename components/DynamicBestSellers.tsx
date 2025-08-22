@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Suspense } from 'react';
 
 interface MenuItem {
   id: string;
@@ -12,8 +13,71 @@ interface MenuItem {
   availableForDelivery: boolean;
 }
 
+function BestSellersSkeleton() {
+  return (
+    <section className="py-16 bg-gradient-to-b from-red-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Titre principal */}
+        <div className="text-center mb-12">
+          <div className="h-12 bg-gray-200 rounded animate-pulse mb-4 mx-auto max-w-md" />
+          <div className="h-6 bg-gray-200 rounded animate-pulse mx-auto max-w-2xl" />
+        </div>
+
+        {/* Grille des cartes skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-2xl shadow-lg overflow-hidden"
+            >
+              {/* Image skeleton */}
+              <div className="h-48 bg-gray-200 animate-pulse relative">
+                {/* Badge skeleton */}
+                <div className="absolute top-4 left-4 z-10">
+                  <div className="h-6 bg-gray-300 rounded-full animate-pulse w-16" />
+                </div>
+              </div>
+
+              {/* Contenu skeleton */}
+              <div className="p-6">
+                {/* Titre */}
+                <div className="h-6 bg-gray-200 rounded animate-pulse mb-2 w-3/4" />
+                
+                {/* Description */}
+                <div className="space-y-2 mb-4">
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-full" />
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
+                </div>
+
+                {/* Prix et boutons */}
+                <div className="flex justify-between items-center">
+                  <div className="h-8 bg-gray-200 rounded animate-pulse w-20" />
+                  <div className="flex flex-col space-y-1">
+                    <div className="h-8 bg-gray-200 rounded-full animate-pulse w-24" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Call to action skeleton */}
+        <div className="text-center mt-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="h-12 bg-gray-200 rounded-full animate-pulse w-48" />
+            <div className="h-12 bg-gray-200 rounded-full animate-pulse w-32" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 async function getBestSellers(): Promise<MenuItem[]> {
   try {
+    // Délai artificiel pour tester le skeleton (à supprimer en production)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
     const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : process.env.NEXTAUTH_URL || 'http://localhost:3004';
@@ -35,7 +99,7 @@ async function getBestSellers(): Promise<MenuItem[]> {
   }
 }
 
-export default async function DynamicBestSellers() {
+async function BestSellersContent() {
   const bestSellers = await getBestSellers();
 
   if (bestSellers.length === 0) {
@@ -150,5 +214,13 @@ export default async function DynamicBestSellers() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function DynamicBestSellers() {
+  return (
+    <Suspense fallback={<BestSellersSkeleton />}>
+      <BestSellersContent />
+    </Suspense>
   );
 }

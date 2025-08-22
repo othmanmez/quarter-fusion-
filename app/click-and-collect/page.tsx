@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
 import MenuDisplayWrapper from '../../components/MenuDisplayWrapper';
 import FloatingCart from '../../components/FloatingCart';
 import OrderSummary from '../../components/OrderSummary';
@@ -102,10 +100,9 @@ export default function ClickAndCollectPage() {
 
   return (
     <main className="min-h-screen">
-      <Navbar />
       
       {/* Header de la page */}
-      <section className="pt-20 pb-12 bg-gradient-to-b from-red-50 to-white">
+      <section className="pt-30 pb-12 bg-gradient-to-b from-red-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -254,7 +251,6 @@ export default function ClickAndCollectPage() {
         </div>
       </section>
 
-      <Footer />
     </main>
   );
 } 

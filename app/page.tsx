@@ -9,10 +9,9 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Navigation fixe */}
-      <Navbar />
       
       {/* Section Hero avec logo */}
-      <Hero />
+      {/*<Hero />*/}
       
       {/* Section Best-Sellers */}
       <DynamicBestSellers />

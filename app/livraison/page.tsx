@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
 import MenuDisplayWrapper from '../../components/MenuDisplayWrapper';
 import FloatingCart from '../../components/FloatingCart';
 import OrderSummary from '../../components/OrderSummary';
@@ -113,7 +111,6 @@ export default function LivraisonPage() {
 
   return (
     <main className="min-h-screen">
-      <Navbar />
       
       {/* Header de la page */}
       <section className="pt-20 pb-12 bg-gradient-to-b from-red-50 to-white">
@@ -265,7 +262,6 @@ export default function LivraisonPage() {
         </div>
       </section>
 
-      <Footer />
     </main>
   );
 } 

@@ -1,10 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { siteData } from '../data/siteData';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navigation = [
+    { name: "🏠 Accueil", href: "/" },
+    { name: "🥡 Click & Collect", href: "/click-and-collect" },
+    { name: "🚗 Livraison", href: "/livraison" },
+    { name: "📞 Contact", href: "/contact" }
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-lg z-50">
@@ -12,15 +18,16 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-red-700">
-              {siteData.restaurant.name}
+            <a href="/"><h1 className="text-2xl font-bold text-red-700">
+              Quarter Fusion
             </h1>
+            </a>
           </div>
 
           {/* Navigation desktop */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              {siteData.navigation.map((item) => (
+              {navigation.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
@@ -34,9 +41,9 @@ export default function Navbar() {
 
           {/* Bouton Commander */}
           <div className="hidden md:block">
-            <button className="bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200">
-              Commander
-            </button>
+            <a href="/commander" className="bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 inline-block">
+              🛒 Commander
+            </a>
           </div>
 
           {/* Menu mobile button */}
@@ -60,7 +67,7 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
-              {siteData.navigation.map((item) => (
+              {navigation.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
@@ -70,9 +77,9 @@ export default function Navbar() {
                   {item.name}
                 </a>
               ))}
-              <button className="w-full mt-4 bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200">
-                Commander
-              </button>
+              <a href="/commander" className="w-full mt-4 bg-red-700 hover:bg-red-800 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 inline-block text-center">
+                🛒 Commander
+              </a>
             </div>
           </div>
         )}

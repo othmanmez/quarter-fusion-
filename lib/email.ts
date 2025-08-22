@@ -2,12 +2,12 @@ import nodemailer from 'nodemailer';
 
 // Configuration du transporteur SMTP
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT || '587'),
   secure: false, // true pour 465, false pour les autres ports
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -28,7 +28,7 @@ interface EmailParams {
 export async function sendEmail({ to, subject, html }: EmailParams): Promise<boolean> {
   try {
     const mailOptions = {
-      from: process.env.SMTP_FROM,
+      from: process.env.EMAIL_USER,
       to,
       subject,
       html,

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import HydrationFix from "../components/HydrationFix";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,10 +39,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+      <Navbar />
+
+      <div className="pt-16">
         <Providers>
           <HydrationFix />
           {children}
         </Providers>
+      </div>
+        <Footer/>
       </body>
     </html>
   );
