@@ -1,26 +1,27 @@
-import { withAuth } from 'next-auth/middleware';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 
-export default withAuth(
-  function middleware(req) {
-    // Vérifier si l'utilisateur est admin
-    if (req.nextauth.token?.role !== 'admin') {
-      return Response.redirect(new URL('/admin/login', req.url));
+export default auth((req) => {
+  const { pathname } = req.nextUrl;
+  
+  // Vérifier si c'est une route admin protégée
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+    // Vérifier l'authentification
+    if (!req.auth) {
+      return NextResponse.redirect(new URL('/admin/login', req.url));
     }
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
-    },
+    
+    // Vérifier le rôle admin
+    if (req.auth.user?.role !== 'admin') {
+      return NextResponse.redirect(new URL('/admin/login', req.url));
+    }
   }
-);
+  
+  return NextResponse.next();
+});
 
 export const config = {
   matcher: [
-    '/admin/dashboard/:path*',
-    '/admin/menu/:path*',
-    '/admin/categories/:path*',
-    '/admin/orders/:path*',
-    '/admin/delivery/:path*',
-    '/admin/settings/:path*',
+    '/admin/((?!login|api).*)' // Toutes les routes admin sauf /admin/login et /admin/api
   ],
 }; 

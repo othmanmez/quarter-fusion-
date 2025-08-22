@@ -1,17 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import connectDB from '../../../../lib/db';
-import Category from '../../../../lib/models/Category';
-import Menu from '../../../../lib/models/Menu';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
-// PUT - Mettre à jour une catégorie
-export async function PUT(
+// GET - Récupérer une catégorie par ID
+export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    const category = await prisma.category.findUnique({
+      where: { id },
+      include: {
+        menus: true,
+        _count: {
+          select: { menus: true }
+        }
+      },
+    });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: 'Catégorie non trouvée' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      category,
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la catégorie:', error);
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT - Modifier une catégorie
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
     // Vérifier l'authentification admin
-    const session = await getServerSession();
+    const session = await auth();
     if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Non autorisé' },
@@ -19,10 +56,8 @@ export async function PUT(
       );
     }
 
-    await connectDB();
-    
     const body = await request.json();
-    const { name } = body;
+    const { name, slug } = body;
 
     // Validation
     if (!name || name.trim().length === 0) {
@@ -33,7 +68,9 @@ export async function PUT(
     }
 
     // Vérifier si la catégorie existe
-    const existingCategory = await Category.findById(params.id);
+    const existingCategory = await prisma.category.findUnique({
+      where: { id }
+    });
     if (!existingCategory) {
       return NextResponse.json(
         { error: 'Catégorie non trouvée' },
@@ -41,32 +78,53 @@ export async function PUT(
       );
     }
 
-    // Vérifier si le nouveau nom existe déjà (sauf pour la même catégorie)
-    const duplicateCategory = await Category.findOne({ 
-      name: { $regex: new RegExp(`^${name}$`, 'i') },
-      _id: { $ne: params.id }
+    // Générer le slug si non fourni
+    const finalSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    // Vérifier si le nouveau nom/slug existe déjà (sauf pour la même catégorie)
+    const duplicateCategory = await prisma.category.findFirst({
+      where: {
+        AND: [
+          { id: { not: id } },
+          {
+            OR: [
+              { name: name.trim() },
+              { slug: finalSlug }
+            ]
+          }
+        ]
+      }
     });
 
     if (duplicateCategory) {
       return NextResponse.json(
-        { error: 'Une catégorie avec ce nom existe déjà' },
+        { error: 'Une catégorie avec ce nom ou ce slug existe déjà' },
         { status: 409 }
       );
     }
 
-    const updatedCategory = await Category.findByIdAndUpdate(
-      params.id,
-      { name: name.trim() },
-      { new: true, runValidators: true }
-    );
+    const updatedCategory = await prisma.category.update({
+      where: { id },
+      data: {
+        name: name.trim(),
+        slug: finalSlug,
+      },
+      include: {
+        _count: {
+          select: {
+            menus: true,
+          },
+        },
+      },
+    });
 
     return NextResponse.json({
       success: true,
       category: updatedCategory,
-      message: 'Catégorie mise à jour avec succès',
+      message: 'Catégorie modifiée avec succès',
     });
   } catch (error) {
-    console.error('Erreur lors de la mise à jour de la catégorie:', error);
+    console.error('Erreur lors de la modification de la catégorie:', error);
     return NextResponse.json(
       { error: 'Erreur interne du serveur' },
       { status: 500 }
@@ -77,11 +135,13 @@ export async function PUT(
 // DELETE - Supprimer une catégorie
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     // Vérifier l'authentification admin
-    const session = await getServerSession();
+    const session = await auth();
     if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Non autorisé' },
@@ -89,10 +149,16 @@ export async function DELETE(
       );
     }
 
-    await connectDB();
-
     // Vérifier si la catégorie existe
-    const category = await Category.findById(params.id);
+    const category = await prisma.category.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { menus: true }
+        }
+      }
+    });
+    
     if (!category) {
       return NextResponse.json(
         { error: 'Catégorie non trouvée' },
@@ -100,18 +166,19 @@ export async function DELETE(
       );
     }
 
-    // Vérifier si des plats utilisent cette catégorie
-    const menuItemsCount = await Menu.countDocuments({ category: params.id });
-    if (menuItemsCount > 0) {
+    // Vérifier si des menus utilisent cette catégorie
+    if (category._count.menus > 0) {
       return NextResponse.json(
         { 
-          error: `Impossible de supprimer cette catégorie car ${menuItemsCount} plat(s) l'utilise(nt)` 
+          error: `Impossible de supprimer cette catégorie car ${category._count.menus} menu(s) l'utilise(nt)` 
         },
         { status: 409 }
       );
     }
 
-    await Category.findByIdAndDelete(params.id);
+    await prisma.category.delete({
+      where: { id }
+    });
 
     return NextResponse.json({
       success: true,

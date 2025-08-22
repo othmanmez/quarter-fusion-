@@ -1,46 +1,81 @@
-# Quarter Fusion - Site Web Restaurant
+# Quarter Fusion - Restaurant Website & Admin Dashboard
 
-Un site web moderne pour un restaurant de snack, développé avec Next.js 14 et Tailwind CSS.
+Une application web complète pour restaurant avec site public, dashboard administrateur et système de gestion des commandes. Développée avec Next.js 15, TypeScript, Prisma ORM et MongoDB.
 
 ## 🚀 Fonctionnalités
 
+### Site Public
 - **Design responsive** : Mobile-first avec adaptation desktop
-- **Navigation fixe** : Menu hamburger sur mobile, navigation complète sur desktop
-- **Section Hero** : Présentation des best-sellers avec badges (HOT, NEW, TOP)
-- **Section Étapes** : Processus en 3 étapes avec images et descriptions
-- **Informations pratiques** : Horaires, contact, Google Maps, conditions de livraison
-- **Réseaux sociaux** : Liens vers TikTok, Instagram, Snapchat
-- **Footer complet** : Mentions légales, copyright, liens utiles
+- **Menu dynamique** : Affichage des plats par catégorie avec filtres
+- **Best-sellers dynamiques** : Contenus provenant de la base de données (badges HOT, NEW, TOP)
+- **Modes de commande** : Click & Collect et Livraison
+- **Système de panier** : Gestion des commandes avec contexte React
+- **Pages dédiées** : Homepage, Menu, Contact
 
-## 🛠️ Technologies utilisées
+### Dashboard Administrateur
+- **Interface modale** : Gestion moderne avec modals au lieu de pages séparées
+- **Gestion des catégories** : CRUD complet avec slugs auto-générés
+- **Gestion des menus** : CRUD complet avec badges et disponibilité
+- **Tableaux compacts** : Layouts optimisés pour une meilleure utilisation de l'espace
+- **Système d'alerte** : Modals de confirmation pour les suppressions
 
-- **Framework** : Next.js 14 avec App Router
+### Authentification & Sécurité
+- **NextAuth v5** : Authentification sécurisée avec rôles
+- **Middleware de protection** : Routes admin protégées
+- **Hashage des mots de passe** : bcryptjs pour la sécurité
+- **Gestion des sessions** : Persistance et hydratation optimisées
+
+## 🛠️ Stack Technique
+
+- **Framework** : Next.js 15 avec App Router et Turbopack
+- **Language** : TypeScript pour le typage statique
+- **Base de données** : MongoDB avec Prisma ORM
+- **Authentification** : NextAuth.js v5
 - **Styling** : Tailwind CSS v4
-- **Images** : Composant `next/image` pour l'optimisation
-- **TypeScript** : Typage statique pour une meilleure maintenabilité
-- **Responsive** : Design mobile-first avec breakpoints Tailwind
+- **Email** : Nodemailer pour les notifications
+- **Images** : Support Cloudinary + composant `next/image`
+- **Runtime** : Node.js (forcé pour éviter les problèmes Edge Runtime)
 
 ## 📁 Structure du projet
 
 ```
 quarter-fusion/
 ├── app/
-│   ├── components/          # Composants React
-│   │   ├── Navbar.tsx      # Navigation fixe
-│   │   ├── Hero.tsx        # Section best-sellers
-│   │   ├── Steps.tsx       # Section 3 étapes
-│   │   ├── InfoSection.tsx # Informations pratiques
-│   │   ├── SocialLinks.tsx # Réseaux sociaux
-│   │   └── Footer.tsx      # Pied de page
-│   ├── data/
-│   │   └── siteData.ts     # Données centralisées
-│   ├── layout.tsx          # Layout principal
-│   ├── page.tsx           # Page d'accueil
-│   └── globals.css        # Styles globaux
-├── public/
-│   └── images/
-│       └── placeholder.svg # Image de placeholder
-└── package.json
+│   ├── admin/                    # Dashboard administrateur (protégé)
+│   │   ├── categories/          # Gestion des catégories
+│   │   ├── menu/               # Gestion des menus
+│   │   ├── dashboard/          # Tableau de bord
+│   │   ├── login/              # Authentification admin
+│   │   └── layout.tsx          # Layout admin avec navigation
+│   ├── api/                     # API REST endpoints
+│   │   ├── auth/               # Routes NextAuth
+│   │   ├── admin/              # API protégées admin
+│   │   ├── categories/         # CRUD catégories
+│   │   ├── menu/               # CRUD menus + best-sellers
+│   │   ├── orders/             # Gestion commandes
+│   │   ├── settings/           # Paramètres restaurant
+│   │   └── upload/             # Upload images Cloudinary
+│   ├── commander/               # Pages de commande client
+│   │   ├── click-and-collect/  # Mode retrait
+│   │   └── livraison/          # Mode livraison
+│   ├── components/              # Composants React réutilisables
+│   │   └── admin/              # Composants spécifiques admin
+│   ├── contexts/                # Contextes React (panier)
+│   ├── types/                   # Définitions TypeScript
+│   ├── data/                    # Données statiques centralisées
+│   ├── layout.tsx               # Layout principal
+│   └── page.tsx                # Page d'accueil
+├── components/                  # Composants globaux
+├── lib/                         # Utilitaires et configuration
+│   ├── auth.ts                 # Configuration NextAuth
+│   ├── prisma.ts               # Client Prisma
+│   ├── admin/                  # Utilitaires admin
+│   └── email.ts                # Templates et envoi emails
+├── prisma/                      # Configuration base de données
+│   ├── schema.prisma           # Schéma Prisma
+│   └── seed.ts                 # Script de seed
+├── scripts/                     # Scripts utilitaires
+└── middleware.ts               # Protection routes admin
 ```
 
 ## 🎨 Design System
@@ -75,36 +110,98 @@ quarter-fusion/
    npm install
    ```
 
-3. **Lancer le serveur de développement**
+3. **Configuration environnement**
    ```bash
-   npm run dev
+   # Copier les fichiers d'exemple
+   cp .env.example .env.local
+   cp .env.example .env
+   
+   # Configurer les variables dans .env.local et .env
    ```
 
-4. **Ouvrir dans le navigateur**
+4. **Initialiser la base de données**
+   ```bash
+   # Synchroniser le schéma Prisma avec MongoDB
+   npx prisma db push
+   
+   # Peupler la base avec des données de test
+   npm run seed
+   ```
+
+5. **Créer un utilisateur admin**
+   ```bash
+   npm run test:admin
+   ```
+
+6. **Lancer le serveur de développement**
+   ```bash
+   npm run dev --turbopack
+   ```
+
+7. **Ouvrir dans le navigateur**
    ```
    http://localhost:3000
    ```
 
+### Variables d'environnement requises
+
+Configurer dans `.env.local` (pour Next.js) et `.env` (pour Prisma) :
+
+```env
+# Base de données MongoDB
+MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/quarter-fusion
+
+# NextAuth configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key
+
+# Credentials admin
+ADMIN_EMAIL=admin@quarter-fusion.com
+ADMIN_PASSWORD=your-admin-password
+
+# Configuration email (Gmail SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+SMTP_FROM=your-email@gmail.com
+
+# Upload images Cloudinary
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+```
+
 ## 📝 Personnalisation
 
-### Modifier les données
-Toutes les données sont centralisées dans `app/data/siteData.ts` :
-- Informations du restaurant
+### Dashboard Administrateur
+- **Accès** : `/admin` (authentification requise)
+- **Fonctionnalités** :
+  - Gestion des catégories de menus avec slugs auto-générés
+  - CRUD complet des articles de menu avec upload d'images
+  - Interface modale moderne (pas de pages séparées)
+  - Tableaux compacts optimisés pour l'espace
+  - Alertes de confirmation pour les suppressions
+  - Statistiques de vente et commandes en temps réel
+
+### Gestion du contenu
+- **Menus dynamiques** : Gestion via l'interface admin avec catégorisation
+- **Best-sellers** : Sélection automatique via badges (HOT, NEW, TOP)
+- **Images** : Upload direct via Cloudinary avec optimisation automatique
+- **Catégories** : Slugs auto-générés à partir du nom pour les URLs
+
+### Modifier les données statiques
+Données centralisées dans `app/data/siteData.ts` :
+- Informations du restaurant (nom, adresse, téléphone)
 - Horaires d'ouverture
-- Best-sellers
-- Étapes de préparation
-- Conditions de livraison
+- Conditions de livraison et tarifs
 - Réseaux sociaux
+- Contenu textuel des pages
 
-### Ajouter des images
-1. Placer les images dans `public/images/`
-2. Mettre à jour les chemins dans `siteData.ts`
-3. Utiliser le composant `next/image` pour l'optimisation
-
-### Modifier les couleurs
-Les couleurs sont définies dans les classes Tailwind. Pour changer le thème :
-1. Modifier les classes `red-700`, `red-800` dans les composants
-2. Ou configurer un thème personnalisé dans `tailwind.config.js`
+### Personaliser l'apparence
+- **Couleurs** : Thème rouge principal (#b91c1c) modifiable dans les composants
+- **Responsive** : Design mobile-first avec breakpoints adaptés
+- **Typographie** : Police Geist moderne avec tailles responsives
 
 ## 📱 Responsive Design
 
@@ -115,36 +212,107 @@ Le site est optimisé pour tous les écrans :
 
 ## 🔧 Scripts disponibles
 
-- `npm run dev` : Serveur de développement
+- `npm run dev --turbopack` : Serveur de développement avec Turbo (recommandé)
 - `npm run build` : Build de production
 - `npm run start` : Serveur de production
-- `npm run lint` : Vérification du code
+- `npm run lint` : Vérification du code ESLint
+- `npm run seed` : Peupler la base de données avec des données de test
+- `npm run test:admin` : Tester l'accès administrateur
+- `npx prisma db push` : Synchroniser le schéma Prisma avec MongoDB
+- `npx prisma studio` : Interface web pour explorer la base de données
 
-## 📄 Pages à créer
+## 📄 Pages implémentées
 
-Le site actuel est une page d'accueil. Pour un site complet, créer :
-- `/menu` : Page du menu complet
-- `/commander` : Page de commande
+### Pages publiques
+- `/` : Page d'accueil avec best-sellers dynamiques
+- `/commander/click-and-collect` : Commande en retrait
+- `/commander/livraison` : Commande en livraison  
 - `/contact` : Page de contact
-- `/mentions-legales` : Mentions légales
-- `/politique-confidentialite` : Politique de confidentialité
-- `/conditions-utilisation` : Conditions d'utilisation
-- `/cgv` : Conditions générales de vente
 
-## 🎯 Optimisations futures
+### Pages administrateur (protégées)
+- `/admin` : Dashboard avec statistiques
+- `/admin/categories` : Gestion des catégories (interface modale)
+- `/admin/menu` : Gestion des menus (interface modale)
+- `/admin/login` : Authentification administrateur
 
-- [ ] Ajouter des vraies images de produits
-- [ ] Intégrer un système de commande en ligne
-- [ ] Ajouter des animations avec Framer Motion
-- [ ] Optimiser le SEO avec des métadonnées dynamiques
-- [ ] Ajouter un système de cookies
-- [ ] Intégrer Google Analytics
-- [ ] Ajouter des tests unitaires
+### API REST
+- `/api/categories` : CRUD catégories
+- `/api/menu` : CRUD menus + best-sellers
+- `/api/orders` : Gestion des commandes
+- `/api/upload` : Upload images Cloudinary
+- `/api/settings` : Paramètres du restaurant
+
+## 🎯 Fonctionnalités implémentées
+
+- [x] Dashboard administrateur complet avec interface modale
+- [x] Gestion des catégories avec slugs auto-générés
+- [x] CRUD complet des menus avec upload d'images Cloudinary
+- [x] Best-sellers dynamiques basés sur la base de données
+- [x] Système d'authentification NextAuth v5 avec rôles
+- [x] Protection des routes admin via middleware
+- [x] API REST complète pour toutes les entités
+- [x] Email automatique de confirmation de commande
+- [x] Interface responsive mobile-first
+- [x] Tableaux compacts optimisés pour l'admin
+
+## 🔮 Améliorations futures
+
+- [ ] Système de paiement en ligne (Stripe/PayPal)
+- [ ] Notifications push pour les commandes
+- [ ] Module de fidélité clients
+- [ ] Analytics avancées des ventes
+- [ ] Module de gestion des stocks
+- [ ] Système de promotions et coupons
+- [ ] Application mobile React Native
+- [ ] Tests automatisés (Jest/Cypress)
+
+## 🛡️ Sécurité
+
+- **Authentification** : NextAuth v5 avec sessions sécurisées
+- **Hashage** : bcryptjs pour les mots de passe admin
+- **Protection CSRF** : Intégration NextAuth automatique
+- **Validation** : Validation côté serveur pour toutes les API
+- **Middleware** : Protection des routes admin
+- **Variables d'environnement** : Séparation des secrets
+
+## 🐛 Résolution de problèmes
+
+### Erreurs courantes
+
+**Base de données non accessible**
+```bash
+# Vérifier la connexion MongoDB
+npx prisma db push
+```
+
+**Variables d'environnement manquantes**
+```bash
+# Copier .env.example vers .env et .env.local
+cp .env.example .env.local
+cp .env.example .env
+```
+
+**Erreur d'hydratation React**
+- Problème résolu avec DarkReader : composant HydrationFix implémenté
+- Largeurs aléatoires remplacées par valeurs fixes
+
+**Erreurs de build TypeScript**
+```bash
+# Vérifier la syntaxe et les types
+npm run lint
+npx tsc --noEmit
+```
 
 ## 📞 Support
 
-Pour toute question ou modification, contactez l'équipe de développement.
+Pour contribuer au projet :
+1. Fork le repository
+2. Créer une branche feature (`git checkout -b feature/nouvelle-fonctionnalite`)
+3. Commit les changements (`git commit -am 'Ajout nouvelle fonctionnalité'`)
+4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
+5. Créer une Pull Request
 
 ---
 
-**Quarter Fusion** - Votre restaurant de snack préféré à Paris 🍔
+**Quarter Fusion** - Application complète de gestion de restaurant 🍔
+*Développée avec Next.js 15, TypeScript, Prisma et MongoDB*

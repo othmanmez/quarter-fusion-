@@ -1,6 +1,6 @@
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { siteData } from '../data/siteData';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
+import { siteData } from '../../data/siteData';
 
 export default function ContactPage() {
   return (

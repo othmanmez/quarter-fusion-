@@ -1,28 +1,24 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import LoginModal from '@/components/admin/LoginModal';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { user, logout, isLoading, isAuthenticated, isAdmin } = useAuth();
+  const pathname = usePathname();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
-  useEffect(() => {
-    if (status === 'loading') return;
-    
-    // Ne pas rediriger si on est déjà sur la page de connexion
-    if (!session && window.location.pathname !== '/admin/login') {
-      router.push('/admin/login');
-    }
-  }, [session, status, router]);
+  // Afficher le modal de login si pas authentifié (sauf sur la page de login)
+  const shouldShowModal = !isAuthenticated && pathname !== '/admin/login' && !isLoading;
 
-  if (status === 'loading') {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
@@ -30,16 +26,39 @@ export default function AdminLayout({
     );
   }
 
-  if (!session) {
-    return null;
+  if (!isAuthenticated || !isAdmin) {
+    return (
+      <>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Quarter Fusion Admin
+            </h1>
+            <p className="text-gray-600 mb-6">
+              Veuillez vous connecter pour accéder au panneau d'administration
+            </p>
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors"
+            >
+              Se connecter
+            </button>
+          </div>
+        </div>
+        <LoginModal 
+          isOpen={shouldShowModal || showLoginModal} 
+          onClose={() => setShowLoginModal(false)} 
+        />
+      </>
+    );
   }
 
   const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: '📊' },
-    { name: 'Menu', href: '/admin/menu', icon: '🍽️' },
+    { name: 'Menus', href: '/admin/menu', icon: '🍽️' },
     { name: 'Catégories', href: '/admin/categories', icon: '📂' },
     { name: 'Commandes', href: '/admin/orders', icon: '📋' },
-    { name: 'Livraison', href: '/admin/delivery', icon: '🚚' },
+    { name: 'Paramètres', href: '/admin/settings', icon: '⚙️' },
   ];
 
   return (
@@ -70,10 +89,10 @@ export default function AdminLayout({
             <div className="flex items-center">
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-700">
-                  {session.user?.email}
+                  {user?.email}
                 </span>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/admin/login' })}
+                  onClick={logout}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                 >
                   Déconnexion

@@ -1,32 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import MenuDisplay from '../components/MenuDisplay';
-import FloatingCart from '../components/FloatingCart';
-import OrderSummary from '../components/OrderSummary';
-import OrderForm from '../components/OrderForm';
-import { siteData } from '../data/siteData';
-import { MenuItem } from '../data/menuData';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
+import MenuDisplayWrapper from '../../components/MenuDisplayWrapper';
+import FloatingCart from '../../components/FloatingCart';
+import OrderSummary from '../../components/OrderSummary';
+import OrderForm from '../../components/OrderForm';
+import { siteData } from '../../data/siteData';
 
-interface CartItem {
-  item: MenuItem;
-  quantity: number;
-  customizations?: string[];
-}
 
-interface OrderFormData {
-  nom: string;
-  prenom: string;
-  email: string;
-  telephone: string;
-  moyenPaiement: string;
-  notes: string;
-  adresse?: string;
-  ville?: string;
-  codePostal?: string;
-}
+import { MenuItem, CartItem, OrderFormData } from '../types/menu';
 
 type OrderStep = 'menu' | 'summary' | 'form';
 
@@ -159,7 +143,7 @@ export default function LivraisonPage() {
                 </p>
               </div>
               
-              <MenuDisplay onAddToCart={handleAddToCart} showAddToCart={true} />
+              <MenuDisplayWrapper onAddToCart={handleAddToCart} showAddToCart={true} mode="livraison" />
             </>
           )}
 

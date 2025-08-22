@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch"
+      "WebSearch",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npm run seed:prisma:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx kill-port:*)",
+      "Bash(taskkill:*)",
+      "Bash(wmic process where:*)",
+      "Bash(powershell:*)",
+      "Bash(npm run build:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

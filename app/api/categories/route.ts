@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import connectDB from '../../../lib/db';
-import Category from '../../../lib/models/Category';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 // GET - Récupérer toutes les catégories
 export async function GET() {
   try {
-    await connectDB();
-    
-    const categories = await Category.find({})
-      .sort({ name: 1 })
-      .select('-__v');
+    const categories = await prisma.category.findMany({
+      orderBy: { name: 'asc' },
+      include: {
+        _count: {
+          select: { menus: true }
+        }
+      }
+    });
 
     return NextResponse.json({
       success: true,
@@ -29,7 +31,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     // Vérifier l'authentification admin
-    const session = await getServerSession();
+    const session = await auth();
     if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Non autorisé' },
@@ -37,10 +39,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await connectDB();
-    
     const body = await request.json();
-    const { name } = body;
+    const { name, slug } = body;
 
     // Validation
     if (!name || name.trim().length === 0) {
@@ -50,19 +50,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Générer le slug si non fourni
+    const finalSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
     // Vérifier si la catégorie existe déjà
-    const existingCategory = await Category.findOne({ 
-      name: { $regex: new RegExp(`^${name}$`, 'i') } 
+    const existingCategory = await prisma.category.findFirst({
+      where: {
+        OR: [
+          { name: name.trim() },
+          { slug: finalSlug }
+        ]
+      }
     });
 
     if (existingCategory) {
       return NextResponse.json(
-        { error: 'Une catégorie avec ce nom existe déjà' },
+        { error: 'Une catégorie avec ce nom ou ce slug existe déjà' },
         { status: 409 }
       );
     }
 
-    const category = await Category.create({ name: name.trim() });
+    const category = await prisma.category.create({
+      data: {
+        name: name.trim(),
+        slug: finalSlug,
+      },
+    });
 
     return NextResponse.json({
       success: true,

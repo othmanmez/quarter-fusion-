@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String @unique
+  slug  String @unique
+  menus Menu[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Menu {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  price       Float
+  image       String
+  available   Boolean  @default(true)
+  badge       String?  // HOT, NEW, TOP
+  
+  // Conditions de commande par mode
+  availableForClickAndCollect Boolean @default(true)
+  availableForDelivery        Boolean @default(true)
+  
+  categoryId  String   @db.ObjectId
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([categoryId])
+  @@index([available])
+  @@index([availableForClickAndCollect])
+  @@index([availableForDelivery])
+}
+
+model Order {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber  String @unique
+  customerName String
+  customerEmail String
+  customerPhone String
+  items        OrderItem[]
+  total        Float
+  deliveryAddress String?
+  city         String?
+  isDelivery   Boolean @default(false)
+  status       OrderStatus @default(A_PREPARER)
+  estimatedTime String @default("30-45 minutes")
+  paymentMethod PaymentMethod
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@index([customerEmail])
+  @@index([status])
+  @@index([createdAt])
+}
+
+type OrderItem {
+  title       String
+  quantity    Int
+  price       Float
+  description String?
+}
+
+enum OrderStatus {
+  A_PREPARER
+  EN_ATTENTE
+  EN_PREPARATION
+  PRETE
+  TERMINEE
+  ANNULEE
+}
+
+enum PaymentMethod {
+  ESPECES
+  CARTE
+}
+
+model Settings {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  key   String @unique
+  value String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String   // Hasher avec bcrypt
+  name      String?
+  role      UserRole @default(USER)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MANAGER
+}

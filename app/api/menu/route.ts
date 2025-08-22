@@ -1,22 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import connectDB from '../../../lib/db';
-import Menu from '../../../lib/models/Menu';
-import Category from '../../../lib/models/Category';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    await connectDB();
+    const { searchParams } = new URL(request.url);
+    const mode = searchParams.get('mode'); // 'click-and-collect' ou 'delivery'
+
+    // Construire les conditions de filtre
+    const whereConditions: any = {
+      available: true,
+    };
+
+    // Ajouter le filtre par mode si spécifié
+    if (mode === 'click-and-collect') {
+      whereConditions.availableForClickAndCollect = true;
+    } else if (mode === 'delivery') {
+      whereConditions.availableForDelivery = true;
+    }
 
     // Récupération de tous les éléments du menu disponibles avec leurs catégories
-    const menuItems = await Menu.find({ available: true })
-      .populate('category', 'name slug')
-      .sort({ 'category.name': 1, title: 1 })
-      .select('-__v');
+    const menuItems = await prisma.menu.findMany({
+      where: whereConditions,
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+      orderBy: [
+        { category: { name: 'asc' } },
+        { title: 'asc' },
+      ],
+    });
 
     // Grouper par catégorie
     const menuByCategory = menuItems.reduce((acc, item) => {
-      const categoryName = (item.category as any).name;
+      const categoryName = item.category.name;
       if (!acc[categoryName]) {
         acc[categoryName] = [];
       }
@@ -42,7 +65,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     // Vérifier l'authentification admin
-    const session = await getServerSession();
+    const session = await auth();
     if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Non autorisé' },
@@ -50,13 +73,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await connectDB();
-    
     const body = await request.json();
-    const { title, description, price, category, image } = body;
+    const { 
+      title, 
+      description, 
+      price, 
+      categoryId, 
+      image, 
+      badge,
+      availableForClickAndCollect = true,
+      availableForDelivery = true,
+      available = true 
+    } = body;
 
     // Validation
-    if (!title || !description || !price || !category || !image) {
+    if (!title || !description || !price || !categoryId || !image) {
       return NextResponse.json(
         { error: 'Tous les champs sont requis' },
         { status: 400 }
@@ -71,7 +102,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifier si la catégorie existe
-    const categoryExists = await Category.findById(category);
+    const categoryExists = await prisma.category.findUnique({
+      where: { id: categoryId }
+    });
     if (!categoryExists) {
       return NextResponse.json(
         { error: 'Catégorie non trouvée' },
@@ -79,12 +112,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const menuItem = await Menu.create({
-      title: title.trim(),
-      description: description.trim(),
-      price: parseFloat(price),
-      category,
-      image,
+    const menuItem = await prisma.menu.create({
+      data: {
+        title: title.trim(),
+        description: description.trim(),
+        price: parseFloat(price),
+        categoryId,
+        image,
+        badge,
+        available,
+        availableForClickAndCollect,
+        availableForDelivery,
+      },
+      include: {
+        category: true,
+      },
     });
 
     return NextResponse.json({

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/lib/auth';
 import { v2 as cloudinary } from 'cloudinary';
 
 // Configuration Cloudinary
@@ -12,7 +12,7 @@ cloudinary.config({
 export async function POST(request: NextRequest) {
   try {
     // Vérifier l'authentification admin
-    const session = await getServerSession();
+    const session = await auth();
     if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Non autorisé' },
