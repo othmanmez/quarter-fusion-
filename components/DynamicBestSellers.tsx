@@ -80,7 +80,7 @@ async function getBestSellers(): Promise<MenuItem[]> {
     
     const baseUrl = process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NEXTAUTH_URL || 'http://localhost:3004';
+      : process.env.NEXTAUTH_URL || 'http://localhost:3000';
     
     const response = await fetch(`${baseUrl}/api/menu/best-sellers`, {
       next: { revalidate: 300 } // Revalidate every 5 minutes
