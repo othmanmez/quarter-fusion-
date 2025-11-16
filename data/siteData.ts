@@ -71,7 +71,7 @@ export const siteData = {
   // Conditions de livraison
   delivery: {
     minimum: "20€",
-    fee: "2.50€",
+    fee: "à partir de 2.50€",
     time: "30-45 minutes",
     zones: "Cergy et environs"
   },

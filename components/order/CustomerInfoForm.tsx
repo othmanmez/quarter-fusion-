@@ -17,13 +17,36 @@ interface Settings {
   deliveryTime: string;
 }
 
+interface DeliveryCity {
+  id: string;
+  name: string;
+  postalCode: string | null;
+  deliveryFee: number;
+  minOrder: number | null;
+  active: boolean;
+}
+
 export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }: CustomerInfoFormProps) {
   const { state, dispatch } = useOrder();
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [deliveryCities, setDeliveryCities] = useState<DeliveryCity[]>([]);
+  const [selectedCityData, setSelectedCityData] = useState<DeliveryCity | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Récupérer les paramètres pour les villes de livraison
+  // Récupérer les villes de livraison
   useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await fetch('/api/delivery-cities');
+        const data = await response.json();
+        if (data.success) {
+          setDeliveryCities(data.cities || []);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des villes:', error);
+      }
+    };
+
     const fetchSettings = async () => {
       try {
         const response = await fetch('/api/settings');
@@ -37,9 +60,18 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
     };
 
     if (mode === 'delivery') {
+      fetchCities();
       fetchSettings();
     }
   }, [mode]);
+
+  // Mettre à jour les frais quand la ville change
+  useEffect(() => {
+    if (state.customerInfo.deliveryCity) {
+      const cityData = deliveryCities.find(c => c.name === state.customerInfo.deliveryCity);
+      setSelectedCityData(cityData || null);
+    }
+  }, [state.customerInfo.deliveryCity, deliveryCities]);
 
   // Validation des champs
   const validateForm = () => {
@@ -283,14 +315,30 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
                   }`}
                 >
                   <option value="">Sélectionnez votre ville</option>
-                  {settings?.deliveryCities.map((city) => (
-                    <option key={city} value={city}>
-                      {city}
+                  {deliveryCities.map((city) => (
+                    <option key={city.id} value={city.name}>
+                      {city.name} {city.postalCode && `(${city.postalCode})`} - {city.deliveryFee.toFixed(2)}€
                     </option>
                   ))}
                 </select>
                 {errors.deliveryCity && (
                   <p className="mt-1 text-sm text-red-600">{errors.deliveryCity}</p>
+                )}
+                
+                {/* Afficher les infos de la ville sélectionnée */}
+                {selectedCityData && (
+                  <div className="mt-2 p-3 bg-blue-50 rounded-lg">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-700">Frais de livraison :</span>
+                      <span className="font-medium text-gray-900">{selectedCityData.deliveryFee.toFixed(2)}€</span>
+                    </div>
+                    {selectedCityData.minOrder && (
+                      <div className="flex justify-between text-sm mt-1">
+                        <span className="text-gray-700">Minimum de commande :</span>
+                        <span className="font-medium text-gray-900">{selectedCityData.minOrder.toFixed(2)}€</span>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </>

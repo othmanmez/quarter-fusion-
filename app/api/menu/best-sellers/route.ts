@@ -24,7 +24,7 @@ export async function GET() {
         { badge: 'asc' }, // HOT first, then NEW, then TOP
         { createdAt: 'desc' }
       ],
-      take: 6 // Limit to 6 items for the homepage
+      take: 3 // Limit to 3 best-sellers on homepage
     });
 
     return NextResponse.json({

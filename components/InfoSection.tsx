@@ -109,25 +109,44 @@ export default function InfoSection() {
               </svg>
               Notre localisation
             </h3>
-            <div className="relative h-96 rounded-xl overflow-hidden">
-                             <iframe
-                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.9916256937595!2d2.0362!3d49.0369!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e6f4c8c8c8c8c%3A0x8c8c8c8c8c8c8c8c!2s6+Passage+de+l%27Aurore%2C+95800+Cergy!5e0!3m2!1sfr!2sfr!4v1234567890"
-                 width="100%"
-                 height="100%"
-                 style={{ border: 0 }}
-                 allowFullScreen
-                 loading="lazy"
-                 referrerPolicy="no-referrer-when-downgrade"
-                 title="Quarter Fusion - Localisation"
-               ></iframe>
+            <div className="relative h-96 rounded-xl overflow-hidden mb-4">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.9916256937595!2d2.0362!3d49.0369!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e6f4c8c8c8c8c%3A0x8c8c8c8c8c8c8c8c!2s6+Passage+de+l%27Aurore%2C+95800+Cergy!5e0!3m2!1sfr!2sfr!4v1234567890"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Quarter Fusion - Localisation"
+              ></iframe>
             </div>
-            <div className="mt-4 text-center">
-                             <a
-                 href="https://maps.google.com/?q=6+Passage+de+l%27Aurore,+95800+Cergy"
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="inline-flex items-center text-red-700 hover:text-red-800 font-medium"
-               >
+
+            {/* Galerie photos du restaurant */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="relative h-32 rounded-lg overflow-hidden">
+                <img 
+                  src="/images/devanture.jpg.jpg" 
+                  alt="Devanture du restaurant"
+                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+              <div className="relative h-32 rounded-lg overflow-hidden">
+                <img 
+                  src="/images/interieur.jpg.jpg" 
+                  alt="Intérieur du restaurant"
+                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                />
+              </div>
+            </div>
+
+            <div className="text-center">
+              <a
+                href="https://maps.google.com/?q=6+Passage+de+l%27Aurore,+95800+Cergy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-red-700 hover:text-red-800 font-medium"
+              >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>

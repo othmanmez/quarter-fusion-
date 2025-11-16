@@ -18,6 +18,11 @@ export default function AdminLayout({
   // Afficher le modal de login si pas authentifié (sauf sur la page de login)
   const shouldShowModal = !isAuthenticated && pathname !== '/admin/login' && !isLoading;
 
+  // Page de login : rendu normal
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">

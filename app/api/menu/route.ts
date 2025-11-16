@@ -87,9 +87,9 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validation
-    if (!title || !description || !price || !categoryId || !image) {
+    if (!title || !description || !price || !categoryId) {
       return NextResponse.json(
-        { error: 'Tous les champs sont requis' },
+        { error: 'Titre, description, prix et catégorie sont requis' },
         { status: 400 }
       );
     }
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         description: description.trim(),
         price: parseFloat(price),
         categoryId,
-        image,
+        image: image || '/images/placeholder.svg', // Image par défaut si non fournie
         badge,
         available,
         availableForClickAndCollect,

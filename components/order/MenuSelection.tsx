@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useOrder, MenuItem } from '../../contexts/OrderContext';
+import CustomizationModal from './CustomizationModal';
 
 interface MenuSelectionProps {
   onNext: () => void;
@@ -13,7 +14,11 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
   const [menu, setMenu] = useState<Record<string, MenuItem[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('buckets');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  
+  // Modal de personnalisation
+  const [showCustomizationModal, setShowCustomizationModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
   // Récupérer le menu depuis l'API
   useEffect(() => {
@@ -44,18 +49,22 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
     fetchMenu();
   }, []);
 
-  // Fonction pour ajouter un article au panier
+  // Fonction pour ouvrir le modal de personnalisation
   const handleAddToCart = (item: MenuItem) => {
-    addToCart(item);
+    setSelectedItem(item);
+    setShowCustomizationModal(true);
   };
 
-  // Catégories avec leurs noms d'affichage
-  const categoryNames = {
-    buckets: 'Buckets',
-    quarters: 'Quarters',
-    sandwiches: 'Sandwiches',
-    accompagnements: 'Accompagnements'
+  // Fonction pour ajouter au panier avec personnalisations
+  const handleAddWithCustomizations = (item: MenuItem, customizations: any[], quantity: number) => {
+    // Ajouter au panier avec les personnalisations
+    for (let i = 0; i < quantity; i++) {
+      addToCart({ ...item, customizations });
+    }
   };
+
+  // Les noms de catégories viennent directement de la base de données
+  // Pas besoin de mapping, on utilise les noms tels quels
 
   if (loading) {
     return (
@@ -112,7 +121,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              {categoryNames[category as keyof typeof categoryNames]}
+              {category}
             </button>
           ))}
         </div>
@@ -124,7 +133,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {menu[selectedCategory].map((item) => (
               <div
-                key={item._id}
+                key={item.id || item._id}
                 className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200"
               >
                 {/* Image */}
@@ -184,6 +193,19 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
           </div>
         )}
       </div>
+
+      {/* Modal de personnalisation */}
+      {selectedItem && (
+        <CustomizationModal
+          item={selectedItem}
+          isOpen={showCustomizationModal}
+          onClose={() => {
+            setShowCustomizationModal(false);
+            setSelectedItem(null);
+          }}
+          onAddToCart={handleAddWithCustomizations}
+        />
+      )}
     </div>
   );
 } 

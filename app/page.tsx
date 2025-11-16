@@ -2,7 +2,6 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import InfoSection from '../components/InfoSection';
 import SocialLinks from '../components/SocialLinks';
-import Footer from '../components/Footer';
 import DynamicBestSellers from '../components/DynamicBestSellers';
 
 export default function Home() {
@@ -22,8 +21,7 @@ export default function Home() {
       {/* Section Réseaux sociaux */}
       <SocialLinks />
       
-      {/* Footer */}
-      <Footer />
+      {/* Footer présent dans app/layout.tsx */}
     </main>
   );
 }

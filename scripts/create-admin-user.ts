@@ -13,33 +13,33 @@ async function createAdminUser() {
 
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await prisma.user.findUnique({
-      where: { email: 'samy@quarterfusion.com' }
+      where: { email: 'Issa2025' }
     });
 
     if (existingUser) {
       console.log('⚠️  L\'utilisateur existe déjà !');
       
       // Mettre à jour le mot de passe
-      const hashedPassword = await bcrypt.hash('pokemon', 12);
+      const hashedPassword = await bcrypt.hash('quarterfusion', 12);
       await prisma.user.update({
-        where: { email: 'samy@quarterfusion.com' },
+        where: { email: 'Issa2025' },
         data: { 
           password: hashedPassword,
           role: 'ADMIN',
           active: true,
-          name: 'Samy'
+          name: 'quarterfusion'
         }
       });
       console.log('✅ Mot de passe mis à jour !');
     } else {
       // Créer le nouvel utilisateur
-      const hashedPassword = await bcrypt.hash('pokemon', 12);
+      const hashedPassword = await bcrypt.hash('quarterfusion', 12);
       
       const newUser = await prisma.user.create({
         data: {
-          email: 'samy@quarterfusion.com',
+          email: 'Issa2025',
           password: hashedPassword,
-          name: 'Samy',
+          name: 'quarterfusion',
           role: 'ADMIN',
           active: true,
         }
@@ -54,8 +54,8 @@ async function createAdminUser() {
     console.log('\n🎉 Configuration terminée !');
     console.log('\n📱 Pour accéder au panel admin :');
     console.log('1. Allez sur: http://localhost:3000/admin');
-    console.log('2. Email: samy@quarterfusion.com');
-    console.log('3. Mot de passe: pokemon');
+    console.log('2. Email: Issa2025');
+    console.log('3. Mot de passe: quarterfusion');
 
   } catch (error) {
     console.error('❌ Erreur lors de la création:', error);

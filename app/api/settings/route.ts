@@ -4,18 +4,37 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    // Récupération des paramètres (simulation - à adapter selon vos besoins)
-    const settings = {
-      orderingOpen: true,
-      deliveryCities: ['Cergy', 'Pontoise', 'Saint-Ouen-l\'Aumône', 'Eragny', 'Vauréal', 'Jouy-le-Moutier'],
-      deliveryFee: 2.50,
-      minimumOrder: 20,
-      deliveryTime: '30-45 minutes'
+    // Récupérer tous les paramètres depuis la base
+    const allSettings = await prisma.settings.findMany();
+    
+    // Convertir en objet
+    const settingsObj: any = {
+      clickAndCollectEnabled: true,
+      deliveryEnabled: true,
+      minOrderAmount: 20,
+      deliveryFee: 2.5,
+      estimatedTime: '30-45 minutes',
+      deliveryCities: ['Cergy', 'Pontoise', 'Saint-Ouen-l\'Aumône', 'Eragny', 'Vauréal', 'Jouy-le-Moutier']
     };
+    
+    allSettings.forEach(setting => {
+      // Convertir les valeurs booléennes
+      if (setting.value === 'true' || setting.value === 'false') {
+        settingsObj[setting.key] = setting.value === 'true';
+      }
+      // Convertir les valeurs numériques
+      else if (!isNaN(Number(setting.value))) {
+        settingsObj[setting.key] = Number(setting.value);
+      }
+      // Valeurs string
+      else {
+        settingsObj[setting.key] = setting.value;
+      }
+    });
 
     return NextResponse.json({
       success: true,
-      settings,
+      settings: settingsObj,
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des paramètres:', error);
@@ -39,36 +58,39 @@ export async function PUT(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { orderingOpen, deliveryCities, deliveryFee, minimumOrder, deliveryTime } = body;
+    const { key, value } = body;
 
-    // Validation
-    if (deliveryFee !== undefined && deliveryFee < 0) {
+    if (!key) {
       return NextResponse.json(
-        { error: 'Les frais de livraison doivent être positifs' },
+        { error: 'Clé manquante' },
         { status: 400 }
       );
     }
 
-    if (minimumOrder !== undefined && minimumOrder < 0) {
+    // Validation selon le type de paramètre
+    if ((key === 'deliveryFee' || key === 'minOrderAmount') && value < 0) {
       return NextResponse.json(
-        { error: 'Le montant minimum de commande doit être positif' },
+        { error: 'La valeur doit être positive' },
         { status: 400 }
       );
     }
 
-    // Simulation de mise à jour (à adapter selon vos besoins)
-    const settings = {
-      orderingOpen,
-      deliveryCities,
-      deliveryFee,
-      minimumOrder,
-      deliveryTime,
-    };
+    // Convertir la valeur en string pour la base
+    const valueStr = String(value);
+
+    // Créer ou mettre à jour le paramètre
+    await prisma.settings.upsert({
+      where: { key },
+      update: { value: valueStr },
+      create: {
+        key,
+        value: valueStr
+      }
+    });
 
     return NextResponse.json({
       success: true,
-      settings,
-      message: 'Paramètres mis à jour avec succès'
+      message: 'Paramètre mis à jour avec succès'
     });
   } catch (error) {
     console.error('Erreur lors de la mise à jour des paramètres:', error);

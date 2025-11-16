@@ -94,15 +94,15 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="modal-email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
+                  Identifiant
                 </label>
                 <input
                   id="modal-email"
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  placeholder="samy@quarterfusion.com"
+                  placeholder="Votre identifiant"
                   required
                 />
               </div>

@@ -9,7 +9,9 @@
     "lint": "next lint",
     "seed": "tsx scripts/seed.ts",
     "seed:prisma": "tsx scripts/seed-prisma.ts",
-    "test:admin": "node scripts/test-admin-access.js"
+    "seed:cities": "tsx scripts/seed-cities.ts",
+    "test:admin": "node scripts/test-admin-access.js",
+    "check:auth": "node scripts/check-nextauth.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

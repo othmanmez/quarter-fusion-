@@ -234,7 +234,7 @@ export default function NewMenuPage() {
             {/* Image URL */}
             <div>
               <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                URL de l'image
+                URL de l'image (optionnel)
               </label>
               <input
                 type="url"
@@ -243,10 +243,10 @@ export default function NewMenuPage() {
                 value={formData.image}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
-                placeholder="https://example.com/image.jpg"
+                placeholder="https://example.com/image.jpg ou laissez vide"
               />
               <p className="mt-1 text-sm text-gray-500">
-                Laissez vide pour utiliser l'image par défaut
+                💡 Laissez vide pour utiliser une image par défaut
               </p>
             </div>
 

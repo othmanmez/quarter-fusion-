@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import EditMenuModal from '../../../components/admin/EditMenuModal';
+import CustomizationsModal from '../../../components/admin/CustomizationsModal';
 
 interface MenuItem {
   id: string;
@@ -37,6 +38,10 @@ export default function AdminMenuPage() {
   // Modal state for editing menu
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMenuItem, setEditingMenuItem] = useState<MenuItem | null>(null);
+  
+  // Modal state for customizations
+  const [showCustomizationsModal, setShowCustomizationsModal] = useState(false);
+  const [customizingMenuItem, setCustomizingMenuItem] = useState<MenuItem | null>(null);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -355,6 +360,16 @@ export default function AdminMenuPage() {
                     <td className="px-3 py-3 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end space-x-2">
                         <button
+                          onClick={() => {
+                            setCustomizingMenuItem(item);
+                            setShowCustomizationsModal(true);
+                          }}
+                          className="text-purple-600 hover:text-purple-900"
+                          title="Gérer les personnalisations"
+                        >
+                          🎨
+                        </button>
+                        <button
                           onClick={() => handleEditMenuItem(item)}
                           className="text-indigo-600 hover:text-indigo-900"
                         >
@@ -409,6 +424,22 @@ export default function AdminMenuPage() {
             setEditingMenuItem(null);
           }}
           onSave={handleSaveMenuItem}
+        />
+      )}
+
+      {/* Customizations Modal */}
+      {customizingMenuItem && (
+        <CustomizationsModal
+          menuId={customizingMenuItem.id}
+          menuTitle={customizingMenuItem.title}
+          isOpen={showCustomizationsModal}
+          onClose={() => {
+            setShowCustomizationsModal(false);
+            setCustomizingMenuItem(null);
+          }}
+          onSave={() => {
+            fetchMenuItems();
+          }}
         />
       )}
     </div>

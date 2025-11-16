@@ -4,13 +4,15 @@ import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 
 // Types pour les éléments du menu et la commande
 export interface MenuItem {
-  _id: string;
+  id?: string;
+  _id?: string;
   title: string;
   description: string;
   price: number;
   category: string;
   image: string;
   badge?: 'HOT' | 'NEW' | 'TOP';
+  customizations?: any[];
 }
 
 export interface CartItem {

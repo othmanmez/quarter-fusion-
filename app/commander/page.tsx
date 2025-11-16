@@ -1,13 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { OrderProvider } from '../../contexts/OrderContext';
 import OrderWizard from '../../components/OrderWizard';
 
 type OrderMode = 'click-and-collect' | 'delivery';
 
+interface Settings {
+  clickAndCollectEnabled: boolean;
+  deliveryEnabled: boolean;
+  minOrderAmount: number;
+  deliveryFee: number;
+  estimatedTime: string;
+}
+
 export default function CommanderPage() {
   const [selectedMode, setSelectedMode] = useState<OrderMode | null>(null);
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings');
+        const data = await response.json();
+        if (data.success) {
+          setSettings(data.settings);
+        }
+      } catch (error) {
+        console.error('Erreur chargement paramètres:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handleModeSelection = (mode: OrderMode) => {
+    if (!settings) return;
+    
+    if (mode === 'click-and-collect' && !settings.clickAndCollectEnabled) {
+      alert('Le Click & Collect est temporairement fermé. Veuillez réessayer plus tard ou choisir la livraison.');
+      return;
+    }
+    
+    if (mode === 'delivery' && !settings.deliveryEnabled) {
+      alert('La livraison est temporairement fermée. Veuillez réessayer plus tard ou choisir le Click & Collect.');
+      return;
+    }
+    
+    setSelectedMode(mode);
+  };
 
   if (selectedMode) {
     return (
@@ -37,15 +80,24 @@ export default function CommanderPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Click & Collect */}
             <div 
-              onClick={() => setSelectedMode('click-and-collect')}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-red-700 group"
+              onClick={() => handleModeSelection('click-and-collect')}
+              className={`bg-white rounded-2xl p-8 shadow-lg transition-all duration-300 border-2 ${
+                settings?.clickAndCollectEnabled 
+                  ? 'hover:shadow-xl cursor-pointer border-transparent hover:border-red-700' 
+                  : 'opacity-60 cursor-not-allowed border-gray-300'
+              } group`}
             >
               <div className="text-center">
                 <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-red-200 transition-colors">
                   <span className="text-4xl">🥡</span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-red-700 transition-colors">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-red-700 transition-colors flex items-center justify-center gap-2">
                   Click & Collect
+                  {!settings?.clickAndCollectEnabled && (
+                    <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                      Fermé
+                    </span>
+                  )}
                 </h2>
                 <p className="text-gray-600 mb-6">
                   Commandez en ligne et venez récupérer votre commande directement au restaurant
@@ -78,15 +130,24 @@ export default function CommanderPage() {
 
             {/* Livraison */}
             <div 
-              onClick={() => setSelectedMode('delivery')}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-red-700 group"
+              onClick={() => handleModeSelection('delivery')}
+              className={`bg-white rounded-2xl p-8 shadow-lg transition-all duration-300 border-2 ${
+                settings?.deliveryEnabled 
+                  ? 'hover:shadow-xl cursor-pointer border-transparent hover:border-red-700' 
+                  : 'opacity-60 cursor-not-allowed border-gray-300'
+              } group`}
             >
               <div className="text-center">
                 <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-red-200 transition-colors">
                   <span className="text-4xl">🚗</span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-red-700 transition-colors">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-red-700 transition-colors flex items-center justify-center gap-2">
                   Livraison à domicile
+                  {!settings?.deliveryEnabled && (
+                    <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                      Fermé
+                    </span>
+                  )}
                 </h2>
                 <p className="text-gray-600 mb-6">
                   Recevez votre commande directement chez vous, chaud et savoureux
