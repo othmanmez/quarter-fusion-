@@ -15,6 +15,7 @@ export function useOrderNotifications({
   const [newOrdersCount, setNewOrdersCount] = useState<number>(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const audioErrorLogged = useRef<boolean>(false); // Flag pour éviter les logs répétitifs
 
   // Initialiser l'audio
   useEffect(() => {
@@ -24,9 +25,13 @@ export function useOrderNotifications({
       audioRef.current.volume = 1.0;
       audioRef.current.preload = 'auto';
       
-      // Gérer les erreurs de chargement
+      // Gérer les erreurs de chargement (une seule fois)
       audioRef.current.addEventListener('error', () => {
-        console.warn('Fichier audio non trouvé, utilisation du son système');
+        if (!audioErrorLogged.current) {
+          // Log une seule fois, puis utiliser le son système
+          audioErrorLogged.current = true;
+        }
+        // Ne rien faire d'autre, le son système sera utilisé en fallback
       });
       
       setIsInitialized(true);

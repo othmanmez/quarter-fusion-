@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
         price: parseFloat(price),
         categoryId,
         image: image || '/images/placeholder.svg', // Image par défaut si non fournie
-        badge,
+        badge: badge ? badge.trim().toUpperCase() : null,
         available,
         availableForClickAndCollect,
         availableForDelivery,

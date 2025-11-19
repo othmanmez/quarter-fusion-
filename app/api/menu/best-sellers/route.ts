@@ -27,7 +27,13 @@ export async function GET() {
         { badge: 'asc' }, // HOT first, then NEW, then TOP
         { createdAt: 'desc' }
       ],
-      take: 3 // Limit to 3 best-sellers on homepage
+      take: 12 // Limit to 12 best-sellers on homepage (augmenté pour afficher tous les HOT)
+    });
+
+    // Log pour debug
+    console.log(`📊 Best sellers trouvés: ${bestSellers.length}`);
+    bestSellers.forEach(item => {
+      console.log(`  - ${item.title} (badge: ${item.badge}, available: ${item.available})`);
     });
 
     return NextResponse.json({

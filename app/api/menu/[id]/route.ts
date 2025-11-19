@@ -116,7 +116,7 @@ export async function PUT(
         price: parseFloat(price),
         categoryId,
         image,
-        badge: badge || null,
+        badge: badge ? badge.trim().toUpperCase() : null,
         available: available ?? true,
         availableForClickAndCollect: availableForClickAndCollect ?? true,
         availableForDelivery: availableForDelivery ?? true,

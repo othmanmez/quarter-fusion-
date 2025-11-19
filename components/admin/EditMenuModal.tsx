@@ -121,7 +121,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
           price: formData.price,
           categoryId: formData.categoryId,
           image: formData.image.trim(),
-          badge: formData.badge.trim() || undefined,
+          badge: formData.badge.trim().toUpperCase() || undefined,
           available: formData.available,
           availableForClickAndCollect: formData.availableForClickAndCollect,
           availableForDelivery: formData.availableForDelivery,
