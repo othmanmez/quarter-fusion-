@@ -22,6 +22,7 @@ interface MenuItem {
   description: string;
   price: number;
   image: string;
+  category?: string;
   allowDrinkOption?: boolean;
   drinkPrice?: number;
 }
@@ -32,7 +33,7 @@ interface DrinkItem {
   price: number;
 }
 
-interface SelectedCustomization {
+export interface SelectedCustomization {
   name: string;
   selectedOptions: string[];
   priceExtra: number;

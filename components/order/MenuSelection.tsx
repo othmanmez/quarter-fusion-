@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useOrder, MenuItem } from '../../contexts/OrderContext';
-import CustomizationModal from './CustomizationModal';
+import CustomizationModal, { SelectedCustomization } from './CustomizationModal';
 
 interface MenuSelectionProps {
   onNext: () => void;
@@ -56,10 +56,13 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
   };
 
   // Fonction pour ajouter au panier avec personnalisations
-  const handleAddWithCustomizations = (item: MenuItem, customizations: any[], quantity: number) => {
+  const handleAddWithCustomizations = (item: MenuItem, customizations: SelectedCustomization[], quantity: number) => {
+    // S'assurer que l'item a la propriété category avant de l'ajouter au panier
+    const itemWithCategory = { ...item, category: item.category || selectedCategory };
+    
     // Ajouter au panier avec les personnalisations
     for (let i = 0; i < quantity; i++) {
-      addToCart({ ...item, customizations });
+      addToCart({ ...itemWithCategory, customizations });
     }
   };
 
