@@ -49,8 +49,9 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
   }, []);
 
   // Fonction pour ouvrir le modal de personnalisation
-  const handleAddToCart = (item: MenuItem) => {
-    setSelectedItem(item);
+  const handleAddToCart = (item: MenuItem, category: string) => {
+    // S'assurer que l'item a la propriété category
+    setSelectedItem({ ...item, category });
     setShowCustomizationModal(true);
   };
 
@@ -176,7 +177,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
                       {item.price.toFixed(2)}€
                     </span>
                     <button
-                      onClick={() => handleAddToCart(item)}
+                      onClick={() => handleAddToCart(item, selectedCategory)}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                     >
                       Ajouter
