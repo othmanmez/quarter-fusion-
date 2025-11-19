@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Assurez-vous que Prisma est généré avant le build
+# (déjà dans package.json : "build": "prisma generate && next build")
+
