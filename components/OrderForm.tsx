@@ -1,7 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CartItem, OrderFormData } from '../app/types/menu';
+
+interface DeliveryCity {
+  id: string;
+  name: string;
+  postalCode: string | null;
+  deliveryFee: number;
+  minOrder: number | null;
+  active: boolean;
+}
 
 interface OrderFormProps {
   cart: CartItem[];
@@ -34,6 +43,48 @@ export default function OrderForm({
     codePostal: ''
   });
 
+  const [deliveryCities, setDeliveryCities] = useState<DeliveryCity[]>([]);
+  const [selectedCity, setSelectedCity] = useState<DeliveryCity | null>(null);
+  const [actualDeliveryFee, setActualDeliveryFee] = useState(deliveryFee);
+  const [loadingCities, setLoadingCities] = useState(false);
+
+  // Charger les villes de livraison
+  useEffect(() => {
+    if (isDelivery) {
+      fetchDeliveryCities();
+    }
+  }, [isDelivery]);
+
+  const fetchDeliveryCities = async () => {
+    setLoadingCities(true);
+    try {
+      const response = await fetch('/api/delivery-cities?activeOnly=true');
+      const data = await response.json();
+      if (data.success) {
+        setDeliveryCities(data.cities);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des villes:', error);
+    } finally {
+      setLoadingCities(false);
+    }
+  };
+
+  // Gérer le changement de ville
+  const handleCityChange = (cityName: string) => {
+    const city = deliveryCities.find(c => c.name === cityName);
+    setSelectedCity(city || null);
+    setFormData({ ...formData, ville: cityName });
+    
+    if (city) {
+      setActualDeliveryFee(city.deliveryFee);
+      // Mettre à jour le code postal automatiquement si disponible
+      if (city.postalCode && !formData.codePostal) {
+        setFormData(prev => ({ ...prev, ville: cityName, codePostal: city.postalCode || '' }));
+      }
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
@@ -47,7 +98,7 @@ export default function OrderForm({
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const finalTotal = totalPrice + deliveryFee;
+  const finalTotal = totalPrice + actualDeliveryFee;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -146,6 +197,36 @@ export default function OrderForm({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
+                    <label htmlFor="ville" className="block text-sm font-medium text-gray-700 mb-2">
+                      Ville de livraison *
+                    </label>
+                    {loadingCities ? (
+                      <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
+                        Chargement...
+                      </div>
+                    ) : deliveryCities.length > 0 ? (
+                      <select
+                        id="ville"
+                        name="ville"
+                        required
+                        value={formData.ville}
+                        onChange={(e) => handleCityChange(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      >
+                        <option value="">Sélectionnez une ville</option>
+                        {deliveryCities.map((city) => (
+                          <option key={city.id} value={city.name}>
+                            {city.name} - {city.deliveryFee.toFixed(2)}€
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="w-full px-4 py-3 border border-red-300 rounded-lg bg-red-50 text-red-700">
+                        Aucune ville de livraison disponible
+                      </div>
+                    )}
+                  </div>
+                  <div>
                     <label htmlFor="codePostal" className="block text-sm font-medium text-gray-700 mb-2">
                       Code postal *
                     </label>
@@ -160,22 +241,40 @@ export default function OrderForm({
                       placeholder="95800"
                     />
                   </div>
-                  <div>
-                    <label htmlFor="ville" className="block text-sm font-medium text-gray-700 mb-2">
-                      Ville *
-                    </label>
-                    <input
-                      type="text"
-                      id="ville"
-                      name="ville"
-                      required
-                      value={formData.ville}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                      placeholder="Cergy"
-                    />
-                  </div>
                 </div>
+
+                {/* Afficher les infos de la ville sélectionnée */}
+                {selectedCity && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-start">
+                      <svg className="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <div className="text-sm text-green-800">
+                        <p className="font-medium">Livraison disponible à {selectedCity.name}</p>
+                        <p>Frais de livraison : <strong>{selectedCity.deliveryFee.toFixed(2)}€</strong></p>
+                        {selectedCity.minOrder && (
+                          <p>Commande minimum : <strong>{selectedCity.minOrder.toFixed(2)}€</strong></p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Afficher un avertissement si commande minimum non atteinte */}
+                {selectedCity && selectedCity.minOrder && totalPrice < selectedCity.minOrder && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <div className="flex items-start">
+                      <svg className="w-5 h-5 text-orange-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <div className="text-sm text-orange-800">
+                        <p className="font-medium">Commande minimum non atteinte</p>
+                        <p>Ajoutez encore {(selectedCity.minOrder - totalPrice).toFixed(2)}€ pour pouvoir commander dans cette ville.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -224,7 +323,7 @@ export default function OrderForm({
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || (selectedCity && selectedCity.minOrder && totalPrice < selectedCity.minOrder)}
                 className="flex-1 bg-red-700 hover:bg-red-800 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Envoi en cours...' : `Commander (${finalTotal.toFixed(2)}€)`}
@@ -260,10 +359,10 @@ export default function OrderForm({
               <span>Sous-total :</span>
               <span>{totalPrice.toFixed(2)}€</span>
             </div>
-            {deliveryFee > 0 && (
+            {actualDeliveryFee > 0 && (
               <div className="flex justify-between text-sm">
-                <span>Frais de livraison :</span>
-                <span>{deliveryFee.toFixed(2)}€</span>
+                <span>Frais de livraison {selectedCity && `(${selectedCity.name})`} :</span>
+                <span>{actualDeliveryFee.toFixed(2)}€</span>
               </div>
             )}
             <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-2">

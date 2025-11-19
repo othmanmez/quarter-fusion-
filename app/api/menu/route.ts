@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const mode = searchParams.get('mode'); // 'click-and-collect' ou 'delivery'
+    const includeCustomizations = searchParams.get('includeCustomizations') === 'true';
 
     // Construire les conditions de filtre
     const whereConditions: any = {
@@ -19,18 +20,26 @@ export async function GET(request: NextRequest) {
       whereConditions.availableForDelivery = true;
     }
 
+    // Construire les options d'inclusion
+    const includeOptions: any = {
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    };
+
+    // Inclure les personnalisations si demandé (pour l'interface admin)
+    if (includeCustomizations) {
+      includeOptions.customizations = true;
+    }
+
     // Récupération de tous les éléments du menu disponibles avec leurs catégories
     const menuItems = await prisma.menu.findMany({
       where: whereConditions,
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
-      },
+      include: includeOptions,
       orderBy: [
         { category: { name: 'asc' } },
         { title: 'asc' },

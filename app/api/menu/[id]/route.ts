@@ -64,6 +64,8 @@ export async function PUT(
       availableForClickAndCollect,
       availableForDelivery,
       available,
+      allowDrinkOption,
+      drinkPrice,
     } = body;
 
     // Validation
@@ -115,6 +117,8 @@ export async function PUT(
         available: available ?? true,
         availableForClickAndCollect: availableForClickAndCollect ?? true,
         availableForDelivery: availableForDelivery ?? true,
+        allowDrinkOption: allowDrinkOption ?? false,
+        drinkPrice: drinkPrice ? parseFloat(drinkPrice) : 1.5,
       },
       include: {
         category: true,

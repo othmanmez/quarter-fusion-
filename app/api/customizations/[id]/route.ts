@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 // PUT - Modifier une personnalisation
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérifier l'authentification admin
@@ -17,11 +17,12 @@ export async function PUT(
       );
     }
 
+    const { id } = await params;
     const body = await request.json();
     const { name, type, required, options } = body;
 
     const customization = await prisma.customization.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(name && { name: name.trim() }),
         ...(type && { type }),
@@ -51,7 +52,7 @@ export async function PUT(
 // DELETE - Supprimer une personnalisation
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérifier l'authentification admin
@@ -63,8 +64,9 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     await prisma.customization.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({

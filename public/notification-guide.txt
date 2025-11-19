@@ -1,0 +1,55 @@
+IMPORTANT : Fichier son de notification manquant
+=====================================================
+
+Le fichier public/notification.mp3 doit être remplacé par un vrai fichier audio.
+
+Options pour obtenir un son :
+
+1. TÉLÉCHARGER UN SON GRATUIT :
+   - https://notificationsounds.com/
+   - https://freesound.org/
+   - https://mixkit.co/free-sound-effects/notification/
+   
+   Recherchez : "notification", "alert", "bell"
+   Format recommandé : MP3, WAV
+   Durée : 1-3 secondes
+
+2. CRÉER VOTRE PROPRE SON :
+   - Utilisez une app d'enregistrement
+   - Ou un éditeur audio (Audacity gratuit)
+
+3. ACHETER UN SON PROFESSIONNEL :
+   - AudioJungle
+   - Pond5
+   - Premium Beat
+
+INSTALLATION :
+==============
+1. Téléchargez votre fichier son
+2. Renommez-le en "notification.mp3"
+3. Placez-le dans le dossier "public/"
+4. Remplacez le fichier placeholder actuel
+
+CARACTÉRISTIQUES RECOMMANDÉES :
+================================
+- Format : MP3 ou WAV
+- Durée : 1-3 secondes
+- Volume : Normalisé (pas trop fort ni trop faible)
+- Qualité : 128-192 kbps (MP3)
+- Type : Son clair, distinctif, professionnel
+
+SONS RECOMMANDÉS :
+==================
+- Cloche simple
+- "Ding" court
+- Notification iOS/Android-like
+- Son de caisse enregistreuse
+- Bip positif
+
+NE PAS UTILISER :
+=================
+- Sons trop longs (>5 secondes)
+- Musique
+- Voix
+- Sons agressifs ou désagréables
+

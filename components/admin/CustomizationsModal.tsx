@@ -180,9 +180,17 @@ export default function CustomizationsModal({
             <h3 className="text-xl font-bold text-gray-900">
               Personnalisations : {menuTitle}
             </h3>
-            <p className="text-sm text-gray-600">
-              Options et suppléments disponibles pour ce plat
+            <p className="text-sm text-gray-600 mb-2">
+              Configurez les options et suppléments disponibles pour ce plat
             </p>
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-3 text-xs">
+              <p className="text-blue-900 font-medium mb-1">💡 Exemples de personnalisations :</p>
+              <ul className="text-blue-800 space-y-1">
+                <li>• <strong>Choix unique</strong> : Sauce (Ketchup, Mayo, BBQ), Taille (Petite, Moyenne, Grande)</li>
+                <li>• <strong>Choix multiples</strong> : Suppléments (Fromage +1€, Bacon +1.50€, Oignons gratuit)</li>
+                <li>• <strong>Oui/Non</strong> : Sans oignons, Sans salade, Extra sauce</li>
+              </ul>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -258,13 +266,81 @@ export default function CustomizationsModal({
               </div>
             )}
 
+            {/* Modèles rapides */}
+            {!showAddForm && customizations.length === 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-3">🚀 Modèles rapides</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <button
+                    onClick={() => {
+                      setFormData({
+                        name: 'Sauce',
+                        type: 'SINGLE_CHOICE',
+                        required: false,
+                        options: [
+                          { name: 'Ketchup', priceExtra: 0 },
+                          { name: 'Mayonnaise', priceExtra: 0 },
+                          { name: 'BBQ', priceExtra: 0 },
+                          { name: 'Sauce blanche', priceExtra: 0 }
+                        ]
+                      });
+                      setShowAddForm(true);
+                    }}
+                    className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
+                  >
+                    <div className="font-medium text-sm text-gray-900">🍯 Choix de sauce</div>
+                    <div className="text-xs text-gray-600">Sauces classiques gratuites</div>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setFormData({
+                        name: 'Suppléments',
+                        type: 'MULTIPLE_CHOICE',
+                        required: false,
+                        options: [
+                          { name: 'Fromage', priceExtra: 1 },
+                          { name: 'Bacon', priceExtra: 1.5 },
+                          { name: 'Œuf', priceExtra: 1 },
+                          { name: 'Oignons', priceExtra: 0 }
+                        ]
+                      });
+                      setShowAddForm(true);
+                    }}
+                    className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
+                  >
+                    <div className="font-medium text-sm text-gray-900">➕ Suppléments</div>
+                    <div className="text-xs text-gray-600">Ingrédients additionnels</div>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setFormData({
+                        name: 'Sans ingrédient',
+                        type: 'MULTIPLE_CHOICE',
+                        required: false,
+                        options: [
+                          { name: 'Sans oignons', priceExtra: 0 },
+                          { name: 'Sans salade', priceExtra: 0 },
+                          { name: 'Sans tomates', priceExtra: 0 }
+                        ]
+                      });
+                      setShowAddForm(true);
+                    }}
+                    className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
+                  >
+                    <div className="font-medium text-sm text-gray-900">🚫 Retirer ingrédient</div>
+                    <div className="text-xs text-gray-600">Options de suppression</div>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Bouton ajouter */}
             {!showAddForm && (
               <button
                 onClick={() => setShowAddForm(true)}
                 className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-red-500 hover:text-red-600 transition-colors"
               >
-                + Ajouter une personnalisation
+                + Ajouter une personnalisation personnalisée
               </button>
             )}
 

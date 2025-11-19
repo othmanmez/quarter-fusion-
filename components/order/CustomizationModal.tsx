@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 
 interface CustomizationOption {
   name: string;
@@ -23,6 +22,14 @@ interface MenuItem {
   description: string;
   price: number;
   image: string;
+  allowDrinkOption?: boolean;
+  drinkPrice?: number;
+}
+
+interface DrinkItem {
+  id: string;
+  title: string;
+  price: number;
 }
 
 interface SelectedCustomization {
@@ -48,10 +55,22 @@ export default function CustomizationModal({
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
+  
+  // État pour l'option boisson
+  const [drinkWanted, setDrinkWanted] = useState(false);
+  const [selectedDrink, setSelectedDrink] = useState<string>('');
+  const [availableDrinks, setAvailableDrinks] = useState<DrinkItem[]>([]);
+  const [loadingDrinks, setLoadingDrinks] = useState(false);
 
   useEffect(() => {
     if (isOpen && item) {
       fetchCustomizations();
+      if (item.allowDrinkOption) {
+        fetchDrinks();
+      }
+      // Reset états
+      setDrinkWanted(false);
+      setSelectedDrink('');
     }
   }, [isOpen, item]);
 
@@ -80,6 +99,30 @@ export default function CustomizationModal({
     }
   };
 
+  const fetchDrinks = async () => {
+    try {
+      setLoadingDrinks(true);
+      const response = await fetch('/api/menu');
+      const data = await response.json();
+
+      if (data.success) {
+        // Filtrer pour ne garder que les boissons disponibles
+        const drinks = (data.items || [])
+          .filter((item: any) => item.category.slug === 'boissons' && item.available)
+          .map((drink: any) => ({
+            id: drink.id,
+            title: drink.title,
+            price: drink.price
+          }));
+        setAvailableDrinks(drinks);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des boissons:', error);
+    } finally {
+      setLoadingDrinks(false);
+    }
+  };
+
   const handleOptionChange = (customId: string, optionName: string, type: string) => {
     setSelectedOptions(prev => {
       const current = prev[customId] || [];
@@ -101,6 +144,7 @@ export default function CustomizationModal({
   const calculateTotalPrice = () => {
     let total = item.price * quantity;
     
+    // Ajouter le prix des personnalisations
     customizations.forEach(custom => {
       const selected = selectedOptions[custom.id] || [];
       selected.forEach(optName => {
@@ -110,6 +154,11 @@ export default function CustomizationModal({
         }
       });
     });
+    
+    // Ajouter le prix de la boisson si sélectionnée
+    if (drinkWanted && item.drinkPrice) {
+      total += item.drinkPrice * quantity;
+    }
     
     return total;
   };
@@ -122,6 +171,12 @@ export default function CustomizationModal({
 
     if (missingRequired) {
       alert(`"${missingRequired.name}" est obligatoire`);
+      return;
+    }
+
+    // Vérifier si une boisson est voulue mais non sélectionnée
+    if (drinkWanted && !selectedDrink) {
+      alert('Veuillez sélectionner une boisson');
       return;
     }
 
@@ -144,12 +199,26 @@ export default function CustomizationModal({
       })
       .filter(Boolean) as SelectedCustomization[];
 
+    // Ajouter la boisson si sélectionnée
+    if (drinkWanted && selectedDrink) {
+      const drink = availableDrinks.find(d => d.id === selectedDrink);
+      if (drink) {
+        selectedCustoms.push({
+          name: `Boisson`,
+          selectedOptions: [drink.title],
+          priceExtra: item.drinkPrice || 0
+        });
+      }
+    }
+
     onAddToCart(item, selectedCustoms, quantity);
     onClose();
     
     // Reset
     setQuantity(1);
     setSelectedOptions({});
+    setDrinkWanted(false);
+    setSelectedDrink('');
   };
 
   if (!isOpen) return null;
@@ -159,11 +228,14 @@ export default function CustomizationModal({
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header avec image */}
         <div className="relative h-48 bg-gray-200">
-          <Image
+          <img
             src={item.image}
             alt={item.title}
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Si l'image ne charge pas, afficher une image par défaut
+              e.currentTarget.src = '/images/placeholder.svg';
+            }}
           />
           <button
             onClick={onClose}
@@ -232,6 +304,81 @@ export default function CustomizationModal({
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Option Boisson */}
+          {item.allowDrinkOption && (
+            <div className="mb-6 border-t pt-6">
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                <div className="flex items-center">
+                  <span className="text-3xl mr-3">🥤</span>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Ajoutez une boisson
+                    </h3>
+                    <p className="text-sm text-blue-800">
+                      Complétez votre menu avec une boisson pour seulement{' '}
+                      <span className="font-bold">+{item.drinkPrice?.toFixed(2)}€</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="flex items-center p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={drinkWanted}
+                    onChange={(e) => {
+                      setDrinkWanted(e.target.checked);
+                      if (!e.target.checked) {
+                        setSelectedDrink('');
+                      }
+                    }}
+                    className="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span className="ml-3 font-medium text-gray-900">
+                    Oui, j'ajoute une boisson (+{item.drinkPrice?.toFixed(2)}€)
+                  </span>
+                </label>
+
+                {drinkWanted && (
+                  <div className="ml-8 space-y-2">
+                    {loadingDrinks ? (
+                      <div className="text-center py-4">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                      </div>
+                    ) : availableDrinks.length === 0 ? (
+                      <p className="text-sm text-gray-600">Aucune boisson disponible</p>
+                    ) : (
+                      <>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Choisissez votre boisson *
+                        </label>
+                        <select
+                          value={selectedDrink}
+                          onChange={(e) => setSelectedDrink(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          required={drinkWanted}
+                        >
+                          <option value="">-- Sélectionnez une boisson --</option>
+                          {availableDrinks.map((drink) => (
+                            <option key={drink.id} value={drink.id}>
+                              {drink.title}
+                            </option>
+                          ))}
+                        </select>
+                        {selectedDrink && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            La boisson sera ajoutée pour {item.drinkPrice?.toFixed(2)}€ au lieu de son prix normal
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

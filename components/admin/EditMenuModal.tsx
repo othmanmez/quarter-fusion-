@@ -12,6 +12,8 @@ interface MenuItem {
   badge?: string;
   availableForClickAndCollect: boolean;
   availableForDelivery: boolean;
+  allowDrinkOption?: boolean;
+  drinkPrice?: number;
   category: {
     id: string;
     name: string;
@@ -48,6 +50,8 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
     available: true,
     availableForClickAndCollect: true,
     availableForDelivery: true,
+    allowDrinkOption: false,
+    drinkPrice: 1.5,
   });
 
   useEffect(() => {
@@ -64,6 +68,8 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
           available: menuItem.available,
           availableForClickAndCollect: menuItem.availableForClickAndCollect,
           availableForDelivery: menuItem.availableForDelivery,
+          allowDrinkOption: menuItem.allowDrinkOption || false,
+          drinkPrice: menuItem.drinkPrice || 1.5,
         });
         setError(null);
       }
@@ -119,6 +125,8 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
           available: formData.available,
           availableForClickAndCollect: formData.availableForClickAndCollect,
           availableForDelivery: formData.availableForDelivery,
+          allowDrinkOption: formData.allowDrinkOption,
+          drinkPrice: formData.drinkPrice,
         }),
       });
 
@@ -251,6 +259,63 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                   <option value="NEW">NEW</option>
                   <option value="TOP">TOP</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Option Boisson */}
+            <div className="border-t pt-4 mt-4">
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <span className="text-2xl">🥤</span>
+                  </div>
+                  <div className="ml-3">
+                    <h4 className="text-sm font-medium text-blue-900">
+                      Option Formule + Boisson
+                    </h4>
+                    <p className="text-xs text-blue-800 mt-1">
+                      Permet au client d'ajouter une boisson de son choix pour un supplément
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="flex items-center h-10">
+                  <input
+                    type="checkbox"
+                    id="allowDrinkOption"
+                    checked={formData.allowDrinkOption}
+                    onChange={(e) => setFormData(prev => ({ ...prev, allowDrinkOption: e.target.checked }))}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="allowDrinkOption" className="ml-2 text-sm font-medium text-gray-700">
+                    Activer l'option boisson
+                  </label>
+                </div>
+
+                {formData.allowDrinkOption && (
+                  <div className="flex-1">
+                    <label htmlFor="drinkPrice" className="block text-sm font-medium text-gray-700 mb-1">
+                      Prix de l'option boisson
+                    </label>
+                    <div className="flex items-center">
+                      <input
+                        type="number"
+                        id="drinkPrice"
+                        value={formData.drinkPrice}
+                        onChange={(e) => setFormData(prev => ({ ...prev, drinkPrice: parseFloat(e.target.value) || 0 }))}
+                        min="0"
+                        step="0.01"
+                        className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-600">€</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Ex: 1.50 pour ajouter une boisson
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

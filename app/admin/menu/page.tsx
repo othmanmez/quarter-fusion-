@@ -17,11 +17,14 @@ interface MenuItem {
   badge?: string;
   availableForClickAndCollect: boolean;
   availableForDelivery: boolean;
+  allowDrinkOption?: boolean;
+  drinkPrice?: number;
   category: {
     id: string;
     name: string;
     slug: string;
   };
+  customizations?: any[];
   createdAt: string;
   updatedAt: string;
 }
@@ -57,7 +60,8 @@ export default function AdminMenuPage() {
   const fetchMenuItems = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/menu');
+      // Inclure les personnalisations pour l'interface admin
+      const response = await fetch('/api/menu?includeCustomizations=true');
       const data = await response.json();
 
       if (data.success) {
@@ -192,7 +196,7 @@ export default function AdminMenuPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Gestion des Menus</h1>
               <p className="text-gray-600">
-                Gérez vos plats et leur disponibilité
+                Gérez vos plats, leur disponibilité et leurs personnalisations
               </p>
             </div>
             <Link
@@ -201,6 +205,28 @@ export default function AdminMenuPage() {
             >
               Ajouter un menu
             </Link>
+          </div>
+          
+          {/* Info sur les personnalisations */}
+          <div className="pb-6">
+            <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <span className="text-2xl">🎨</span>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-purple-900">
+                    Gérez les personnalisations de vos menus
+                  </h3>
+                  <div className="mt-2 text-sm text-purple-800">
+                    <p>
+                      Cliquez sur <strong className="bg-purple-600 text-white px-2 py-0.5 rounded text-xs">🎨 Personnaliser</strong> pour configurer les options de chaque plat (sauces, suppléments, ingrédients à retirer, etc.).
+                      Les boissons ne peuvent pas être personnalisées.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -291,6 +317,9 @@ export default function AdminMenuPage() {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Modes
                   </th>
+                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Personnalisations
+                  </th>
                   <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
@@ -357,29 +386,56 @@ export default function AdminMenuPage() {
                         </span>
                       </div>
                     </td>
+                    <td className="px-3 py-3 whitespace-nowrap text-center">
+                      {item.category.slug !== 'boissons' ? (
+                        item.customizations && item.customizations.length > 0 ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            {item.customizations.length} configurée{item.customizations.length > 1 ? 's' : ''}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-400">
+                            Aucune
+                          </span>
+                        )
+                      ) : (
+                        <span className="text-xs text-gray-400">
+                          N/A
+                        </span>
+                      )}
+                    </td>
                     <td className="px-3 py-3 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
-                        <button
-                          onClick={() => {
-                            setCustomizingMenuItem(item);
-                            setShowCustomizationsModal(true);
-                          }}
-                          className="text-purple-600 hover:text-purple-900"
-                          title="Gérer les personnalisations"
-                        >
-                          🎨
-                        </button>
+                      <div className="flex justify-end items-center space-x-2">
+                        {/* Bouton Personnalisations - désactivé pour les boissons */}
+                        {item.category.slug !== 'boissons' ? (
+                          <button
+                            onClick={() => {
+                              setCustomizingMenuItem(item);
+                              setShowCustomizationsModal(true);
+                            }}
+                            className="px-3 py-1.5 bg-purple-600 text-white text-xs font-medium rounded hover:bg-purple-700 transition-colors"
+                            title="Gérer les personnalisations (sauces, suppléments, etc.)"
+                          >
+                            🎨 Personnaliser
+                          </button>
+                        ) : (
+                          <span 
+                            className="px-3 py-1.5 bg-gray-200 text-gray-500 text-xs font-medium rounded cursor-not-allowed"
+                            title="Les boissons n'ont pas de personnalisations"
+                          >
+                            🎨 Personnaliser
+                          </span>
+                        )}
                         <button
                           onClick={() => handleEditMenuItem(item)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-indigo-600 hover:text-indigo-900 font-medium"
                         >
-                          Modifier
+                          ✏️ Modifier
                         </button>
                         <button
                           onClick={() => handleDelete(item.id, item.title)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-600 hover:text-red-900 font-medium"
                         >
-                          Supprimer
+                          🗑️ Supprimer
                         </button>
                       </div>
                     </td>

@@ -36,6 +36,10 @@ model Menu {
   availableForClickAndCollect Boolean @default(true)
   availableForDelivery        Boolean @default(true)
   
+  // Option boisson (formule menu + boisson)
+  allowDrinkOption Boolean @default(false) // Si true, le client peut ajouter une boisson
+  drinkPrice       Float   @default(1.5)   // Prix de l'option boisson (par défaut 1,50€)
+  
   // Personnalisations disponibles pour ce plat
   customizations Customization[]
   

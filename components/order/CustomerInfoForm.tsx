@@ -131,24 +131,31 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
       return;
     }
 
-    // Préparer les données de la commande
+    // Préparer les données de la commande dans le format attendu par l'API
     const orderData = {
-      customerName: `${state.customerInfo.firstName} ${state.customerInfo.lastName}`,
-      customerEmail: state.customerInfo.email,
-      customerPhone: state.customerInfo.phone,
-      items: state.cart.map(cartItem => ({
-        title: cartItem.item.title,
+      cart: state.cart.map(cartItem => ({
+        item: {
+          id: cartItem.item.id || cartItem.item._id,
+          title: cartItem.item.title,
+          price: cartItem.item.price,
+          description: cartItem.item.description
+        },
         quantity: cartItem.quantity,
-        price: cartItem.item.price,
-        description: cartItem.item.description
+        customizations: cartItem.item.customizations || []
       })),
-      total: state.cart.reduce((total, item) => total + (item.item.price * item.quantity), 0) + (mode === 'delivery' ? 2.50 : 0),
-      deliveryAddress: mode === 'delivery' ? state.customerInfo.deliveryAddress : undefined,
-      city: mode === 'delivery' ? state.customerInfo.deliveryCity : undefined,
-      isDelivery: mode === 'delivery',
-      paymentMethod: state.customerInfo.paymentMethod,
-      notes: state.customerInfo.notes,
-      estimatedTime: mode === 'delivery' ? '30-45 minutes' : '15-20 minutes'
+      formData: {
+        prenom: state.customerInfo.firstName,
+        nom: state.customerInfo.lastName,
+        email: state.customerInfo.email,
+        telephone: state.customerInfo.phone,
+        moyenPaiement: state.customerInfo.paymentMethod,
+        notes: state.customerInfo.notes,
+        adresse: mode === 'delivery' ? state.customerInfo.deliveryAddress : undefined,
+        ville: mode === 'delivery' ? state.customerInfo.deliveryCity : undefined,
+        codePostal: mode === 'delivery' ? selectedCityData?.postalCode || '' : undefined
+      },
+      total: state.cart.reduce((total, item) => total + (item.item.price * item.quantity), 0) + (mode === 'delivery' && selectedCityData ? selectedCityData.deliveryFee : 0),
+      type: mode === 'delivery' ? 'livraison' : 'click-and-collect'
     };
 
     onConfirm(orderData);

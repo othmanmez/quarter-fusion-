@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/admin/LoginModal';
+import OrderNotificationBadge from '@/components/admin/OrderNotificationBadge';
 
 export default function AdminLayout({
   children,
@@ -68,6 +69,9 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Badge de notification pour nouvelles commandes */}
+      <OrderNotificationBadge />
+      
       {/* Navigation */}
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

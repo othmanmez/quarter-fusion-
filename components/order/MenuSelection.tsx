@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { useOrder, MenuItem } from '../../contexts/OrderContext';
 import CustomizationModal from './CustomizationModal';
 
@@ -138,16 +137,18 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
               >
                 {/* Image */}
                 <div className="relative h-48 bg-gray-200">
-                  <Image
+                  <img
                     src={item.image}
                     alt={item.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'https://via.placeholder.com/400x300/ef4444/ffffff?text=Quarter+Fusion';
+                    }}
                   />
                   {/* Badge */}
                   {item.badge && (
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-3 left-3 z-10">
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold text-white ${
                           item.badge === 'HOT' ? 'bg-red-600' :

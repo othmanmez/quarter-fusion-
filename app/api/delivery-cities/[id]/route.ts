@@ -1,87 +1,116 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// PUT - Modifier une ville de livraison
+// PUT - Mettre à jour une ville
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Vérifier l'authentification admin
-    const session = await auth();
-    if (!session || session.user?.role?.toLowerCase() !== 'admin') {
-      return NextResponse.json(
-        { error: 'Non autorisé' },
-        { status: 401 }
-      );
-    }
-
+    const { id } = await params;
     const body = await request.json();
     const { name, postalCode, deliveryFee, minOrder, active } = body;
 
     // Validation
-    if (deliveryFee !== undefined && deliveryFee < 0) {
+    if (name && (typeof name !== 'string' || name.trim().length === 0)) {
       return NextResponse.json(
-        { error: 'Les frais de livraison doivent être >= 0' },
+        { success: false, error: 'Le nom de la ville est invalide' },
         { status: 400 }
       );
     }
 
-    // Mettre à jour
-    const city = await prisma.deliveryCity.update({
-      where: { id: params.id },
+    if (deliveryFee !== undefined && (typeof deliveryFee !== 'number' || deliveryFee < 0)) {
+      return NextResponse.json(
+        { success: false, error: 'Les frais de livraison doivent être positifs' },
+        { status: 400 }
+      );
+    }
+
+    // Vérifier si la ville existe
+    const existingCity = await prisma.deliveryCity.findUnique({
+      where: { id },
+    });
+
+    if (!existingCity) {
+      return NextResponse.json(
+        { success: false, error: 'Ville non trouvée' },
+        { status: 404 }
+      );
+    }
+
+    // Si le nom change, vérifier qu'il n'existe pas déjà
+    if (name && name.trim() !== existingCity.name) {
+      const duplicateCity = await prisma.deliveryCity.findUnique({
+        where: { name: name.trim() },
+      });
+
+      if (duplicateCity) {
+        return NextResponse.json(
+          { success: false, error: 'Une ville avec ce nom existe déjà' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Mettre à jour la ville
+    const updatedCity = await prisma.deliveryCity.update({
+      where: { id },
       data: {
         ...(name && { name: name.trim() }),
         ...(postalCode !== undefined && { postalCode: postalCode?.trim() || null }),
-        ...(deliveryFee !== undefined && { deliveryFee: parseFloat(deliveryFee) }),
-        ...(minOrder !== undefined && { minOrder: minOrder ? parseFloat(minOrder) : null }),
-        ...(active !== undefined && { active })
-      }
+        ...(deliveryFee !== undefined && { deliveryFee: parseFloat(deliveryFee.toFixed(2)) }),
+        ...(minOrder !== undefined && { minOrder: minOrder ? parseFloat(minOrder.toFixed(2)) : null }),
+        ...(active !== undefined && { active }),
+      },
     });
 
     return NextResponse.json({
       success: true,
-      city
+      city: updatedCity,
     });
   } catch (error) {
-    console.error('Erreur lors de la modification de la ville:', error);
+    console.error('Erreur lors de la mise à jour de la ville:', error);
     return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
+      { success: false, error: 'Erreur lors de la mise à jour de la ville' },
       { status: 500 }
     );
   }
 }
 
-// DELETE - Supprimer une ville de livraison
+// DELETE - Supprimer une ville
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Vérifier l'authentification admin
-    const session = await auth();
-    if (!session || session.user?.role?.toLowerCase() !== 'admin') {
+    const { id } = await params;
+
+    // Vérifier si la ville existe
+    const existingCity = await prisma.deliveryCity.findUnique({
+      where: { id },
+    });
+
+    if (!existingCity) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
-        { status: 401 }
+        { success: false, error: 'Ville non trouvée' },
+        { status: 404 }
       );
     }
 
+    // Supprimer la ville
     await prisma.deliveryCity.delete({
-      where: { id: params.id }
+      where: { id },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Ville supprimée avec succès'
+      message: 'Ville supprimée avec succès',
     });
   } catch (error) {
     console.error('Erreur lors de la suppression de la ville:', error);
     return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
+      { success: false, error: 'Erreur lors de la suppression de la ville' },
       { status: 500 }
     );
   }
 }
-

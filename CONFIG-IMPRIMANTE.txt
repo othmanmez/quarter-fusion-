@@ -1,0 +1,76 @@
+========================================
+CONFIGURATION IMPRIMANTE EPSON WIFI
+========================================
+
+Ajoutez ces lignes dans votre fichier .env :
+
+# ========================================
+# CONFIGURATION IMPRIMANTE EPSON WIFI
+# ========================================
+
+# Activer l'impression automatique des tickets
+AUTO_PRINT_ENABLED=true
+
+# Adresse IP de votre imprimante Epson WiFi
+# Format : tcp://ADRESSE_IP:9100
+# ⚠️ REMPLACEZ 192.168.1.100 PAR L'IP DE VOTRE IMPRIMANTE !
+PRINTER_INTERFACE=tcp://192.168.1.100:9100
+
+# Type d'imprimante (ne pas changer)
+PRINTER_TYPE=EPSON
+
+# Largeur du ticket (en caractères)
+# 48 pour imprimante 80mm (standard)
+# 32 pour imprimante 58mm (petite)
+PRINTER_WIDTH=48
+
+========================================
+COMMENT TROUVER L'IP DE L'IMPRIMANTE ?
+========================================
+
+Méthode 1 : Sur l'imprimante
+- Menu → Paramètres réseau → Statut réseau
+- Notez l'adresse IP affichée
+
+Méthode 2 : Imprimer la page réseau
+- Maintenez le bouton Papier appuyé
+- Une page s'imprime avec l'IP
+
+Méthode 3 : Via le routeur
+- Connectez-vous au routeur (192.168.1.1)
+- Liste des appareils connectés
+- Cherchez votre imprimante Epson
+
+========================================
+INSTALLATION ET TEST
+========================================
+
+1. Installer les dépendances :
+   npm install node-thermal-printer
+
+2. Redémarrer le serveur :
+   Ctrl+C puis : npm run dev
+
+3. Tester l'imprimante :
+   - Allez sur /admin/settings
+   - Cliquez sur "Vérifier le statut"
+   - Cliquez sur "Imprimer un test"
+
+========================================
+UTILISATION
+========================================
+
+Une fois configurée, l'imprimante imprime 
+automatiquement un ticket à chaque commande !
+
+Aucune action manuelle nécessaire.
+
+========================================
+GUIDE COMPLET
+========================================
+
+Pour plus d'infos, consultez :
+docs/GUIDE-IMPRIMANTE-EPSON-WIFI.md
+
+========================================
+

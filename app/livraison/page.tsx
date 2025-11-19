@@ -5,9 +5,8 @@ import MenuDisplayWrapper from '../../components/MenuDisplayWrapper';
 import FloatingCart from '../../components/FloatingCart';
 import OrderSummary from '../../components/OrderSummary';
 import OrderForm from '../../components/OrderForm';
+import OrderConfirmationModal from '../../components/order/OrderConfirmationModal';
 import { siteData } from '../../data/siteData';
-
-
 import { MenuItem, CartItem, OrderFormData } from '../types/menu';
 
 type OrderStep = 'menu' | 'summary' | 'form';
@@ -16,6 +15,9 @@ export default function LivraisonPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentStep, setCurrentStep] = useState<OrderStep>('menu');
   const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [orderNumber, setOrderNumber] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
 
   const handleAddToCart = (item: MenuItem, quantity: number) => {
     setCart(prevCart => {
@@ -94,12 +96,22 @@ export default function LivraisonPage() {
 
       const result = await response.json();
 
-      if (result.success) {
-        alert(`Commande envoyée avec succès !\nNuméro de commande : ${result.orderNumber}\nVous recevrez un email de confirmation.`);
+      if (response.ok && result.success) {
+        // Afficher la modal de confirmation
+        setOrderNumber(result.orderNumber);
+        setCustomerEmail(formData.email);
+        setShowConfirmation(true);
         setCart([]);
-        setCurrentStep('menu');
       } else {
-        throw new Error(result.error || 'Erreur lors de l\'envoi de la commande');
+        // Si on a un orderNumber malgré l'erreur, la commande a été enregistrée
+        if (result.orderNumber) {
+          setOrderNumber(result.orderNumber);
+          setCustomerEmail(formData.email);
+          setShowConfirmation(true);
+          setCart([]);
+        } else {
+          throw new Error(result.error || 'Erreur lors de l\'envoi de la commande');
+        }
       }
     } catch (error) {
       console.error('Erreur:', error);
@@ -262,6 +274,16 @@ export default function LivraisonPage() {
         </div>
       </section>
 
+      {/* Modal de confirmation */}
+      <OrderConfirmationModal
+        isOpen={showConfirmation}
+        orderNumber={orderNumber}
+        customerEmail={customerEmail}
+        onClose={() => {
+          setShowConfirmation(false);
+          setCurrentStep('menu');
+        }}
+      />
     </main>
   );
 } 

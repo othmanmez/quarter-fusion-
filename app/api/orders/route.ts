@@ -274,6 +274,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Informations client manquantes' }, { status: 400 });
     }
 
+    const orderNumber = `QF-${Date.now()}`;
+
+    // Sauvegarde de la commande dans la base de données Prisma
+    const { prisma } = await import('@/lib/prisma');
+    
+    const savedOrder = await prisma.order.create({
+      data: {
+        orderNumber,
+        customerName: `${orderData.formData.prenom} ${orderData.formData.nom}`,
+        customerEmail: orderData.formData.email,
+        customerPhone: orderData.formData.telephone,
+        items: orderData.cart.map(cartItem => ({
+          title: cartItem.item.title,
+          quantity: cartItem.quantity,
+          price: cartItem.item.price,
+          description: cartItem.item.description,
+          customizations: cartItem.customizations?.map(custom => ({
+            name: custom,
+            selectedOptions: [custom],
+            priceExtra: 0
+          })) || []
+        })),
+        total: orderData.total,
+        deliveryAddress: orderData.formData.adresse,
+        city: orderData.formData.ville,
+        isDelivery: orderData.type === 'livraison',
+        status: 'A_PREPARER',
+        estimatedTime: orderData.type === 'livraison' ? '30-45 minutes' : '15-20 minutes',
+        paymentMethod: orderData.formData.moyenPaiement.toUpperCase() as 'ESPECES' | 'CARTE',
+        notes: orderData.formData.notes || undefined
+      }
+    });
+
     // Envoi email au client
     const clientEmailResult = await transporter.sendMail({
       from: `"Quarter Fusion" <${process.env.EMAIL_USER}>`,
@@ -290,17 +323,42 @@ export async function POST(request: NextRequest) {
       html: generateAdminEmailHTML(orderData),
     });
 
-    // Ici vous pouvez ajouter la sauvegarde en base de données
-    // const order = await saveOrderToDatabase(orderData);
+    // Impression automatique du ticket (si activée)
+    let printStatus = { success: false, message: 'Impression désactivée' };
+    if (process.env.AUTO_PRINT_ENABLED === 'true') {
+      try {
+        const { printOrderTicket } = await import('@/lib/printer');
+        await printOrderTicket({
+          orderNumber: savedOrder.orderNumber,
+          customerName: savedOrder.customerName,
+          customerPhone: savedOrder.customerPhone,
+          items: savedOrder.items as any[],
+          total: savedOrder.total,
+          isDelivery: savedOrder.isDelivery,
+          deliveryAddress: savedOrder.deliveryAddress || undefined,
+          city: savedOrder.city || undefined,
+          paymentMethod: savedOrder.paymentMethod,
+          notes: savedOrder.notes || undefined,
+          createdAt: savedOrder.createdAt
+        });
+        printStatus = { success: true, message: 'Ticket imprimé avec succès' };
+      } catch (printError: any) {
+        console.error('Erreur lors de l\'impression du ticket:', printError);
+        printStatus = { success: false, message: printError.message || 'Erreur d\'impression' };
+        // Ne pas faire échouer la commande si l'impression échoue
+      }
+    }
 
     return NextResponse.json({ 
       success: true, 
       message: 'Commande envoyée avec succès',
-      orderNumber: `QF-${Date.now()}`,
+      orderNumber,
+      orderId: savedOrder.id,
       emailsSent: {
         client: clientEmailResult.messageId,
         admin: adminEmailResult.messageId
-      }
+      },
+      printStatus
     });
 
   } catch (error) {
@@ -313,18 +371,19 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    // connectToDatabase(); // This line was removed as per the new_code, as the database connection is no longer needed here.
+    const { prisma } = await import('@/lib/prisma');
     
-    // const orders = await Order.find({}) // This line was removed as per the new_code, as the Order model is no longer imported.
-    //   .sort({ createdAt: -1 })
-    //   .limit(50)
-    //   .select('-__v');
+    const orders = await prisma.order.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 100
+    });
 
-    // return NextResponse.json({
-    //   success: true,
-    //   orders,
-    // });
-    return NextResponse.json({ message: "GET endpoint is not implemented in the new code." }, { status: 501 });
+    return NextResponse.json({
+      success: true,
+      orders,
+    });
   } catch (error) {
     console.error('Erreur lors de la récupération des commandes:', error);
     return NextResponse.json(

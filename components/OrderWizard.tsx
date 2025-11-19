@@ -49,11 +49,17 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
 
       const result = await response.json();
 
-      if (result.success) {
-        dispatch({ type: 'SET_ORDER_NUMBER', payload: result.order.orderNumber });
+      if (response.ok && result.success) {
+        dispatch({ type: 'SET_ORDER_NUMBER', payload: result.orderNumber });
         setIsOrderComplete(true);
       } else {
-        throw new Error(result.error || 'Erreur lors de la création de la commande');
+        // Si on a un orderNumber malgré l'erreur, la commande a été enregistrée
+        if (result.orderNumber) {
+          dispatch({ type: 'SET_ORDER_NUMBER', payload: result.orderNumber });
+          setIsOrderComplete(true);
+        } else {
+          throw new Error(result.error || 'Erreur lors de la création de la commande');
+        }
       }
     } catch (error) {
       console.error('Erreur lors de la confirmation de la commande:', error);
@@ -192,8 +198,8 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                 <>
                   {/* Liste des articles */}
                   <div className="space-y-3 mb-4">
-                    {state.cart.map((cartItem) => (
-                      <div key={cartItem.item._id} className="flex justify-between items-center">
+                    {state.cart.map((cartItem, index) => (
+                      <div key={`cart-item-${cartItem.item._id}-${index}`} className="flex justify-between items-center">
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900">
                             {cartItem.item.title}

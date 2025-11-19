@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import PrinterTestButton from '@/components/admin/PrinterTestButton';
+import DeliveryCitiesManager from '@/components/admin/DeliveryCitiesManager';
 
 interface Settings {
   clickAndCollectEnabled: boolean;
@@ -301,6 +303,12 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Test d'imprimante */}
+        <PrinterTestButton />
+
+        {/* Gestion des villes de livraison */}
+        <DeliveryCitiesManager />
       </div>
     </div>
   );

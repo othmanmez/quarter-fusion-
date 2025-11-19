@@ -5,11 +5,12 @@ import { prisma } from '@/lib/prisma';
 // GET - Récupérer les personnalisations d'un plat
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const customizations = await prisma.customization.findMany({
-      where: { menuId: params.id },
+      where: { menuId: id },
       orderBy: { createdAt: 'asc' }
     });
 
@@ -29,7 +30,7 @@ export async function GET(
 // POST - Ajouter une personnalisation à un plat
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérifier l'authentification admin
@@ -41,6 +42,7 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const body = await request.json();
     const { name, type, required, options } = body;
 
@@ -69,7 +71,7 @@ export async function POST(
     // Créer la personnalisation
     const customization = await prisma.customization.create({
       data: {
-        menuId: params.id,
+        menuId: id,
         name: name.trim(),
         type,
         required: required || false,

@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   ],
   creator: "Samy Ajouid & Othman Meziane",
   generator: "Next.js 15 - Développé par Samy Ajouid & Othman Meziane",
+  manifest: "/manifest.json",
   openGraph: {
     title: "Quarter Fusion - Restaurant de Snack à Paris",
     description: "Découvrez Quarter Fusion, votre restaurant de snack préféré à Paris. Plats délicieux, livraison rapide et service impeccable.",
