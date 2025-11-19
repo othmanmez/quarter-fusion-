@@ -323,7 +323,7 @@ export default function OrderForm({
               </button>
               <button
                 type="submit"
-                disabled={loading || (selectedCity && selectedCity.minOrder && totalPrice < selectedCity.minOrder)}
+                disabled={loading || (!!selectedCity && !!selectedCity.minOrder && totalPrice < selectedCity.minOrder)}
                 className="flex-1 bg-red-700 hover:bg-red-800 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Envoi en cours...' : `Commander (${finalTotal.toFixed(2)}€)`}
