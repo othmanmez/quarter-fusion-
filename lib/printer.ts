@@ -1,4 +1,4 @@
-import { ThermalPrinter, PrinterTypes } from 'node-thermal-printer';
+import { ThermalPrinter, PrinterTypes, CharacterSet } from 'node-thermal-printer';
 
 interface OrderItem {
   title: string;
@@ -36,7 +36,7 @@ export function getPrinterConfig() {
     interface: process.env.PRINTER_INTERFACE || 'tcp://192.168.1.100', // IP de l'imprimante
     // Ou pour USB : 'usb://04b8:0e15'
     // Ou pour connexion série : '/dev/usb/lp0'
-    characterSet: 'PC850_MULTILINGUAL',
+    characterSet: 'PC850_MULTILINGUAL' as CharacterSet,
     width: 48, // Largeur en caractères (48 pour 80mm, 32 pour 58mm)
     removeSpecialCharacters: false,
   };
@@ -300,7 +300,7 @@ export async function checkPrinterConnection(): Promise<boolean> {
     const printer = new ThermalPrinter({
       type: PrinterTypes.EPSON,
       interface: printerInterface,
-      characterSet: 'PC850_MULTILINGUAL',
+      characterSet: 'PC850_MULTILINGUAL' as CharacterSet,
       removeSpecialCharacters: false,
       lineCharacter: '=',
       width: parseInt(process.env.PRINTER_WIDTH || '48'),
@@ -333,7 +333,7 @@ export async function printTestTicket() {
     const printer = new ThermalPrinter({
       type: PrinterTypes.EPSON,
       interface: printerInterface,
-      characterSet: 'PC850_MULTILINGUAL',
+      characterSet: 'PC850_MULTILINGUAL' as CharacterSet,
       removeSpecialCharacters: false,
       lineCharacter: '=',
       width: parseInt(process.env.PRINTER_WIDTH || '48'),
