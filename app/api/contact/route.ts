@@ -6,6 +6,9 @@ import {
   ContactEmailData 
 } from '../../../emails/templates/contact-template';
 
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

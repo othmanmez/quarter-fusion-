@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
+
 // GET - Récupérer toutes les villes de livraison
 export async function GET(request: NextRequest) {
   try {

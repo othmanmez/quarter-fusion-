@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
 import { DashboardData } from '@/app/types/admin';
 import { z } from 'zod';
 

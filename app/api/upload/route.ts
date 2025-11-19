@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { v2 as cloudinary } from 'cloudinary';
 
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
+
 // Configuration Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

@@ -118,6 +118,44 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const handlePrint = async (order: Order) => {
+    try {
+      // URL du service d'impression local (configurable via variable d'environnement)
+      const printerServiceUrl = process.env.NEXT_PUBLIC_PRINTER_SERVICE_URL || 'http://localhost:9000';
+      
+      const response = await fetch(`${printerServiceUrl}/print`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderNumber: order.orderNumber,
+          customerName: order.customerName,
+          phone: order.customerPhone,
+          items: order.items,
+          total: order.total,
+          isDelivery: order.isDelivery,
+          deliveryAddress: order.deliveryAddress,
+          city: order.city,
+          paymentMethod: order.paymentMethod,
+          notes: order.notes,
+          createdAt: order.createdAt
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert('✅ Ticket imprimé avec succès !');
+      } else {
+        alert('❌ Erreur d\'impression : ' + result.error);
+      }
+    } catch (error: any) {
+      console.error('Erreur d\'impression:', error);
+      alert('❌ Service d\'impression non disponible.\n\nVérifiez que le service est démarré sur votre PC en lançant start-printer.bat');
+    }
+  };
+
   const toggleOrderDetails = (orderId: string) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
@@ -308,13 +346,22 @@ export default function AdminOrdersPage() {
                     </select>
                   </div>
 
-                  {/* Toggle Details */}
-                  <button
-                    onClick={() => toggleOrderDetails(order.id)}
-                    className="text-red-600 hover:text-red-700 text-sm font-medium"
-                  >
-                    {expandedOrder === order.id ? '▼ Masquer les détails' : '▶ Voir les détails'}
-                  </button>
+                  {/* Action Buttons */}
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => toggleOrderDetails(order.id)}
+                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                    >
+                      {expandedOrder === order.id ? '▼ Masquer les détails' : '▶ Voir les détails'}
+                    </button>
+                    <button
+                      onClick={() => handlePrint(order)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center space-x-2"
+                    >
+                      <span>🖨️</span>
+                      <span>Imprimer</span>
+                    </button>
+                  </div>
 
                   {/* Order Details */}
                   {expandedOrder === order.id && (

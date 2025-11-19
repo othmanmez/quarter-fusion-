@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
 import { auth } from '@/lib/auth';
 
 export async function PUT(

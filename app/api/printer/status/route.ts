@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { checkPrinterConnection } from '@/lib/printer';
 
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const enabled = process.env.AUTO_PRINT_ENABLED === 'true';

@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // Fetch menus with HOT, NEW, or TOP badges that are available

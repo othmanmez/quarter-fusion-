@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
+
 // GET - Récupérer une catégorie par ID
 export async function GET(
   request: NextRequest,

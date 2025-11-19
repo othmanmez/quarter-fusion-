@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+// Configuration pour Next.js - route dynamique
+export const dynamic = 'force-dynamic';
+
 interface OrderItem {
   item: {
     id: string;
@@ -328,45 +331,90 @@ export async function POST(request: NextRequest) {
     
     console.log('🖨️  [IMPRESSION] Vérification de l\'impression automatique...');
     console.log('🖨️  [IMPRESSION] AUTO_PRINT_ENABLED =', process.env.AUTO_PRINT_ENABLED);
-    console.log('🖨️  [IMPRESSION] PRINTER_INTERFACE =', process.env.PRINTER_INTERFACE);
+    console.log('🖨️  [IMPRESSION] REMOTE_PRINT_ENABLED =', process.env.REMOTE_PRINT_ENABLED);
     
     if (process.env.AUTO_PRINT_ENABLED === 'true') {
-      console.log('🖨️  [IMPRESSION] Impression activée, chargement du module...');
-      try {
-        const { printOrderTicket } = await import('@/lib/printer');
-        console.log('🖨️  [IMPRESSION] Module chargé, impression en cours...');
-        console.log('🖨️  [IMPRESSION] Commande N°', savedOrder.orderNumber);
-        
-        const printed = await printOrderTicket({
-          orderNumber: savedOrder.orderNumber,
-          customerName: savedOrder.customerName,
-          customerPhone: savedOrder.customerPhone,
-          items: savedOrder.items as any[],
-          total: savedOrder.total,
-          isDelivery: savedOrder.isDelivery,
-          deliveryAddress: savedOrder.deliveryAddress || undefined,
-          city: savedOrder.city || undefined,
-          paymentMethod: savedOrder.paymentMethod,
-          notes: savedOrder.notes || undefined,
-          createdAt: savedOrder.createdAt
-        });
-        
-        if (printed) {
-          console.log('✅ [IMPRESSION] Ticket imprimé avec succès !');
-          printStatus = { success: true, message: 'Ticket imprimé avec succès' };
-        } else {
-          console.log('❌ [IMPRESSION] L\'impression a échoué (retour false)');
-          printStatus = { success: false, message: 'L\'impression a retourné false' };
+      // Vérifier si on utilise l'impression à distance (Netlify)
+      if (process.env.REMOTE_PRINT_ENABLED === 'true' && process.env.PRINTER_PUBLIC_URL) {
+        console.log('🌐 [IMPRESSION] Impression à distance activée');
+        try {
+          const printerUrl = process.env.PRINTER_PUBLIC_URL;
+          const authToken = process.env.PRINTER_AUTH_TOKEN;
+          
+          if (!authToken) {
+            throw new Error('PRINTER_AUTH_TOKEN manquant');
+          }
+          
+          console.log('🖨️  [IMPRESSION] Envoi vers:', printerUrl);
+          
+          // Appeler notre propre API d'impression
+          const response = await fetch(`${process.env.NEXTAUTH_URL}/api/print-remote`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({
+              orderNumber: savedOrder.orderNumber,
+              customerName: savedOrder.customerName,
+              customerPhone: savedOrder.customerPhone,
+              items: savedOrder.items,
+              total: savedOrder.total,
+              isDelivery: savedOrder.isDelivery,
+              deliveryAddress: savedOrder.deliveryAddress,
+              city: savedOrder.city,
+              paymentMethod: savedOrder.paymentMethod,
+              notes: savedOrder.notes,
+              createdAt: savedOrder.createdAt
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (response.ok && result.success) {
+            console.log('✅ [IMPRESSION] Ticket envoyé à l\'imprimante distante !');
+            printStatus = { success: true, message: 'Ticket imprimé à distance' };
+          } else {
+            throw new Error(result.error || 'Erreur d\'impression à distance');
+          }
+        } catch (printError: any) {
+          console.error('❌ [IMPRESSION] Erreur d\'impression à distance:', printError);
+          printStatus = { success: false, message: printError.message || 'Erreur d\'impression à distance' };
         }
-      } catch (printError: any) {
-        console.error('❌ [IMPRESSION] Erreur lors de l\'impression du ticket:', printError);
-        console.error('❌ [IMPRESSION] Message d\'erreur:', printError.message);
-        console.error('❌ [IMPRESSION] Stack:', printError.stack);
-        printStatus = { success: false, message: printError.message || 'Erreur d\'impression' };
-        // Ne pas faire échouer la commande si l'impression échoue
+      } else {
+        // Impression locale (comme avant)
+        console.log('🖨️  [IMPRESSION] Impression locale activée');
+        try {
+          const { printOrderTicket } = await import('@/lib/printer');
+          console.log('🖨️  [IMPRESSION] Module chargé, impression en cours...');
+          
+          const printed = await printOrderTicket({
+            orderNumber: savedOrder.orderNumber,
+            customerName: savedOrder.customerName,
+            customerPhone: savedOrder.customerPhone,
+            items: savedOrder.items as any[],
+            total: savedOrder.total,
+            isDelivery: savedOrder.isDelivery,
+            deliveryAddress: savedOrder.deliveryAddress || undefined,
+            city: savedOrder.city || undefined,
+            paymentMethod: savedOrder.paymentMethod,
+            notes: savedOrder.notes || undefined,
+            createdAt: savedOrder.createdAt
+          });
+          
+          if (printed) {
+            console.log('✅ [IMPRESSION] Ticket imprimé avec succès !');
+            printStatus = { success: true, message: 'Ticket imprimé avec succès' };
+          } else {
+            printStatus = { success: false, message: 'L\'impression a échoué' };
+          }
+        } catch (printError: any) {
+          console.error('❌ [IMPRESSION] Erreur:', printError);
+          printStatus = { success: false, message: printError.message || 'Erreur d\'impression' };
+        }
       }
     } else {
-      console.log('⚠️  [IMPRESSION] Impression désactivée dans la configuration');
+      console.log('⚠️  [IMPRESSION] Impression désactivée');
     }
 
     return NextResponse.json({ 
