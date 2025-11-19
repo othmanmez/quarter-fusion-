@@ -73,9 +73,9 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                       <button
                         onClick={() => {
                           if (cartItem.quantity > 1) {
-                            updateQuantity(cartItem.item._id, cartItem.quantity - 1);
+                            updateQuantity(cartItem.item._id || '', cartItem.quantity - 1);
                           } else {
-                            removeFromCart(cartItem.item._id);
+                            removeFromCart(cartItem.item._id || '');
                           }
                         }}
                         className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors duration-200"
@@ -86,7 +86,7 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                         {cartItem.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(cartItem.item._id, cartItem.quantity + 1)}
+                        onClick={() => updateQuantity(cartItem.item._id || '', cartItem.quantity + 1)}
                         className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors duration-200"
                       >
                         +
@@ -102,7 +102,7 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
 
                     {/* Bouton supprimer */}
                     <button
-                      onClick={() => removeFromCart(cartItem.item._id)}
+                      onClick={() => removeFromCart(cartItem.item._id || '')}
                       className="text-red-600 hover:text-red-800 p-1"
                       title="Supprimer"
                     >

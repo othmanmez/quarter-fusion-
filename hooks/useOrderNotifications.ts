@@ -43,8 +43,7 @@ export function useOrderNotifications({
         icon: '/images/logo-snack.png',
         badge: '/images/logo-snack.png',
         tag: 'new-order',
-        requireInteraction: true,
-        vibrate: [200, 100, 200]
+        requireInteraction: true
       });
     }
   };

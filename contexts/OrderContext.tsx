@@ -9,7 +9,7 @@ export interface MenuItem {
   title: string;
   description: string;
   price: number;
-  category: string;
+  category?: string;
   image: string;
   badge?: 'HOT' | 'NEW' | 'TOP';
   customizations?: any[];
