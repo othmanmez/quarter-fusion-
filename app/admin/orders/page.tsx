@@ -120,10 +120,14 @@ export default function AdminOrdersPage() {
 
   const handlePrint = async (order: Order) => {
     try {
-      // URL du service d'impression local (configurable via variable d'environnement)
-      const printerServiceUrl = process.env.NEXT_PUBLIC_PRINTER_SERVICE_URL || 'http://localhost:9000';
+      // URL du service d'impression sur la tablette
+      // Le navigateur de la tablette peut accéder à cette IP locale
+      // même si le site est hébergé sur Netlify (c'est le navigateur qui fait la requête, pas le serveur)
+      const printerServiceUrl = 'http://192.168.1.33:9000';
       
-      const response = await fetch(`${printerServiceUrl}/print`, {
+      console.log('🖨️ Tentative d\'impression via:', printerServiceUrl);
+      
+      const response = await fetch(printerServiceUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +144,9 @@ export default function AdminOrdersPage() {
           paymentMethod: order.paymentMethod,
           notes: order.notes,
           createdAt: order.createdAt
-        })
+        }),
+        // Timeout de 10 secondes (plus long pour laisser le temps à l'impression)
+        signal: AbortSignal.timeout(10000),
       });
       
       const result = await response.json();
@@ -148,11 +154,27 @@ export default function AdminOrdersPage() {
       if (result.success) {
         alert('✅ Ticket imprimé avec succès !');
       } else {
-        alert('❌ Erreur d\'impression : ' + result.error);
+        alert('❌ Erreur d\'impression : ' + (result.error || 'Erreur inconnue'));
       }
     } catch (error: any) {
       console.error('Erreur d\'impression:', error);
-      alert('❌ Service d\'impression non disponible.\n\nVérifiez que le service est démarré sur votre PC en lançant start-printer.bat');
+      
+      let errorMessage = '❌ Service d\'impression non disponible.\n\n';
+      
+      if (error.name === 'AbortError') {
+        errorMessage += 'Timeout : Le service n\'a pas répondu dans les 10 secondes.\n\n';
+      } else if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+        errorMessage += 'Impossible de se connecter au service.\n\n';
+      }
+      
+      errorMessage += 'Vérifiez que :\n';
+      errorMessage += '1. Termux est démarré sur votre tablette\n';
+      errorMessage += '2. Le service écoute : cd ~/storage/shared/quarter-fusion && node printer-service-tablet.js\n';
+      errorMessage += '3. Vous êtes sur le même réseau WiFi que l\'imprimante\n';
+      errorMessage += '4. L\'IP de la tablette est bien 192.168.1.33\n';
+      errorMessage += '5. Le service affiche "✅ Prêt à imprimer !"';
+      
+      alert(errorMessage);
     }
   };
 

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/admin/LoginModal';
 import OrderNotificationBadge from '@/components/admin/OrderNotificationBadge';
+import { useOrderNotifications } from '@/hooks/useOrderNotifications';
 
 export default function AdminLayout({
   children,
@@ -15,6 +16,12 @@ export default function AdminLayout({
   const { user, logout, isLoading, isAuthenticated, isAdmin } = useAuth();
   const pathname = usePathname();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  
+  // Activer les notifications sonores pour les nouvelles commandes
+  useOrderNotifications({ 
+    enabled: isAuthenticated && isAdmin,
+    checkInterval: 10000 // Vérifie toutes les 10 secondes
+  });
 
   // Afficher le modal de login si pas authentifié (sauf sur la page de login)
   const shouldShowModal = !isAuthenticated && pathname !== '/admin/login' && !isLoading;

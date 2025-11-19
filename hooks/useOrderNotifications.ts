@@ -19,19 +19,75 @@ export function useOrderNotifications({
   // Initialiser l'audio
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Essayer de charger le fichier audio
       audioRef.current = new Audio('/notification.mp3');
       audioRef.current.volume = 1.0;
+      audioRef.current.preload = 'auto';
+      
+      // Gérer les erreurs de chargement
+      audioRef.current.addEventListener('error', () => {
+        console.warn('Fichier audio non trouvé, utilisation du son système');
+      });
+      
       setIsInitialized(true);
     }
   }, []);
 
+  // Fonction pour générer un son avec Web Audio API (fallback)
+  const playSystemSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      // Son de notification (fréquence 800Hz, durée 200ms)
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+
+      // Deuxième bip après 100ms
+      setTimeout(() => {
+        const oscillator2 = audioContext.createOscillator();
+        const gainNode2 = audioContext.createGain();
+
+        oscillator2.connect(gainNode2);
+        gainNode2.connect(audioContext.destination);
+
+        oscillator2.frequency.value = 1000;
+        oscillator2.type = 'sine';
+
+        gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+        oscillator2.start(audioContext.currentTime);
+        oscillator2.stop(audioContext.currentTime + 0.2);
+      }, 100);
+    } catch (error) {
+      console.error('Erreur lors de la génération du son système:', error);
+    }
+  };
+
   // Fonction pour jouer le son
   const playNotificationSound = () => {
     if (audioRef.current) {
+      // Essayer de jouer le fichier audio
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(error => {
-        console.error('Erreur lors de la lecture du son:', error);
+      audioRef.current.play().catch((error) => {
+        console.warn('Impossible de jouer le fichier audio, utilisation du son système:', error);
+        // Fallback : utiliser le son système
+        playSystemSound();
       });
+    } else {
+      // Si pas de fichier audio, utiliser le son système
+      playSystemSound();
     }
   };
 
