@@ -33,8 +33,8 @@ export default function OrderSummary({
       {/* Liste des articles */}
       <div className="p-6">
         <div className="space-y-4">
-          {cart.map((cartItem) => (
-            <div key={cartItem.item.id} className="flex items-start justify-between p-4 bg-gray-50 rounded-lg">
+          {cart.map((cartItem, index) => (
+            <div key={`cart-item-${cartItem.item.id}-${index}`} className="flex items-start justify-between p-4 bg-gray-50 rounded-lg">
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-gray-900">{cartItem.item.title}</h3>

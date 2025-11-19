@@ -36,7 +36,7 @@ export function getPrinterConfig() {
     interface: process.env.PRINTER_INTERFACE || 'tcp://192.168.1.100', // IP de l'imprimante
     // Ou pour USB : 'usb://04b8:0e15'
     // Ou pour connexion série : '/dev/usb/lp0'
-    characterSet: 'FRANCE',
+    characterSet: 'PC850_MULTILINGUAL',
     width: 48, // Largeur en caractères (48 pour 80mm, 32 pour 58mm)
     removeSpecialCharacters: false,
   };
@@ -89,89 +89,71 @@ export async function printOrderTicket(order: PrintOrder): Promise<boolean> {
     const printer = createPrinter();
     const width = 48;
 
-    // En-tête
+    printer.newLine();
+    
+    // ========== EN-TÊTE ==========
     printer.alignCenter();
+    printer.println('================================================');
     printer.setTextDoubleHeight();
     printer.setTextDoubleWidth();
     printer.bold(true);
-    printer.println('QUARTER FUSION');
+    printer.println('QUARTER');
+    printer.println('FUSION');
     printer.bold(false);
     printer.setTextNormal();
-    printer.println('6 passage de l\'aurore');
-    printer.println('95800 Cergy');
+    printer.println('6 passage de l\'aurore - 95800 Cergy');
     printer.println('Tel: 01 30 17 31 78');
-    printer.newLine();
+    printer.println('================================================');
 
-    // Ligne de séparation
-    printer.println(separator(width, '='));
-    printer.newLine();
-
-    // Type de commande
-    printer.alignCenter();
+    // ========== TYPE DE COMMANDE + N° ==========
     printer.setTextDoubleHeight();
     printer.bold(true);
+    printer.invert(true);
     if (order.isDelivery) {
-      printer.println('** LIVRAISON **');
+      printer.println('  LIVRAISON  ');
     } else {
-      printer.println('** CLICK & COLLECT **');
+      printer.println(' CLICK & COLLECT ');
     }
+    printer.invert(false);
     printer.bold(false);
     printer.setTextNormal();
     printer.newLine();
 
     // Numéro de commande
-    printer.alignCenter();
     printer.bold(true);
-    printer.println('Commande N°');
-    printer.setTextDoubleHeight();
-    printer.println(order.orderNumber);
-    printer.setTextNormal();
+    printer.println('N° ' + order.orderNumber);
     printer.bold(false);
-    printer.newLine();
-
+    
     // Date et heure
-    printer.alignLeft();
     const date = new Date(order.createdAt);
     const dateStr = date.toLocaleDateString('fr-FR');
-    const timeStr = date.toLocaleTimeString('fr-FR');
-    printer.println(alignLeftRight('Date:', dateStr, width));
-    printer.println(alignLeftRight('Heure:', timeStr, width));
-    printer.newLine();
+    const timeStr = date.toLocaleTimeString('fr-FR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+    printer.println(dateStr + ' - ' + timeStr);
+    printer.println('================================================');
 
-    // Ligne de séparation
-    printer.println(separator(width, '='));
-    printer.newLine();
-
-    // Informations client
+    // ========== CLIENT ==========
+    printer.alignLeft();
     printer.bold(true);
-    printer.println('CLIENT:');
+    printer.println('CLIENT: ' + order.customerName.toUpperCase());
     printer.bold(false);
-    printer.println(order.customerName);
     printer.println('Tel: ' + order.customerPhone);
     
     if (order.isDelivery && order.deliveryAddress) {
-      printer.println('Adresse:');
-      printer.println(order.deliveryAddress);
+      printer.println('Adresse: ' + order.deliveryAddress);
       if (order.city) {
         printer.println(order.city);
       }
     }
-    printer.newLine();
+    printer.println('------------------------------------------------');
 
-    // Ligne de séparation
-    printer.println(separator(width, '-'));
-    printer.newLine();
-
-    // Articles commandés
-    printer.bold(true);
-    printer.println('ARTICLES:');
-    printer.bold(false);
-    printer.newLine();
-
+    // ========== ARTICLES ==========
     let subtotal = 0;
 
-    order.items.forEach((item) => {
-      // Nom de l'article et prix
+    order.items.forEach((item, index) => {
+      // Nom de l'article
       printer.bold(true);
       const itemLine = `${item.quantity}x ${item.title}`;
       const itemPrice = item.price * item.quantity;
@@ -180,61 +162,56 @@ export async function printOrderTicket(order: PrintOrder): Promise<boolean> {
       
       subtotal += itemPrice;
 
-      // Personnalisations
+      // Personnalisations (condensées)
       if (item.customizations && item.customizations.length > 0) {
         item.customizations.forEach((custom) => {
           custom.selectedOptions.forEach((option) => {
-            const customText = `  + ${custom.name}: ${option}`;
             if (custom.priceExtra > 0) {
               printer.println(
-                alignLeftRight(customText, `+${formatPrice(custom.priceExtra)}`, width)
+                alignLeftRight(`  + ${option}`, `+${formatPrice(custom.priceExtra)}`, width)
               );
               subtotal += custom.priceExtra * item.quantity;
             } else {
-              printer.println(customText);
+              printer.println(`  + ${option}`);
             }
           });
         });
       }
-      
-      printer.newLine();
     });
 
-    // Ligne de séparation
-    printer.println(separator(width, '-'));
-    printer.newLine();
-
-    // Total
-    printer.alignRight();
-    printer.setTextDoubleHeight();
-    printer.bold(true);
-    printer.println('TOTAL: ' + formatPrice(order.total));
-    printer.bold(false);
-    printer.setTextNormal();
-    printer.newLine();
-
-    // Moyen de paiement
+    // ========== TOTAL ==========
+    printer.println('------------------------------------------------');
     printer.alignLeft();
-    printer.println(separator(width, '-'));
+    
+    // Total
+    printer.bold(true);
+    printer.setTextDoubleHeight();
+    printer.println(alignLeftRight('TOTAL:', formatPrice(order.total), width));
+    printer.setTextNormal();
+    printer.bold(false);
+    
+    // Paiement
     printer.println(alignLeftRight('Paiement:', order.paymentMethod.toUpperCase(), width));
     
+    // Notes
     if (order.notes) {
-      printer.newLine();
-      printer.println(separator(width, '-'));
+      printer.println('------------------------------------------------');
       printer.bold(true);
-      printer.println('NOTES:');
+      printer.println('Notes: ' + order.notes);
       printer.bold(false);
-      printer.println(order.notes);
     }
 
-    printer.newLine();
-    printer.println(separator(width, '='));
-    printer.newLine();
-
-    // Message de fin
+    // ========== FIN ==========
+    printer.println('================================================');
     printer.alignCenter();
-    printer.println('Merci de votre commande !');
-    printer.println('A bientot chez Quarter Fusion');
+    printer.setTextDoubleHeight();
+    printer.bold(true);
+    printer.println('BON APPETIT !');
+    printer.bold(false);
+    printer.setTextNormal();
+    printer.println('Merci pour votre confiance');
+    printer.println('@quarterfusion');
+    printer.println('================================================');
     printer.newLine();
     printer.newLine();
 
@@ -323,7 +300,7 @@ export async function checkPrinterConnection(): Promise<boolean> {
     const printer = new ThermalPrinter({
       type: PrinterTypes.EPSON,
       interface: printerInterface,
-      characterSet: 'FRANCE',
+      characterSet: 'PC850_MULTILINGUAL',
       removeSpecialCharacters: false,
       lineCharacter: '=',
       width: parseInt(process.env.PRINTER_WIDTH || '48'),
@@ -356,7 +333,7 @@ export async function printTestTicket() {
     const printer = new ThermalPrinter({
       type: PrinterTypes.EPSON,
       interface: printerInterface,
-      characterSet: 'FRANCE',
+      characterSet: 'PC850_MULTILINGUAL',
       removeSpecialCharacters: false,
       lineCharacter: '=',
       width: parseInt(process.env.PRINTER_WIDTH || '48'),

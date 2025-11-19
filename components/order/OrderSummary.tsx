@@ -50,9 +50,9 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
           <>
             {/* Articles */}
             <div className="space-y-4 mb-6">
-              {state.cart.map((cartItem) => (
+              {state.cart.map((cartItem, index) => (
                 <div
-                  key={cartItem.item._id}
+                  key={`cart-item-${cartItem.item._id}-${index}`}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
                   <div className="flex-1">

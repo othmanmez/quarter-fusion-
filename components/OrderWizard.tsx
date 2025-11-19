@@ -199,7 +199,7 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                   {/* Liste des articles */}
                   <div className="space-y-3 mb-4">
                     {state.cart.map((cartItem, index) => (
-                      <div key={`cart-item-${cartItem.item._id}-${index}`} className="flex justify-between items-center">
+                      <div key={`cart-item-${cartItem.item._id || ''}-${index}`} className="flex justify-between items-center">
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900">
                             {cartItem.item.title}
@@ -215,14 +215,14 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                                 dispatch({ 
                                   type: 'UPDATE_QUANTITY', 
                                   payload: { 
-                                    itemId: cartItem.item._id, 
+                                    itemId: cartItem.item._id || '', 
                                     quantity: cartItem.quantity - 1 
                                   } 
                                 });
                               } else {
                                 dispatch({ 
                                   type: 'REMOVE_FROM_CART', 
-                                  payload: cartItem.item._id 
+                                  payload: cartItem.item._id || '' 
                                 });
                               }
                             }}
@@ -238,7 +238,7 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                               dispatch({ 
                                 type: 'UPDATE_QUANTITY', 
                                 payload: { 
-                                  itemId: cartItem.item._id, 
+                                  itemId: cartItem.item._id || '', 
                                   quantity: cartItem.quantity + 1 
                                 } 
                               });

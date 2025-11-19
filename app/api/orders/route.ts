@@ -325,10 +325,19 @@ export async function POST(request: NextRequest) {
 
     // Impression automatique du ticket (si activée)
     let printStatus = { success: false, message: 'Impression désactivée' };
+    
+    console.log('🖨️  [IMPRESSION] Vérification de l\'impression automatique...');
+    console.log('🖨️  [IMPRESSION] AUTO_PRINT_ENABLED =', process.env.AUTO_PRINT_ENABLED);
+    console.log('🖨️  [IMPRESSION] PRINTER_INTERFACE =', process.env.PRINTER_INTERFACE);
+    
     if (process.env.AUTO_PRINT_ENABLED === 'true') {
+      console.log('🖨️  [IMPRESSION] Impression activée, chargement du module...');
       try {
         const { printOrderTicket } = await import('@/lib/printer');
-        await printOrderTicket({
+        console.log('🖨️  [IMPRESSION] Module chargé, impression en cours...');
+        console.log('🖨️  [IMPRESSION] Commande N°', savedOrder.orderNumber);
+        
+        const printed = await printOrderTicket({
           orderNumber: savedOrder.orderNumber,
           customerName: savedOrder.customerName,
           customerPhone: savedOrder.customerPhone,
@@ -341,12 +350,23 @@ export async function POST(request: NextRequest) {
           notes: savedOrder.notes || undefined,
           createdAt: savedOrder.createdAt
         });
-        printStatus = { success: true, message: 'Ticket imprimé avec succès' };
+        
+        if (printed) {
+          console.log('✅ [IMPRESSION] Ticket imprimé avec succès !');
+          printStatus = { success: true, message: 'Ticket imprimé avec succès' };
+        } else {
+          console.log('❌ [IMPRESSION] L\'impression a échoué (retour false)');
+          printStatus = { success: false, message: 'L\'impression a retourné false' };
+        }
       } catch (printError: any) {
-        console.error('Erreur lors de l\'impression du ticket:', printError);
+        console.error('❌ [IMPRESSION] Erreur lors de l\'impression du ticket:', printError);
+        console.error('❌ [IMPRESSION] Message d\'erreur:', printError.message);
+        console.error('❌ [IMPRESSION] Stack:', printError.stack);
         printStatus = { success: false, message: printError.message || 'Erreur d\'impression' };
         // Ne pas faire échouer la commande si l'impression échoue
       }
+    } else {
+      console.log('⚠️  [IMPRESSION] Impression désactivée dans la configuration');
     }
 
     return NextResponse.json({ 
