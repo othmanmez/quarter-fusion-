@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MenuDisplayWrapper from '../../components/MenuDisplayWrapper';
 import FloatingCart from '../../components/FloatingCart';
 import OrderSummary from '../../components/OrderSummary';
 import OrderForm from '../../components/OrderForm';
 import OrderConfirmationModal from '../../components/order/OrderConfirmationModal';
+import ClosedMessage from '../../components/ClosedMessage';
 import { MenuItem, CartItem, OrderFormData } from '../types/menu';
 
 type OrderStep = 'menu' | 'summary' | 'form';
@@ -17,6 +18,50 @@ export default function ClickAndCollectPage() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [isOpen, setIsOpen] = useState<boolean | null>(null);
+  const [checkingStatus, setCheckingStatus] = useState(true);
+
+  // Vérifier si le restaurant est ouvert
+  useEffect(() => {
+    async function checkIfOpen() {
+      try {
+        const response = await fetch('/api/settings');
+        const data = await response.json();
+
+        if (data.success) {
+          // Par défaut ouvert si le paramètre n'existe pas
+          const restaurantOpen = data.settings.restaurantOpen !== false;
+          setIsOpen(restaurantOpen);
+        } else {
+          setIsOpen(true); // Par défaut ouvert en cas d'erreur
+        }
+      } catch (error) {
+        console.error('Erreur lors de la vérification du statut:', error);
+        setIsOpen(true); // Par défaut ouvert en cas d'erreur
+      } finally {
+        setCheckingStatus(false);
+      }
+    }
+
+    checkIfOpen();
+  }, []);
+
+  // Afficher un loader pendant la vérification
+  if (checkingStatus) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Vérification...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Afficher le message de fermeture si fermé
+  if (isOpen === false) {
+    return <ClosedMessage />;
+  }
 
   const handleAddToCart = (item: MenuItem, quantity: number) => {
     setCart(prevCart => {
@@ -257,7 +302,7 @@ export default function ClickAndCollectPage() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-700">Lundi - Dimanche</span>
-                  <span className="font-medium">18:00 - 02:00</span>
+                  <span className="font-medium">18:00 - 01:00</span>
                 </div>
               </div>
             </div>

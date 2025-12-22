@@ -9,13 +9,13 @@ export const siteData = {
 
   // Horaires d'ouverture
   hours: {
-    monday: "18:00 - 02:00",
-    tuesday: "18:00 - 02:00", 
-    wednesday: "18:00 - 02:00",
-    thursday: "18:00 - 02:00",
-    friday: "18:00 - 02:00",
-    saturday: "18:00 - 02:00",
-    sunday: "18:00 - 02:00"
+    monday: "18:00 - 01:00",
+    tuesday: "18:00 - 01:00",
+    wednesday: "18:00 - 01:00",
+    thursday: "18:00 - 01:00",
+    friday: "18:00 - 01:00",
+    saturday: "18:00 - 01:00",
+    sunday: "18:00 - 01:00"
   },
 
   // Best-sellers (section Hero)

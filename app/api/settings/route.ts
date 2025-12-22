@@ -12,6 +12,7 @@ export async function GET() {
     
     // Convertir en objet
     const settingsObj: any = {
+      restaurantOpen: true,
       clickAndCollectEnabled: true,
       deliveryEnabled: true,
       minOrderAmount: 20,

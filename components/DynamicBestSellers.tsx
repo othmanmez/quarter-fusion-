@@ -74,15 +74,12 @@ function BestSellersSkeleton() {
 
 async function getBestSellers(): Promise<MenuItem[]> {
   try {
-    // Délai artificiel pour tester le skeleton (à supprimer en production)
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
       : process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    
+
     const response = await fetch(`${baseUrl}/api/menu/best-sellers`, {
-      next: { revalidate: 300 } // Revalidate every 5 minutes
+      cache: 'no-store' // Pas de cache pour voir les changements immédiatement
     });
 
     if (!response.ok) {

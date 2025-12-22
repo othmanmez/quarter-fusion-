@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.local' });
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 
@@ -6,45 +7,51 @@ const prisma = new PrismaClient();
 async function updateAdmin() {
   try {
     console.log('🔧 Mise à jour du compte administrateur...');
-    
-    // Supprimer l'ancien utilisateur s'il existe
-    const oldUser = await prisma.user.findUnique({
-      where: { email: 'samy@quarterfusion.com' }
-    });
-    
-    if (oldUser) {
-      await prisma.user.delete({
-        where: { email: 'samy@quarterfusion.com' }
+
+    const adminEmail = process.env.ADMIN_EMAIL || 'quarterfusion@gmail.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+
+    // Supprimer les anciens utilisateurs s'ils existent
+    const oldUsers = ['samy@quarterfusion.com', 'issa@quarterfusion.com'];
+    for (const email of oldUsers) {
+      const oldUser = await prisma.user.findUnique({
+        where: { email }
       });
-      console.log('✅ Ancien utilisateur supprimé');
+
+      if (oldUser && email !== adminEmail) {
+        await prisma.user.delete({
+          where: { email }
+        });
+        console.log(`✅ Ancien utilisateur ${email} supprimé`);
+      }
     }
-    
-    // Créer ou mettre à jour le nouvel utilisateur
-    const hashedPassword = await bcrypt.hash('Issa2025', 12);
-    
+
+    // Créer ou mettre à jour le compte administrateur
+    const hashedPassword = await bcrypt.hash(adminPassword, 12);
+
     const user = await prisma.user.upsert({
-      where: { email: 'issa@quarterfusion.com' },
+      where: { email: adminEmail },
       update: {
         password: hashedPassword,
         role: 'ADMIN',
         active: true,
-        name: 'Issa'
+        name: 'Admin'
       },
       create: {
-        email: 'issa@quarterfusion.com',
+        email: adminEmail,
         password: hashedPassword,
-        name: 'Issa',
+        name: 'Admin',
         role: 'ADMIN',
         active: true
       }
     });
-    
+
     console.log('✅ Compte administrateur configuré !');
     console.log('\n📱 Identifiants de connexion :');
-    console.log('Email: issa@quarterfusion.com');
-    console.log('Mot de passe: Issa2025');
+    console.log(`Email: ${adminEmail}`);
+    console.log(`Mot de passe: ${adminPassword}`);
     console.log('\n🌐 Connexion : http://localhost:3000/admin');
-    
+
   } catch (error) {
     console.error('❌ Erreur:', error.message);
   } finally {

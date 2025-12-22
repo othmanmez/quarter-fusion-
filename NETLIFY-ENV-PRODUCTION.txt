@@ -1,0 +1,109 @@
+=================================================================
+VARIABLES D'ENVIRONNEMENT POUR NETLIFY - PRODUCTION
+=================================================================
+
+⚠️  IMPORTANT : Copiez ces variables dans Netlify
+    Netlify Dashboard → Site settings → Environment variables
+    Cliquez sur "Add a variable" pour chaque ligne
+
+=================================================================
+
+# ============================================
+# BASE DE DONNÉES
+# ============================================
+
+DATABASE_URL=mongodb+srv://quarterfusion:Quarter2025%21@cluster0.5brzic0.mongodb.net/quarter-fusion?retryWrites=true&w=majority&appName=Cluster0
+
+
+# ============================================
+# NEXTAUTH (Authentification)
+# ============================================
+
+NEXTAUTH_URL=https://votre-domaine.com
+NEXTAUTH_SECRET=ZX3cmpK5nCaFIz/lol2M5SQApw6BH5ThCBnd45vIKvo=
+
+
+# ============================================
+# EMAIL (Gmail SMTP)
+# ============================================
+
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=quarterfusion@gmail.com
+EMAIL_PASS=fpcplcoqhgfmlkok
+ADMIN_EMAIL=quarterfusion@gmail.com
+
+
+# ============================================
+# IMPRESSION AUTOMATIQUE (IMPORTANT !)
+# ============================================
+
+# Activer l'impression automatique
+AUTO_PRINT_ENABLED=true
+
+# Activer l'impression à distance
+REMOTE_PRINT_ENABLED=true
+
+# URL du service sur la tablette
+# ⚠️  REMPLACEZ 192.168.1.33 PAR L'IP DE VOTRE TABLETTE !
+PRINTER_PUBLIC_URL=http://192.168.1.33:9000
+
+# Token de sécurité pour l'impression
+# ⚠️  GÉNÉREZ UN NOUVEAU TOKEN AVEC : node scripts/generate-secret.js
+PRINTER_AUTH_TOKEN=votre-token-secret-genere-ici-changez-moi
+
+
+# ============================================
+# CLOUDINARY (Optionnel - pour images)
+# ============================================
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+
+=================================================================
+ÉTAPES DE CONFIGURATION SUR NETLIFY
+=================================================================
+
+1. Allez sur Netlify : https://app.netlify.com
+2. Sélectionnez votre site
+3. Allez dans : Site settings → Environment variables
+4. Cliquez sur "Add a variable"
+5. Pour chaque ligne ci-dessus :
+   - Name : Le nom de la variable (ex: DATABASE_URL)
+   - Value : La valeur (ex: mongodb+srv://...)
+   - Cliquez "Create variable"
+6. Répétez pour toutes les variables
+7. Allez dans "Deploys" → "Trigger deploy" → "Deploy site"
+
+=================================================================
+VARIABLES À PERSONNALISER OBLIGATOIREMENT
+=================================================================
+
+✅ NEXTAUTH_URL
+   → Remplacez par votre vrai domaine
+   → Exemple : https://quarterfusion.com
+
+✅ PRINTER_PUBLIC_URL
+   → Trouvez l'IP de votre tablette :
+     Sur la tablette dans Termux : ip route get 1.1.1.1 | awk '{print $7}'
+   → Exemple : http://192.168.1.33:9000
+
+✅ PRINTER_AUTH_TOKEN
+   → Générez un token avec : node scripts/generate-secret.js
+   → Copiez le résultat ici
+
+=================================================================
+TEST APRÈS CONFIGURATION
+=================================================================
+
+1. Vérifiez que le service tourne sur la tablette
+2. Passez une commande test sur le site
+3. Le ticket devrait s'imprimer automatiquement !
+4. Si ça ne marche pas :
+   - Vérifiez les logs Netlify
+   - Vérifiez que la tablette est accessible
+   - Consultez GUIDE-IMPRESSION-AUTOMATIQUE.md
+
+=================================================================

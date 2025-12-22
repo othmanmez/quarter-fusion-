@@ -27,7 +27,7 @@ export async function GET() {
         { badge: 'asc' }, // HOT first, then NEW, then TOP
         { createdAt: 'desc' }
       ],
-      take: 12 // Limit to 12 best-sellers on homepage (augmenté pour afficher tous les HOT)
+      take: 3 // Limit to 3 best-sellers on homepage
     });
 
     // Log pour debug

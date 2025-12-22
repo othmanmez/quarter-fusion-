@@ -6,6 +6,7 @@ import PrinterTestButton from '@/components/admin/PrinterTestButton';
 import DeliveryCitiesManager from '@/components/admin/DeliveryCitiesManager';
 
 interface Settings {
+  restaurantOpen: boolean;
   clickAndCollectEnabled: boolean;
   deliveryEnabled: boolean;
   minOrderAmount: number;
@@ -15,6 +16,7 @@ interface Settings {
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings>({
+    restaurantOpen: true,
     clickAndCollectEnabled: true,
     deliveryEnabled: true,
     minOrderAmount: 20,
@@ -47,7 +49,7 @@ export default function SettingsPage() {
 
   const handleToggle = async (key: keyof Settings) => {
     const newValue = !settings[key];
-    
+
     try {
       setSaving(true);
       const response = await fetch('/api/settings', {
@@ -65,8 +67,20 @@ export default function SettingsPage() {
 
       if (data.success) {
         setSettings(prev => ({ ...prev, [key]: newValue }));
-        const serviceName = key === 'clickAndCollectEnabled' ? 'Click & Collect' : 'Livraison';
-        toast.success(`${serviceName} ${newValue ? 'activé' : 'désactivé'}`);
+        let serviceName = '';
+        if (key === 'restaurantOpen') {
+          serviceName = 'Restaurant';
+          toast.success(`🔔 ${serviceName} ${newValue ? 'OUVERT' : 'FERMÉ'}`, {
+            duration: 5000,
+            className: newValue ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+          });
+        } else if (key === 'clickAndCollectEnabled') {
+          serviceName = 'Click & Collect';
+          toast.success(`${serviceName} ${newValue ? 'activé' : 'désactivé'}`);
+        } else if (key === 'deliveryEnabled') {
+          serviceName = 'Livraison';
+          toast.success(`${serviceName} ${newValue ? 'activé' : 'désactivé'}`);
+        }
       } else {
         toast.error('Erreur lors de la mise à jour');
       }
@@ -125,13 +139,56 @@ export default function SettingsPage() {
       </div>
 
       <div className="mt-8 space-y-6">
+        {/* INTERRUPTEUR PRINCIPAL - Restaurant Ouvert/Fermé */}
+        <div className={`bg-gradient-to-r ${settings.restaurantOpen ? 'from-green-50 to-emerald-50' : 'from-red-50 to-orange-50'} shadow-lg rounded-lg border-2 ${settings.restaurantOpen ? 'border-green-300' : 'border-red-300'}`}>
+          <div className="px-6 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold flex items-center gap-3">
+                  {settings.restaurantOpen ? (
+                    <>
+                      <span className="text-green-600">🟢</span>
+                      <span className="text-gray-900">Restaurant OUVERT</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-red-600">🔴</span>
+                      <span className="text-gray-900">Restaurant FERMÉ</span>
+                    </>
+                  )}
+                </h2>
+                <p className={`text-base mt-2 font-medium ${settings.restaurantOpen ? 'text-green-700' : 'text-red-700'}`}>
+                  {settings.restaurantOpen
+                    ? '✅ Les clients peuvent commander en ligne'
+                    : '⛔ Les pages de commande affichent un message de fermeture'}
+                </p>
+              </div>
+              <button
+                onClick={() => handleToggle('restaurantOpen')}
+                disabled={saving}
+                className={`relative inline-flex h-10 w-20 items-center rounded-full transition-all shadow-lg focus:outline-none focus:ring-4 ${
+                  settings.restaurantOpen
+                    ? 'bg-green-600 focus:ring-green-300'
+                    : 'bg-red-600 focus:ring-red-300'
+                } disabled:opacity-50 transform hover:scale-105`}
+              >
+                <span
+                  className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-md transition-transform ${
+                    settings.restaurantOpen ? 'translate-x-11' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Activation des services */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Services de commande</h2>
             <p className="text-sm text-gray-600 mt-1">Activez ou désactivez les prises de commande</p>
           </div>
-          
+
           <div className="px-6 py-4 space-y-6">
             {/* Click & Collect */}
             <div className="flex items-center justify-between">
@@ -264,12 +321,24 @@ export default function SettingsPage() {
                 type="text"
                 value={settings.estimatedTime}
                 onChange={(e) => setSettings(prev => ({ ...prev, estimatedTime: e.target.value }))}
-                onBlur={(e) => {
-                  const response = fetch('/api/settings', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ key: 'estimatedTime', value: e.target.value })
-                  });
+                onBlur={async (e) => {
+                  try {
+                    setSaving(true);
+                    const response = await fetch('/api/settings', {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ key: 'estimatedTime', value: e.target.value })
+                    });
+                    const data = await response.json();
+                    if (!data.success) {
+                      toast.error('Erreur lors de la mise à jour');
+                    }
+                  } catch (error) {
+                    console.error('Erreur:', error);
+                    toast.error('Erreur lors de la mise à jour');
+                  } finally {
+                    setSaving(false);
+                  }
                 }}
                 placeholder="Ex: 30-45 minutes"
                 className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
