@@ -119,6 +119,7 @@ export default function CustomizationsModal({
         fetchCustomizations();
         resetForm();
         setShowAddForm(false);
+        onSave(); // Notifier la page parente pour recharger les données
       } else {
         alert('Erreur: ' + data.error);
       }
@@ -151,6 +152,7 @@ export default function CustomizationsModal({
 
       if (data.success) {
         fetchCustomizations();
+        onSave(); // Notifier la page parente pour recharger les données
       } else {
         alert('Erreur: ' + data.error);
       }

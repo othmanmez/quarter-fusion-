@@ -61,7 +61,10 @@ export default function AdminMenuPage() {
     try {
       setLoading(true);
       // Inclure les personnalisations pour l'interface admin
-      const response = await fetch('/api/menu?includeCustomizations=true');
+      // Ajouter un timestamp pour éviter le cache
+      const response = await fetch(`/api/menu?includeCustomizations=true&_t=${Date.now()}`, {
+        cache: 'no-store'
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -97,6 +100,50 @@ export default function AdminMenuPage() {
     } catch (error) {
       console.error('Erreur:', error);
       alert('Erreur lors de la suppression');
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    const menuCount = menuItems.length;
+    
+    if (menuCount === 0) {
+      alert('Aucun menu à supprimer');
+      return;
+    }
+
+    // Double confirmation pour éviter les suppressions accidentelles
+    const firstConfirm = confirm(
+      `⚠️ ATTENTION : Vous êtes sur le point de supprimer TOUS les ${menuCount} menu(s) !\n\nCette action est irréversible et supprimera également toutes les personnalisations associées.\n\nVoulez-vous vraiment continuer ?`
+    );
+
+    if (!firstConfirm) {
+      return;
+    }
+
+    const secondConfirm = confirm(
+      `⚠️ DERNIÈRE CONFIRMATION ⚠️\n\nVous allez supprimer définitivement ${menuCount} menu(s).\n\nTapez OK pour confirmer.`
+    );
+
+    if (!secondConfirm) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/menu', {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMenuItems([]);
+        alert(`✅ ${data.message}`);
+      } else {
+        alert('Erreur lors de la suppression: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la suppression de tous les menus');
     }
   };
 
@@ -199,12 +246,23 @@ export default function AdminMenuPage() {
                 Gérez vos plats, leur disponibilité et leurs personnalisations
               </p>
             </div>
-            <Link
-              href="/admin/menu/new"
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium"
-            >
-              Ajouter un menu
-            </Link>
+            <div className="flex gap-3">
+              {menuItems.length > 0 && (
+                <button
+                  onClick={handleDeleteAll}
+                  className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg font-medium"
+                  title="Supprimer tous les menus"
+                >
+                  🗑️ Supprimer tout
+                </button>
+              )}
+              <Link
+                href="/admin/menu/new"
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium"
+              >
+                Ajouter un menu
+              </Link>
+            </div>
           </div>
           
           {/* Info sur les personnalisations */}

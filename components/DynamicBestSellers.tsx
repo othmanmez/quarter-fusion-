@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { prisma } from '@/lib/prisma';
 
 interface MenuItem {
   id: string;
@@ -77,21 +78,35 @@ async function getBestSellers(): Promise<MenuItem[]> {
     // Délai artificiel pour tester le skeleton (à supprimer en production)
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    
-    const response = await fetch(`${baseUrl}/api/menu/best-sellers`, {
-      next: { revalidate: 300 } // Revalidate every 5 minutes
+    // Appeler directement Prisma au lieu de fetch pour éviter les problèmes de connexion
+    // C'est la même logique que dans app/api/menu/best-sellers/route.ts
+    const bestSellers = await prisma.menu.findMany({
+      where: {
+        badge: {
+          in: ['HOT', 'NEW', 'TOP']
+        },
+        available: true
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true
+          }
+        }
+      },
+      orderBy: [
+        { badge: 'asc' }, // HOT first, then NEW, then TOP
+        { createdAt: 'desc' }
+      ],
+      take: 12 // Limit to 12 best-sellers on homepage
     });
 
-    if (!response.ok) {
-      console.error('Failed to fetch best sellers:', response.statusText);
-      return [];
-    }
-
-    const data = await response.json();
-    return data.success ? data.items : [];
+    return bestSellers.map((item: any) => ({
+      ...item,
+      badge: item.badge === null ? undefined : item.badge,
+    }));
   } catch (error) {
     console.error('Error fetching best sellers:', error);
     return [];

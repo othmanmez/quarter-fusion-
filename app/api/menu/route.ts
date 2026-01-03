@@ -153,4 +153,44 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// DELETE - Supprimer tous les menus
+export async function DELETE(request: NextRequest) {
+  try {
+    // Vérifier l'authentification admin
+    const session = await auth();
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Non autorisé' },
+        { status: 401 }
+      );
+    }
+
+    // Compter le nombre de menus avant suppression
+    const menuCount = await prisma.menu.count();
+
+    if (menuCount === 0) {
+      return NextResponse.json({
+        success: true,
+        message: 'Aucun menu à supprimer',
+        deletedCount: 0
+      });
+    }
+
+    // Supprimer tous les menus (les personnalisations seront supprimées en cascade)
+    const result = await prisma.menu.deleteMany({});
+
+    return NextResponse.json({
+      success: true,
+      message: `${result.count} menu(s) supprimé(s) avec succès`,
+      deletedCount: result.count
+    });
+  } catch (error) {
+    console.error('Erreur lors de la suppression de tous les menus:', error);
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    );
+  }
 } 
