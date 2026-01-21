@@ -1,125 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import MenuDisplayWrapper from '../../components/MenuDisplayWrapper';
-import FloatingCart from '../../components/FloatingCart';
-import OrderSummary from '../../components/OrderSummary';
-import OrderForm from '../../components/OrderForm';
-import OrderConfirmationModal from '../../components/order/OrderConfirmationModal';
 import { siteData } from '../../data/siteData';
-import { MenuItem, CartItem, OrderFormData } from '../types/menu';
+import Link from 'next/link';
 
-type OrderStep = 'menu' | 'summary' | 'form';
-
+// Mode consultation uniquement - version mise à jour
 export default function LivraisonPage() {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [currentStep, setCurrentStep] = useState<OrderStep>('menu');
-  const [loading, setLoading] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [orderNumber, setOrderNumber] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
-
-  const handleAddToCart = (item: MenuItem, quantity: number) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(cartItem => cartItem.item.id === item.id);
-      
-      if (existingItem) {
-        return prevCart.map(cartItem =>
-          cartItem.item.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + quantity }
-            : cartItem
-        );
-      } else {
-        return [...prevCart, { item, quantity }];
-      }
-    });
-  };
-
-  const updateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      setCart(prevCart => prevCart.filter(cartItem => cartItem.item.id !== itemId));
-      return;
-    }
-    
-    setCart(prevCart =>
-      prevCart.map(cartItem =>
-        cartItem.item.id === itemId
-          ? { ...cartItem, quantity: newQuantity }
-          : cartItem
-      )
-    );
-  };
-
-  const getTotalPrice = () => {
-    const subtotal = cart.reduce((total, cartItem) => {
-      return total + (cartItem.item.price * cartItem.quantity);
-    }, 0);
-    
-    // Ajouter les frais de livraison
-    const deliveryFee = parseFloat(siteData.delivery.fee.replace('€', ''));
-    return subtotal + deliveryFee;
-  };
-
-  const getDeliveryFee = () => {
-    return parseFloat(siteData.delivery.fee.replace('€', ''));
-  };
-
-  const handleContinueToSummary = () => {
-    setCurrentStep('summary');
-  };
-
-  const handleBackToMenu = () => {
-    setCurrentStep('menu');
-  };
-
-  const handleContinueToForm = () => {
-    setCurrentStep('form');
-  };
-
-  const handleSubmitOrder = async (formData: OrderFormData) => {
-    setLoading(true);
-    
-    try {
-      // Appel API pour envoyer la commande
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          cart,
-          formData,
-          total: getTotalPrice(),
-          type: 'livraison'
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        // Afficher la modal de confirmation
-        setOrderNumber(result.orderNumber);
-        setCustomerEmail(formData.email);
-        setShowConfirmation(true);
-        setCart([]);
-      } else {
-        // Si on a un orderNumber malgré l'erreur, la commande a été enregistrée
-        if (result.orderNumber) {
-          setOrderNumber(result.orderNumber);
-          setCustomerEmail(formData.email);
-          setShowConfirmation(true);
-          setCart([]);
-        } else {
-          throw new Error(result.error || 'Erreur lors de l\'envoi de la commande');
-        }
-      }
-    } catch (error) {
-      console.error('Erreur:', error);
-      alert('Erreur lors de l\'envoi de la commande. Veuillez réessayer.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <main className="min-h-screen">
@@ -131,8 +17,25 @@ export default function LivraisonPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Livraison à <span className="text-red-700">domicile</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Commandez en ligne et faites-vous livrer chez vous. Service rapide et professionnel.
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+              Découvrez notre menu et nos prix de livraison
+            </p>
+            
+            {/* Bouton pour commander */}
+            <div className="flex justify-center">
+              <Link
+                href="/commander"
+                className="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+              >
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Commander maintenant
+              </Link>
+            </div>
+            
+            <p className="text-sm text-gray-500 mt-4">
+              Cette page est en consultation uniquement. Pour passer commande, cliquez sur le bouton ci-dessus.
             </p>
           </div>
         </div>
@@ -141,55 +44,18 @@ export default function LivraisonPage() {
       {/* Contenu principal */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {currentStep === 'menu' && (
-            <>
-              <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-900">
-                  Notre Menu
-                </h2>
-                <p className="text-gray-600 mt-2">
-                  Sélectionnez vos plats préférés et personnalisez-les selon vos goûts
-                </p>
-              </div>
-              
-              <MenuDisplayWrapper onAddToCart={handleAddToCart} showAddToCart={true} mode="livraison" />
-            </>
-          )}
-
-          {currentStep === 'summary' && (
-            <OrderSummary
-              cart={cart}
-              totalPrice={getTotalPrice() - getDeliveryFee()}
-              deliveryFee={getDeliveryFee()}
-              onBack={handleBackToMenu}
-              onContinue={handleContinueToForm}
-            />
-          )}
-
-          {currentStep === 'form' && (
-            <OrderForm
-              cart={cart}
-              totalPrice={getTotalPrice() - getDeliveryFee()}
-              deliveryFee={getDeliveryFee()}
-              isDelivery={true}
-              onBack={() => setCurrentStep('summary')}
-              onSubmit={handleSubmitOrder}
-              loading={loading}
-            />
-          )}
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">
+              Notre Menu - Prix Livraison
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Consultez nos plats et leurs prix pour la livraison (+ {siteData.delivery.fee} de frais de livraison)
+            </p>
+          </div>
+          
+          <MenuDisplayWrapper showAddToCart={false} mode="livraison" />
         </div>
       </section>
-
-      {/* Panier flottant (visible seulement sur la page menu) */}
-      {currentStep === 'menu' && (
-        <FloatingCart
-          cart={cart}
-          onUpdateQuantity={updateQuantity}
-          onContinue={handleContinueToSummary}
-          totalPrice={getTotalPrice() - getDeliveryFee()}
-          deliveryFee={getDeliveryFee()}
-        />
-      )}
 
       {/* Informations supplémentaires */}
       <section className="py-16 bg-gray-50">
@@ -273,17 +139,6 @@ export default function LivraisonPage() {
           </div>
         </div>
       </section>
-
-      {/* Modal de confirmation */}
-      <OrderConfirmationModal
-        isOpen={showConfirmation}
-        orderNumber={orderNumber}
-        customerEmail={customerEmail}
-        onClose={() => {
-          setShowConfirmation(false);
-          setCurrentStep('menu');
-        }}
-      />
     </main>
   );
 } 

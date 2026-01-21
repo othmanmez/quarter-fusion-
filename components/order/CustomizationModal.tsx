@@ -12,6 +12,7 @@ interface Customization {
   name: string;
   type: 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'TOGGLE';
   required: boolean;
+  maxSelections?: number | null;
   options: CustomizationOption[];
 }
 
@@ -21,6 +22,8 @@ interface MenuItem {
   title: string;
   description: string;
   price: number;
+  priceClickAndCollect?: number | null;
+  priceDelivery?: number | null;
   image: string;
   category?: string;
   allowDrinkOption?: boolean;
@@ -60,6 +63,7 @@ export default function CustomizationModal({
   // État pour l'option boisson
   const [drinkWanted, setDrinkWanted] = useState(false);
   const [selectedDrink, setSelectedDrink] = useState<string>('');
+  const [modePrice, setModePrice] = useState<number>(item.price);
   const [availableDrinks, setAvailableDrinks] = useState<DrinkItem[]>([]);
   const [loadingDrinks, setLoadingDrinks] = useState(false);
 
@@ -68,6 +72,14 @@ export default function CustomizationModal({
       fetchCustomizations();
       if (item.allowDrinkOption) {
         fetchDrinks();
+      }
+      const isDelivery = window.location.pathname.includes('livraison') || window.location.pathname.includes('delivery');
+      if (isDelivery && item.priceDelivery != null) {
+        setModePrice(item.priceDelivery);
+      } else if (!isDelivery && item.priceClickAndCollect != null) {
+        setModePrice(item.priceClickAndCollect);
+      } else {
+        setModePrice(item.price);
       }
       // Reset états
       setDrinkWanted(false);
@@ -108,12 +120,15 @@ export default function CustomizationModal({
 
       if (data.success) {
         // Filtrer pour ne garder que les boissons disponibles
+        const isDelivery = window.location.pathname.includes('livraison') || window.location.pathname.includes('delivery');
         const drinks = (data.items || [])
           .filter((item: any) => item.category.slug === 'boissons' && item.available)
           .map((drink: any) => ({
             id: drink.id,
             title: drink.title,
-            price: drink.price
+            price: isDelivery
+              ? (drink.priceDelivery ?? drink.price)
+              : (drink.priceClickAndCollect ?? drink.price)
           }));
         setAvailableDrinks(drinks);
       }
@@ -127,6 +142,7 @@ export default function CustomizationModal({
   const handleOptionChange = (customId: string, optionName: string, type: string) => {
     setSelectedOptions(prev => {
       const current = prev[customId] || [];
+      const custom = customizations.find(c => c.id === customId);
       
       if (type === 'SINGLE_CHOICE' || type === 'TOGGLE') {
         // Pour choix unique, remplacer
@@ -136,6 +152,10 @@ export default function CustomizationModal({
         if (current.includes(optionName)) {
           return { ...prev, [customId]: current.filter(o => o !== optionName) };
         } else {
+          if (custom?.maxSelections && current.length >= custom.maxSelections) {
+            alert(`Vous pouvez sélectionner au maximum ${custom.maxSelections} choix`);
+            return prev;
+          }
           return { ...prev, [customId]: [...current, optionName] };
         }
       }
@@ -143,7 +163,7 @@ export default function CustomizationModal({
   };
 
   const calculateTotalPrice = () => {
-    let total = item.price * quantity;
+    let total = modePrice * quantity;
     
     // Ajouter le prix des personnalisations
     customizations.forEach(custom => {
@@ -157,8 +177,11 @@ export default function CustomizationModal({
     });
     
     // Ajouter le prix de la boisson si sélectionnée
-    if (drinkWanted && item.drinkPrice) {
-      total += item.drinkPrice * quantity;
+    if (drinkWanted && selectedDrink) {
+      const drink = availableDrinks.find(d => d.id === selectedDrink);
+      if (drink) {
+        total += drink.price * quantity;
+      }
     }
     
     return total;
@@ -207,7 +230,7 @@ export default function CustomizationModal({
         selectedCustoms.push({
           name: `Boisson`,
           selectedOptions: [drink.title],
-          priceExtra: item.drinkPrice || 0
+          priceExtra: drink.price || 0
         });
       }
     }
@@ -275,6 +298,16 @@ export default function CustomizationModal({
                     {custom.required && (
                       <span className="ml-2 px-2 py-0.5 bg-red-100 text-red-800 text-xs font-medium rounded">
                         Obligatoire
+                      </span>
+                    )}
+                    {custom.type === 'MULTIPLE_CHOICE' && custom.maxSelections && (
+                      <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-700 text-xs font-medium rounded">
+                        Max {custom.maxSelections}
+                      </span>
+                    )}
+                    {custom.name.toLowerCase().includes('sauce') && custom.maxSelections === 2 && (
+                      <span className="ml-2 px-2 py-0.5 bg-red-50 text-red-700 text-xs font-medium rounded">
+                        Max 2 sauces
                       </span>
                     )}
                   </div>

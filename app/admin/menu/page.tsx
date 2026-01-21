@@ -12,6 +12,8 @@ interface MenuItem {
   title: string;
   description: string;
   price: number;
+  priceClickAndCollect?: number | null;
+  priceDelivery?: number | null;
   image: string;
   available: boolean;
   badge?: string;
@@ -256,12 +258,12 @@ export default function AdminMenuPage() {
                   🗑️ Supprimer tout
                 </button>
               )}
-              <Link
-                href="/admin/menu/new"
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium"
-              >
-                Ajouter un menu
-              </Link>
+            <Link
+              href="/admin/menu/new"
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium"
+            >
+              Ajouter un menu
+            </Link>
             </div>
           </div>
           
@@ -367,7 +369,7 @@ export default function AdminMenuPage() {
                     Catégorie
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Prix
+                    Prix C&C / Liv
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
@@ -420,7 +422,11 @@ export default function AdminMenuPage() {
                       </span>
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900 font-medium">
-                      {item.price.toFixed(2)}€
+                      {(
+                        (item.priceClickAndCollect ?? item.price).toFixed(2)
+                      )}€ / {(
+                        (item.priceDelivery ?? item.price).toFixed(2)
+                      )}€
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
                       <button

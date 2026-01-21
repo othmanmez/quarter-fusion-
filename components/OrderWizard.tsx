@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useOrder } from '../contexts/OrderContext';
+import { getCartSubtotal, getCartItemUnitPrice } from '@/lib/pricing';
 import MenuSelection from './order/MenuSelection';
 import OrderSummary from './order/OrderSummary';
 import CustomerInfoForm from './order/CustomerInfoForm';
@@ -205,7 +206,7 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                             {cartItem.item.title}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {cartItem.quantity} × {cartItem.item.price.toFixed(2)}€
+                            {cartItem.quantity} × {getCartItemUnitPrice(cartItem).toFixed(2)}€
                           </p>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -254,26 +255,36 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
 
                   {/* Total */}
                   <div className="border-t pt-4">
+                    {(() => {
+                      const subtotal = getCartSubtotal(state.cart);
+                      const deliveryFee = mode === 'delivery' ? 2.5 : 0;
+                      const total = subtotal + deliveryFee;
+
+                      return (
+                        <>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm text-gray-600">Sous-total :</span>
                       <span className="text-sm font-medium">
-                        {state.cart.reduce((total, item) => total + (item.item.price * item.quantity), 0).toFixed(2)}€
+                        {subtotal.toFixed(2)}€
                       </span>
                     </div>
                     
                     {mode === 'delivery' && (
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm text-gray-600">Frais de livraison :</span>
-                        <span className="text-sm font-medium">2.50€</span>
+                        <span className="text-sm font-medium">{deliveryFee.toFixed(2)}€</span>
                       </div>
                     )}
                     
                     <div className="flex justify-between items-center text-lg font-bold">
                       <span>Total :</span>
                       <span className="text-red-600">
-                        {(state.cart.reduce((total, item) => total + (item.item.price * item.quantity), 0) + (mode === 'delivery' ? 2.50 : 0)).toFixed(2)}€
+                        {total.toFixed(2)}€
                       </span>
                     </div>
+                        </>
+                      );
+                    })()}
                   </div>
 
                   {/* Bouton pour passer à l'étape suivante */}

@@ -106,7 +106,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           Choisissez vos plats
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-800">
           Sélectionnez les plats que vous souhaitez commander
         </p>
       </div>
@@ -118,10 +118,10 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors duration-200 ${
+              className={`px-6 py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors duration-200 ${
                 selectedCategory === category
                   ? 'border-red-600 text-red-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-gray-700 hover:text-gray-900'
               }`}
             >
               {category}
@@ -171,7 +171,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-800 text-sm mb-4 line-clamp-2">
                     {item.description}
                   </p>
                   
@@ -183,7 +183,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
                       onClick={() => handleAddToCart(item, selectedCategory)}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
                     >
-                      Ajouter
+                      Personnaliser
                     </button>
                   </div>
                 </div>

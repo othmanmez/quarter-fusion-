@@ -47,7 +47,7 @@ export async function POST(
 
     const { id } = await params;
     const body = await request.json();
-    const { name, type, required, options } = body;
+    const { name, type, required, options, maxSelections } = body;
 
     // Validation
     if (!name || name.trim() === '') {
@@ -71,6 +71,16 @@ export async function POST(
       );
     }
 
+    if (type === 'MULTIPLE_CHOICE' && maxSelections !== undefined && maxSelections !== null) {
+      const max = parseInt(maxSelections, 10);
+      if (Number.isNaN(max) || max < 1) {
+        return NextResponse.json(
+          { error: 'Le nombre maximum de choix doit être supérieur à 0' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Créer la personnalisation
     const customization = await prisma.customization.create({
       data: {
@@ -78,6 +88,11 @@ export async function POST(
         name: name.trim(),
         type,
         required: required || false,
+        ...(type === 'MULTIPLE_CHOICE' && {
+          maxSelections: maxSelections !== undefined && maxSelections !== null
+            ? parseInt(maxSelections, 10)
+            : null
+        }),
         options: options.map((opt: any) => ({
           name: opt.name,
           priceExtra: parseFloat(opt.priceExtra) || 0

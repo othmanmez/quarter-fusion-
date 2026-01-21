@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useOrder } from '../../contexts/OrderContext';
+import { getCartSubtotal } from '@/lib/pricing';
 
 interface CustomerInfoFormProps {
   onConfirm: (orderData: any) => void;
@@ -154,7 +155,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
         ville: mode === 'delivery' ? state.customerInfo.deliveryCity : undefined,
         codePostal: mode === 'delivery' ? selectedCityData?.postalCode || '' : undefined
       },
-      total: state.cart.reduce((total, item) => total + (item.item.price * item.quantity), 0) + (mode === 'delivery' && selectedCityData ? selectedCityData.deliveryFee : 0),
+      total: getCartSubtotal(state.cart) + (mode === 'delivery' && selectedCityData ? selectedCityData.deliveryFee : 0),
       type: mode === 'delivery' ? 'livraison' : 'click-and-collect'
     };
 

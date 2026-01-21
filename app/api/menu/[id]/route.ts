@@ -61,6 +61,8 @@ export async function PUT(
       title,
       description,
       price,
+      priceClickAndCollect,
+      priceDelivery,
       categoryId,
       image,
       badge,
@@ -71,8 +73,8 @@ export async function PUT(
       drinkPrice,
     } = body;
 
-    // Validation
-    if (!title || !description || price === undefined || !categoryId || !image) {
+    // Validation (image non obligatoire lors de la modification)
+    if (!title || !description || price === undefined || !categoryId) {
       return NextResponse.json(
         { error: 'Tous les champs sont requis' },
         { status: 400 }
@@ -82,6 +84,20 @@ export async function PUT(
     if (price < 0) {
       return NextResponse.json(
         { error: 'Le prix doit être positif' },
+        { status: 400 }
+      );
+    }
+
+    if (priceClickAndCollect !== undefined && priceClickAndCollect < 0) {
+      return NextResponse.json(
+        { error: 'Le prix Click & Collect doit être positif' },
+        { status: 400 }
+      );
+    }
+
+    if (priceDelivery !== undefined && priceDelivery < 0) {
+      return NextResponse.json(
+        { error: 'Le prix Livraison doit être positif' },
         { status: 400 }
       );
     }
@@ -108,20 +124,41 @@ export async function PUT(
       );
     }
 
+    const nextImage = image && String(image).trim() !== '' ? image : existingMenu.image;
+
+    const normalizedClickAndCollect =
+      priceClickAndCollect !== undefined ? parseFloat(priceClickAndCollect) : existingMenu.priceClickAndCollect;
+    const normalizedDelivery =
+      priceDelivery !== undefined ? parseFloat(priceDelivery) : existingMenu.priceDelivery;
+    const basePrice =
+      price !== undefined
+        ? parseFloat(price)
+        : normalizedClickAndCollect ?? normalizedDelivery ?? existingMenu.price;
+
+    const parsedDrinkPrice = drinkPrice !== undefined && drinkPrice !== null
+      ? parseFloat(drinkPrice)
+      : undefined;
+    const nextDrinkPrice =
+      parsedDrinkPrice !== undefined && !Number.isNaN(parsedDrinkPrice)
+        ? parsedDrinkPrice
+        : (existingMenu.drinkPrice ?? 1.5);
+
     const updatedMenuItem = await prisma.menu.update({
       where: { id: id },
       data: {
         title: title.trim(),
         description: description.trim(),
-        price: parseFloat(price),
+        price: basePrice,
+        priceClickAndCollect: normalizedClickAndCollect,
+        priceDelivery: normalizedDelivery,
         categoryId,
-        image,
+        image: nextImage,
         badge: badge ? badge.trim().toUpperCase() : null,
         available: available ?? true,
         availableForClickAndCollect: availableForClickAndCollect ?? true,
         availableForDelivery: availableForDelivery ?? true,
         allowDrinkOption: allowDrinkOption ?? false,
-        drinkPrice: drinkPrice ? parseFloat(drinkPrice) : 1.5,
+        drinkPrice: nextDrinkPrice,
       },
       include: {
         category: true,

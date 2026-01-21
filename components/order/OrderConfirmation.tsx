@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useOrder } from '../../contexts/OrderContext';
+import { getCartItemTotal, getCartSubtotal } from '@/lib/pricing';
 
 interface OrderConfirmationProps {
   orderNumber: string;
@@ -12,10 +13,31 @@ interface OrderConfirmationProps {
 export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: OrderConfirmationProps) {
   const { state } = useOrder();
 
+  const renderCustomizations = (customizations?: any[]) => {
+    if (!Array.isArray(customizations) || customizations.length === 0) return null;
+    return (
+      <div className="mt-1 space-y-1">
+        {customizations.map((custom, idx) => {
+          if (typeof custom === 'string') {
+            return (
+              <p key={`${custom}-${idx}`} className="text-xs text-blue-700">
+                {custom}
+              </p>
+            );
+          }
+          const label = `${custom.name}: ${(custom.selectedOptions || []).join(', ')}`;
+          return (
+            <p key={`${custom.name}-${idx}`} className="text-xs text-blue-700">
+              {label}{custom.priceExtra > 0 ? ` (+${custom.priceExtra.toFixed(2)}€)` : ''}
+            </p>
+          );
+        })}
+      </div>
+    );
+  };
+
   // Calculer le total
-  const subtotal = state.cart.reduce((total, cartItem) => {
-    return total + (cartItem.item.price * cartItem.quantity);
-  }, 0);
+  const subtotal = getCartSubtotal(state.cart);
   const deliveryFee = mode === 'delivery' ? 2.50 : 0;
   const total = subtotal + deliveryFee;
 
@@ -104,9 +126,10 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
                         <span className="font-medium text-gray-900">
                           {cartItem.quantity} × {cartItem.item.title}
                         </span>
+                        {renderCustomizations(cartItem.item.customizations)}
                       </div>
                       <span className="text-gray-700">
-                        {(cartItem.item.price * cartItem.quantity).toFixed(2)}€
+                        {getCartItemTotal(cartItem).toFixed(2)}€
                       </span>
                     </div>
                   ))}

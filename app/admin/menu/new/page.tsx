@@ -21,7 +21,8 @@ export default function NewMenuPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: '',
+    priceClickAndCollect: '',
+    priceDelivery: '',
     categoryId: '',
     image: '/images/placeholder.svg',
     badge: '',
@@ -64,13 +65,13 @@ export default function NewMenuPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.description || !formData.price || !formData.categoryId) {
+    if (!formData.title || !formData.description || !formData.priceClickAndCollect || !formData.priceDelivery || !formData.categoryId) {
       setError('Tous les champs obligatoires doivent être remplis');
       return;
     }
 
-    if (parseFloat(formData.price) < 0) {
-      setError('Le prix doit être positif');
+    if (parseFloat(formData.priceClickAndCollect) < 0 || parseFloat(formData.priceDelivery) < 0) {
+      setError('Les prix doivent être positifs');
       return;
     }
 
@@ -85,7 +86,9 @@ export default function NewMenuPage() {
         },
         body: JSON.stringify({
           ...formData,
-          price: parseFloat(formData.price),
+          price: parseFloat(formData.priceClickAndCollect),
+          priceClickAndCollect: parseFloat(formData.priceClickAndCollect),
+          priceDelivery: parseFloat(formData.priceDelivery),
         }),
       });
 
@@ -190,16 +193,34 @@ export default function NewMenuPage() {
             </div>
 
             {/* Price and Category */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                  Prix (€) *
+                <label htmlFor="priceClickAndCollect" className="block text-sm font-medium text-gray-700 mb-2">
+                  Prix Click & Collect (€) *
                 </label>
                 <input
                   type="number"
-                  id="price"
-                  name="price"
-                  value={formData.price}
+                  id="priceClickAndCollect"
+                  name="priceClickAndCollect"
+                  value={formData.priceClickAndCollect}
+                  onChange={handleInputChange}
+                  required
+                  min="0"
+                  step="0.01"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="priceDelivery" className="block text-sm font-medium text-gray-700 mb-2">
+                  Prix Livraison (€) *
+                </label>
+                <input
+                  type="number"
+                  id="priceDelivery"
+                  name="priceDelivery"
+                  value={formData.priceDelivery}
                   onChange={handleInputChange}
                   required
                   min="0"

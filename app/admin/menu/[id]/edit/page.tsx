@@ -16,6 +16,8 @@ interface MenuItem {
   title: string;
   description: string;
   price: number;
+  priceClickAndCollect?: number | null;
+  priceDelivery?: number | null;
   image: string;
   available: boolean;
   badge?: string;
@@ -41,7 +43,8 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: '',
+    priceClickAndCollect: '',
+    priceDelivery: '',
     categoryId: '',
     image: '',
     badge: '',
@@ -90,15 +93,22 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
         throw new Error('Menu non trouvé');
       }
 
-      setCategories(categoriesData.categories || []);
-      setMenuItem(menuData.menuItem);
+      const nextCategories = categoriesData.categories || [];
+      const menu = menuData.menuItem;
+      if (nextCategories.length === 0 && menu?.category) {
+        setCategories([menu.category]);
+      } else {
+        setCategories(nextCategories);
+      }
+      setMenuItem(menu);
       
       // Populate form with menu data
-      const menu = menuData.menuItem;
+      const fallbackPrice = menu.price;
       setFormData({
         title: menu.title,
         description: menu.description,
-        price: menu.price.toString(),
+        priceClickAndCollect: (menu.priceClickAndCollect ?? fallbackPrice).toString(),
+        priceDelivery: (menu.priceDelivery ?? fallbackPrice).toString(),
         categoryId: menu.category.id,
         image: menu.image,
         badge: menu.badge || '',
@@ -118,13 +128,13 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.description || !formData.price || !formData.categoryId) {
+    if (!formData.title || !formData.description || !formData.priceClickAndCollect || !formData.priceDelivery || !formData.categoryId) {
       setError('Tous les champs obligatoires doivent être remplis');
       return;
     }
 
-    if (parseFloat(formData.price) < 0) {
-      setError('Le prix doit être positif');
+    if (parseFloat(formData.priceClickAndCollect) < 0 || parseFloat(formData.priceDelivery) < 0) {
+      setError('Les prix doivent être positifs');
       return;
     }
 
@@ -139,7 +149,9 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
         },
         body: JSON.stringify({
           ...formData,
-          price: parseFloat(formData.price),
+          price: parseFloat(formData.priceClickAndCollect),
+          priceClickAndCollect: parseFloat(formData.priceClickAndCollect),
+          priceDelivery: parseFloat(formData.priceDelivery),
         }),
       });
 
@@ -261,16 +273,34 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
             </div>
 
             {/* Price and Category */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                  Prix (€) *
+                <label htmlFor="priceClickAndCollect" className="block text-sm font-medium text-gray-700 mb-2">
+                  Prix Click & Collect (€) *
                 </label>
                 <input
                   type="number"
-                  id="price"
-                  name="price"
-                  value={formData.price}
+                  id="priceClickAndCollect"
+                  name="priceClickAndCollect"
+                  value={formData.priceClickAndCollect}
+                  onChange={handleInputChange}
+                  required
+                  min="0"
+                  step="0.01"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="priceDelivery" className="block text-sm font-medium text-gray-700 mb-2">
+                  Prix Livraison (€) *
+                </label>
+                <input
+                  type="number"
+                  id="priceDelivery"
+                  name="priceDelivery"
+                  value={formData.priceDelivery}
                   onChange={handleInputChange}
                   required
                   min="0"
@@ -308,7 +338,8 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
                 URL de l'image
               </label>
               <input
-                type="url"
+                type="text"
+                inputMode="url"
                 id="image"
                 name="image"
                 value={formData.image}

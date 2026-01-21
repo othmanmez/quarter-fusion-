@@ -28,6 +28,9 @@ model Menu {
   title       String
   description String
   price       Float
+  // Prix par mode (optionnels pour compatibilité)
+  priceClickAndCollect Float?
+  priceDelivery       Float?
   image       String
   available   Boolean  @default(true)
   badge       String?  // HOT, NEW, TOP
@@ -60,6 +63,8 @@ model Customization {
   name        String   // Ex: "Sauce", "Taille", "Supplément fromage"
   type        CustomizationType
   required    Boolean  @default(false) // Si le client DOIT choisir
+  // Nombre maximum de choix pour MULTIPLE_CHOICE (optionnel)
+  maxSelections Int?
   options     CustomizationOption[]
   
   menuId      String   @db.ObjectId

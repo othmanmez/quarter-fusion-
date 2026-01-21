@@ -1,6 +1,7 @@
 'use client';
 
 import { CartItem } from '../app/types/menu';
+import { getCartItemTotal, getCartItemUnitPrice, getCartSubtotal } from '@/lib/pricing';
 
 interface OrderSummaryProps {
   cart: CartItem[];
@@ -18,7 +19,8 @@ export default function OrderSummary({
   onContinue 
 }: OrderSummaryProps) {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const finalTotal = totalPrice + deliveryFee;
+  const computedSubtotal = getCartSubtotal(cart);
+  const finalTotal = computedSubtotal + deliveryFee;
 
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -39,13 +41,13 @@ export default function OrderSummary({
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-gray-900">{cartItem.item.title}</h3>
                   <span className="text-lg font-bold text-red-700">
-                    {(cartItem.item.price * cartItem.quantity).toFixed(2)}€
+                    {getCartItemTotal(cartItem).toFixed(2)}€
                   </span>
                 </div>
                 <p className="text-sm text-gray-600 mb-2">{cartItem.item.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">
-                    Quantité : {cartItem.quantity} × {cartItem.item.price.toFixed(2)}€
+                    Quantité : {cartItem.quantity} × {getCartItemUnitPrice(cartItem).toFixed(2)}€
                   </span>
                   {cartItem.customizations && cartItem.customizations.length > 0 && (
                     <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
@@ -69,7 +71,7 @@ export default function OrderSummary({
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Sous-total ({totalItems} article{totalItems > 1 ? 's' : ''}) :</span>
-              <span>{totalPrice.toFixed(2)}€</span>
+              <span>{computedSubtotal.toFixed(2)}€</span>
             </div>
             {deliveryFee > 0 && (
               <div className="flex justify-between text-sm">

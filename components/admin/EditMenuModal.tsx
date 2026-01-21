@@ -7,6 +7,8 @@ interface MenuItem {
   title: string;
   description: string;
   price: number;
+  priceClickAndCollect?: number | null;
+  priceDelivery?: number | null;
   image: string;
   available: boolean;
   badge?: string;
@@ -43,7 +45,8 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: 0,
+    priceClickAndCollect: 0,
+    priceDelivery: 0,
     categoryId: '',
     image: '',
     badge: '',
@@ -58,10 +61,12 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
     if (isOpen) {
       fetchCategories();
       if (menuItem) {
+        const fallbackPrice = menuItem.price;
         setFormData({
           title: menuItem.title,
           description: menuItem.description,
-          price: menuItem.price,
+          priceClickAndCollect: menuItem.priceClickAndCollect ?? fallbackPrice,
+          priceDelivery: menuItem.priceDelivery ?? fallbackPrice,
           categoryId: menuItem.category.id,
           image: menuItem.image,
           badge: menuItem.badge || '',
@@ -69,22 +74,36 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
           availableForClickAndCollect: menuItem.availableForClickAndCollect,
           availableForDelivery: menuItem.availableForDelivery,
           allowDrinkOption: menuItem.allowDrinkOption || false,
-          drinkPrice: menuItem.drinkPrice || 1.5,
+          drinkPrice: menuItem.drinkPrice ?? 1.5,
         });
         setError(null);
       }
     }
   }, [isOpen, menuItem]);
 
+  useEffect(() => {
+    if (menuItem && categories.length === 0) {
+      setCategories([menuItem.category]);
+    }
+  }, [menuItem, categories.length]);
+
   const fetchCategories = async () => {
     try {
       const response = await fetch('/api/categories');
       const data = await response.json();
       if (data.success) {
-        setCategories(data.categories || []);
+        const nextCategories = data.categories || [];
+        if (nextCategories.length === 0 && menuItem) {
+          setCategories([menuItem.category]);
+        } else {
+          setCategories(nextCategories);
+        }
       }
     } catch (error) {
       console.error('Erreur lors du chargement des catégories:', error);
+      if (menuItem) {
+        setCategories([menuItem.category]);
+      }
     }
   };
 
@@ -101,8 +120,8 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
       return;
     }
 
-    if (formData.price <= 0) {
-      setError('Le prix doit être supérieur à 0');
+    if (formData.priceClickAndCollect <= 0 || formData.priceDelivery <= 0) {
+      setError('Les prix doivent être supérieurs à 0');
       return;
     }
 
@@ -118,7 +137,9 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
         body: JSON.stringify({
           title: formData.title.trim(),
           description: formData.description.trim(),
-          price: formData.price,
+          price: formData.priceClickAndCollect,
+          priceClickAndCollect: formData.priceClickAndCollect,
+          priceDelivery: formData.priceDelivery,
           categoryId: formData.categoryId,
           image: formData.image.trim(),
           badge: formData.badge.trim().toUpperCase() || undefined,
@@ -171,7 +192,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
           )}
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Title */}
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
@@ -188,16 +209,33 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                 />
               </div>
 
-              {/* Price */}
+              {/* Prix Click & Collect */}
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-                  Prix (€) *
+                <label htmlFor="priceClickAndCollect" className="block text-sm font-medium text-gray-700 mb-1">
+                  Prix Click & Collect (€) *
                 </label>
                 <input
                   type="number"
-                  id="price"
-                  value={formData.price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                  id="priceClickAndCollect"
+                  value={formData.priceClickAndCollect}
+                  onChange={(e) => setFormData(prev => ({ ...prev, priceClickAndCollect: parseFloat(e.target.value) || 0 }))}
+                  required
+                  min="0"
+                  step="0.01"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                />
+              </div>
+
+              {/* Prix Livraison */}
+              <div>
+                <label htmlFor="priceDelivery" className="block text-sm font-medium text-gray-700 mb-1">
+                  Prix Livraison (€) *
+                </label>
+                <input
+                  type="number"
+                  id="priceDelivery"
+                  value={formData.priceDelivery}
+                  onChange={(e) => setFormData(prev => ({ ...prev, priceDelivery: parseFloat(e.target.value) || 0 }))}
                   required
                   min="0"
                   step="0.01"
@@ -339,7 +377,8 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
               {/* Input URL */}
               <div className="space-y-2">
                 <input
-                  type="url"
+                  type="text"
+                  inputMode="url"
                   value={formData.image}
                   onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"

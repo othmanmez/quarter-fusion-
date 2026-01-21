@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import { getCartSubtotal } from '@/lib/pricing';
 
 // Types pour les éléments du menu et la commande
 export interface MenuItem {
@@ -9,6 +10,8 @@ export interface MenuItem {
   title: string;
   description: string;
   price: number;
+  priceClickAndCollect?: number | null;
+  priceDelivery?: number | null;
   category?: string;
   image: string;
   badge?: 'HOT' | 'NEW' | 'TOP';
@@ -194,9 +197,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   };
 
   const getCartTotal = () => {
-    return state.cart.reduce((total, cartItem) => {
-      return total + (cartItem.item.price * cartItem.quantity);
-    }, 0);
+    return getCartSubtotal(state.cart);
   };
 
   const getCartItemCount = () => {

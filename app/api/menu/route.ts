@@ -49,8 +49,18 @@ export async function GET(request: NextRequest) {
       ],
     });
 
+    const normalizedItems = mode
+      ? menuItems.map((item: any) => {
+          const priceByMode =
+            mode === 'click-and-collect'
+              ? item.priceClickAndCollect ?? item.price
+              : item.priceDelivery ?? item.price;
+          return { ...item, price: priceByMode };
+        })
+      : menuItems;
+
     // Grouper par catégorie
-    const menuByCategory = menuItems.reduce((acc: any, item: any) => {
+    const menuByCategory = normalizedItems.reduce((acc: any, item: any) => {
       const categoryName = item.category.name;
       if (!acc[categoryName]) {
         acc[categoryName] = [];
@@ -62,7 +72,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       menu: menuByCategory,
-      items: menuItems,
+      items: normalizedItems,
     });
   } catch (error) {
     console.error('Erreur lors de la récupération du menu:', error);
@@ -89,17 +99,21 @@ export async function POST(request: NextRequest) {
     const { 
       title, 
       description, 
-      price, 
+      price,
+      priceClickAndCollect,
+      priceDelivery,
       categoryId, 
       image, 
       badge,
+      allowDrinkOption = false,
+      drinkPrice,
       availableForClickAndCollect = true,
       availableForDelivery = true,
       available = true 
     } = body;
 
     // Validation
-    if (!title || !description || !price || !categoryId) {
+    if (!title || !description || price === undefined || !categoryId) {
       return NextResponse.json(
         { error: 'Titre, description, prix et catégorie sont requis' },
         { status: 400 }
@@ -109,6 +123,20 @@ export async function POST(request: NextRequest) {
     if (price < 0) {
       return NextResponse.json(
         { error: 'Le prix doit être positif' },
+        { status: 400 }
+      );
+    }
+
+    if (priceClickAndCollect !== undefined && priceClickAndCollect < 0) {
+      return NextResponse.json(
+        { error: 'Le prix Click & Collect doit être positif' },
+        { status: 400 }
+      );
+    }
+
+    if (priceDelivery !== undefined && priceDelivery < 0) {
+      return NextResponse.json(
+        { error: 'Le prix Livraison doit être positif' },
         { status: 400 }
       );
     }
@@ -124,17 +152,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const normalizedClickAndCollect =
+      priceClickAndCollect !== undefined ? parseFloat(priceClickAndCollect) : undefined;
+    const normalizedDelivery =
+      priceDelivery !== undefined ? parseFloat(priceDelivery) : undefined;
+    const basePrice =
+      normalizedClickAndCollect ??
+      normalizedDelivery ??
+      parseFloat(price);
+
+    const parsedDrinkPrice = drinkPrice !== undefined && drinkPrice !== null
+      ? parseFloat(drinkPrice)
+      : undefined;
+    const nextDrinkPrice =
+      parsedDrinkPrice !== undefined && !Number.isNaN(parsedDrinkPrice)
+        ? parsedDrinkPrice
+        : 1.5;
+
     const menuItem = await prisma.menu.create({
       data: {
         title: title.trim(),
         description: description.trim(),
-        price: parseFloat(price),
+        price: basePrice,
+        priceClickAndCollect: normalizedClickAndCollect,
+        priceDelivery: normalizedDelivery,
         categoryId,
         image: image || '/images/placeholder.svg', // Image par défaut si non fournie
         badge: badge ? badge.trim().toUpperCase() : null,
         available,
         availableForClickAndCollect,
         availableForDelivery,
+        allowDrinkOption,
+        drinkPrice: nextDrinkPrice,
       },
       include: {
         category: true,
@@ -153,7 +202,7 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+} 
 
 // DELETE - Supprimer tous les menus
 export async function DELETE(request: NextRequest) {

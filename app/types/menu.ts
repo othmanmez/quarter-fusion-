@@ -10,6 +10,8 @@ export interface MenuItem {
   title: string;
   description: string;
   price: number;
+  priceClickAndCollect?: number | null;
+  priceDelivery?: number | null;
   image: string;
   available: boolean;
   badge?: string;

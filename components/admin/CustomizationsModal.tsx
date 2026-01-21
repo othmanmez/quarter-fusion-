@@ -12,6 +12,7 @@ interface Customization {
   name: string;
   type: 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'TOGGLE';
   required: boolean;
+  maxSelections?: number | null;
   options: CustomizationOption[];
 }
 
@@ -37,6 +38,7 @@ export default function CustomizationsModal({
     name: '',
     type: 'SINGLE_CHOICE',
     required: false,
+    maxSelections: null,
     options: [{ name: '', priceExtra: 0 }]
   });
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -100,6 +102,13 @@ export default function CustomizationsModal({
       return;
     }
 
+    if (formData.type === 'MULTIPLE_CHOICE' && formData.maxSelections !== null && formData.maxSelections !== undefined) {
+      if (Number.isNaN(formData.maxSelections) || formData.maxSelections < 1) {
+        alert('Le nombre maximum de choix doit être supérieur à 0');
+        return;
+      }
+    }
+
     try {
       const url = editingId
         ? `/api/customizations/${editingId}`
@@ -135,6 +144,9 @@ export default function CustomizationsModal({
       name: custom.name,
       type: custom.type,
       required: custom.required,
+      maxSelections: custom.type === 'MULTIPLE_CHOICE'
+        ? (custom.maxSelections ?? null)
+        : null,
       options: [...custom.options]
     });
     setShowAddForm(true);
@@ -168,6 +180,7 @@ export default function CustomizationsModal({
       name: '',
       type: 'SINGLE_CHOICE',
       required: false,
+      maxSelections: null,
       options: [{ name: '', priceExtra: 0 }]
     });
   };
@@ -227,10 +240,15 @@ export default function CustomizationsModal({
                               </span>
                             )}
                             <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">
-                              {custom.type === 'SINGLE_CHOICE' && 'Choix unique'}
-                              {custom.type === 'MULTIPLE_CHOICE' && 'Choix multiples'}
-                              {custom.type === 'TOGGLE' && 'Oui/Non'}
+              {custom.type === 'SINGLE_CHOICE' && 'Choix unique'}
+              {custom.type === 'MULTIPLE_CHOICE' && 'Choix multiples'}
+              {custom.type === 'TOGGLE' && 'Oui/Non'}
                             </span>
+            {custom.type === 'MULTIPLE_CHOICE' && custom.maxSelections && (
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                Max {custom.maxSelections}
+              </span>
+            )}
                           </div>
                           <div className="space-y-1">
                             {custom.options.map((opt, idx) => (
@@ -365,7 +383,7 @@ export default function CustomizationsModal({
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Nom de la personnalisation *
@@ -386,13 +404,45 @@ export default function CustomizationsModal({
                     </label>
                     <select
                       value={formData.type}
-                      onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as any }))}
+                      onChange={(e) => {
+                        const nextType = e.target.value as any;
+                        setFormData(prev => ({
+                          ...prev,
+                          type: nextType,
+                          maxSelections: nextType === 'MULTIPLE_CHOICE' ? prev.maxSelections : null
+                        }));
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
                     >
                       <option value="SINGLE_CHOICE">Choix unique (radio)</option>
                       <option value="MULTIPLE_CHOICE">Choix multiples (checkbox)</option>
                       <option value="TOGGLE">Oui/Non (toggle)</option>
                     </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Max choix (si multiple)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={formData.type === 'MULTIPLE_CHOICE' ? (formData.maxSelections ?? '') : ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormData(prev => ({
+                          ...prev,
+                          maxSelections: value === '' ? null : parseInt(value, 10)
+                        }));
+                      }}
+                      disabled={formData.type !== 'MULTIPLE_CHOICE'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100 disabled:text-gray-400"
+                      placeholder="Ex: 2"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Limite le nombre d'options sélectionnables
+                    </p>
                   </div>
                 </div>
 

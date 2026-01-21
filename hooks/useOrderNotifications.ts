@@ -16,6 +16,8 @@ export function useOrderNotifications({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const audioErrorLogged = useRef<boolean>(false); // Flag pour éviter les logs répétitifs
+  const fetchErrorLogged = useRef<boolean>(false);
+  const consecutiveFailures = useRef<number>(0);
 
   // Initialiser l'audio
   useEffect(() => {
@@ -122,7 +124,18 @@ export function useOrderNotifications({
 
     const checkNewOrders = async () => {
       try {
-        const response = await fetch('/api/orders');
+        if (!navigator.onLine || document.visibilityState === 'hidden') return;
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch('/api/orders', {
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+
+        if (!response.ok) return;
         const data = await response.json();
 
         if (data.success && data.orders) {
@@ -148,8 +161,13 @@ export function useOrderNotifications({
             setLastOrderCount(currentCount);
           }
         }
-      } catch (error) {
-        console.error('Erreur lors de la vérification des commandes:', error);
+      } catch (error: any) {
+        if (error?.name === 'AbortError') return;
+        consecutiveFailures.current += 1;
+        if (consecutiveFailures.current >= 3) {
+          // Désactiver temporairement les logs après plusieurs échecs
+          fetchErrorLogged.current = true;
+        }
       }
     };
 

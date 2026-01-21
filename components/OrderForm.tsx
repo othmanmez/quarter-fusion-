@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getCartItemTotal, getCartItemUnitPrice, getCartSubtotal } from '@/lib/pricing';
 import { CartItem, OrderFormData } from '../app/types/menu';
 
 interface DeliveryCity {
@@ -47,6 +48,29 @@ export default function OrderForm({
   const [selectedCity, setSelectedCity] = useState<DeliveryCity | null>(null);
   const [actualDeliveryFee, setActualDeliveryFee] = useState(deliveryFee);
   const [loadingCities, setLoadingCities] = useState(false);
+
+  const renderCustomizations = (customizations?: any[]) => {
+    if (!Array.isArray(customizations) || customizations.length === 0) return null;
+    return (
+      <div className="mt-1 space-y-1">
+        {customizations.map((custom, idx) => {
+          if (typeof custom === 'string') {
+            return (
+              <p key={`${custom}-${idx}`} className="text-xs text-blue-700">
+                {custom}
+              </p>
+            );
+          }
+          const label = `${custom.name}: ${(custom.selectedOptions || []).join(', ')}`;
+          return (
+            <p key={`${custom.name}-${idx}`} className="text-xs text-blue-700">
+              {label}{custom.priceExtra > 0 ? ` (+${custom.priceExtra.toFixed(2)}€)` : ''}
+            </p>
+          );
+        })}
+      </div>
+    );
+  };
 
   // Charger les villes de livraison
   useEffect(() => {
@@ -344,11 +368,12 @@ export default function OrderForm({
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-900">{cartItem.item.title}</h4>
                   <p className="text-sm text-gray-600">
-                    {cartItem.quantity} × {cartItem.item.price.toFixed(2)}€
+                    {cartItem.quantity} × {getCartItemUnitPrice(cartItem).toFixed(2)}€
                   </p>
+                  {renderCustomizations(cartItem.item.customizations)}
                 </div>
                 <span className="font-semibold text-gray-900">
-                  {(cartItem.item.price * cartItem.quantity).toFixed(2)}€
+                  {getCartItemTotal(cartItem).toFixed(2)}€
                 </span>
               </div>
             ))}
@@ -357,7 +382,7 @@ export default function OrderForm({
           <div className="space-y-2 border-t border-gray-200 pt-4">
             <div className="flex justify-between text-sm">
               <span>Sous-total :</span>
-              <span>{totalPrice.toFixed(2)}€</span>
+              <span>{getCartSubtotal(cart).toFixed(2)}€</span>
             </div>
             {actualDeliveryFee > 0 && (
               <div className="flex justify-between text-sm">

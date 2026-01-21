@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useOrder } from '../../contexts/OrderContext';
+import { getCartItemTotal, getCartItemUnitPrice, getCartSubtotal } from '@/lib/pricing';
 
 interface OrderSummaryProps {
   onNext: () => void;
@@ -11,10 +12,31 @@ interface OrderSummaryProps {
 export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
   const { state, removeFromCart, updateQuantity } = useOrder();
 
+  const renderCustomizations = (customizations?: any[]) => {
+    if (!Array.isArray(customizations) || customizations.length === 0) return null;
+    return (
+      <div className="mt-2 space-y-1">
+        {customizations.map((custom, idx) => {
+          if (typeof custom === 'string') {
+            return (
+              <p key={`${custom}-${idx}`} className="text-xs text-blue-700">
+                {custom}
+              </p>
+            );
+          }
+          const label = `${custom.name}: ${(custom.selectedOptions || []).join(', ')}`;
+          return (
+            <p key={`${custom.name}-${idx}`} className="text-xs text-blue-700">
+              {label}{custom.priceExtra > 0 ? ` (+${custom.priceExtra.toFixed(2)}€)` : ''}
+            </p>
+          );
+        })}
+      </div>
+    );
+  };
+
   // Calculer le sous-total
-  const subtotal = state.cart.reduce((total, cartItem) => {
-    return total + (cartItem.item.price * cartItem.quantity);
-  }, 0);
+  const subtotal = getCartSubtotal(state.cart);
 
   // Calculer les frais de livraison
   const deliveryFee = state.orderMode === 'delivery' ? 2.50 : 0;
@@ -63,8 +85,9 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                       {cartItem.item.description}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
-                      {cartItem.item.price.toFixed(2)}€ l'unité
+                      {getCartItemUnitPrice(cartItem).toFixed(2)}€ l'unité
                     </p>
+                    {renderCustomizations(cartItem.item.customizations)}
                   </div>
 
                   <div className="flex items-center space-x-4">
@@ -96,7 +119,7 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                     {/* Prix total pour cet article */}
                     <div className="text-right">
                       <p className="font-semibold text-gray-900">
-                        {(cartItem.item.price * cartItem.quantity).toFixed(2)}€
+                        {getCartItemTotal(cartItem).toFixed(2)}€
                       </p>
                     </div>
 
