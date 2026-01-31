@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { ImageUploadField } from '@/app/components/admin/ImageUploadField';
 
 interface MenuItem {
   id: string;
@@ -359,35 +360,12 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
 
             {/* Image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image du plat (optionnel)
-              </label>
-              
-              {/* Preview de l'image actuelle */}
-              {formData.image && (
-                <div className="mb-3">
-                  <img 
-                    src={formData.image} 
-                    alt="Aperçu" 
-                    className="h-32 w-32 object-cover rounded-lg border-2 border-gray-200"
-                  />
-                </div>
-              )}
-              
-              {/* Input URL */}
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  inputMode="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
-                  placeholder="URL de l'image (ex: https://example.com/image.jpg)"
-                />
-                <p className="text-xs text-gray-500">
-                  💡 Conseil : Utilisez un service comme <a href="https://imgur.com" target="_blank" className="text-red-600 hover:underline">Imgur</a> ou <a href="https://postimages.org" target="_blank" className="text-red-600 hover:underline">PostImages</a> pour héberger vos images gratuitement
-                </p>
-              </div>
+              <ImageUploadField
+                label="Image du plat (optionnel)"
+                value={formData.image}
+                onChange={(nextUrl) => setFormData(prev => ({ ...prev, image: nextUrl }))}
+                helpText="Choisissez un fichier et cliquez sur Uploader (Cloudinary)."
+              />
             </div>
 
             {/* Availability Options */}

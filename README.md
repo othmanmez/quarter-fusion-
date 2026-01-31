@@ -400,6 +400,28 @@ ADMIN_EMAIL=...
 
 ---
 
+## 🖼️ Images (menus & boissons)
+
+Les **boissons** sont des items de menu (catégorie `boissons`) : elles utilisent donc le même champ `image`.
+
+### **Option la plus simple en production (Netlify) : Cloudinary**
+
+1. Créez un compte Cloudinary et récupérez vos identifiants.
+2. Ajoutez ces variables dans **Netlify → Site settings → Environment variables** :
+
+```env
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+```
+
+3. Dans l'admin, sur **Nouveau Menu** ou **Modifier le Menu**, utilisez le bouton **Uploader** dans le champ Image.
+   - L'admin upload l'image via `/api/upload` (protégé admin) et colle automatiquement l'URL Cloudinary dans le champ `image`.
+
+💡 En local, vous pouvez aussi utiliser des chemins type `/images/mon-produit.jpg` (fichiers dans `public/images/`).
+
+---
+
 ## 🔒 Sécurité
 
 ### **Bonnes pratiques implémentées**

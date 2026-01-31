@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ImageUploadField } from '@/app/components/admin/ImageUploadField';
 
 interface Category {
   id: string;
@@ -334,31 +335,12 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
 
             {/* Image URL */}
             <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                URL de l'image
-              </label>
-              <input
-                type="text"
-                inputMode="url"
-                id="image"
-                name="image"
+              <ImageUploadField
+                label="Image"
                 value={formData.image}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
-                placeholder="https://example.com/image.jpg"
+                onChange={(nextUrl) => setFormData(prev => ({ ...prev, image: nextUrl }))}
+                helpText="Collez une URL ou uploadez un fichier (Cloudinary)."
               />
-              {formData.image && (
-                <div className="mt-2">
-                  <img
-                    src={formData.image}
-                    alt="Aperçu"
-                    className="h-32 w-32 object-cover rounded-lg"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/images/placeholder.svg';
-                    }}
-                  />
-                </div>
-              )}
             </div>
 
             {/* Badge */}

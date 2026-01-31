@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
+import { unstable_noStore as noStore } from 'next/cache';
 
 interface MenuItem {
   id: string;
@@ -75,8 +76,8 @@ function BestSellersSkeleton() {
 
 async function getBestSellers(): Promise<MenuItem[]> {
   try {
-    // Délai artificiel pour tester le skeleton (à supprimer en production)
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Toujours recharger depuis la base (sinon en prod ça peut rester “bloqué” avec un cache)
+    noStore();
     
     // Appeler directement Prisma au lieu de fetch pour éviter les problèmes de connexion
     // C'est la même logique que dans app/api/menu/best-sellers/route.ts
@@ -100,7 +101,7 @@ async function getBestSellers(): Promise<MenuItem[]> {
         { badge: 'asc' }, // HOT first, then NEW, then TOP
         { createdAt: 'desc' }
       ],
-      take: 12 // Limit to 12 best-sellers on homepage
+      take: 3 // 3 best-sellers sur la page d'accueil
     });
 
     return bestSellers.map((item: any) => ({
@@ -171,8 +172,15 @@ async function BestSellersContent() {
                 )}
                 
                 {/* Image */}
-                <div className="h-48 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center relative">
-                  <div className="text-red-600 text-4xl">🍔</div>
+                <div className="h-48 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center relative overflow-hidden">
+                  <img
+                    src={item.image || '/images/placeholder.svg'}
+                    alt={item.title}
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/images/placeholder.svg';
+                    }}
+                  />
                 </div>
               </div>
 

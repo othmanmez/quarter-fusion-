@@ -4,6 +4,8 @@ import { v2 as cloudinary } from 'cloudinary';
 
 // Configuration pour Next.js - route dynamique
 export const dynamic = 'force-dynamic';
+// Force Node.js runtime (Buffer + Cloudinary)
+export const runtime = 'nodejs';
 
 // Configuration Cloudinary
 cloudinary.config({
@@ -14,6 +16,20 @@ cloudinary.config({
 
 export async function POST(request: NextRequest) {
   try {
+    if (
+      !process.env.CLOUDINARY_CLOUD_NAME ||
+      !process.env.CLOUDINARY_API_KEY ||
+      !process.env.CLOUDINARY_API_SECRET
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Cloudinary n'est pas configuré. Ajoutez CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET dans les variables d'environnement (Netlify ou .env.local), puis redeploy/redémarrez.",
+        },
+        { status: 500 }
+      );
+    }
+
     // Vérifier l'authentification admin
     const session = await auth();
     if (!session || session.user?.role !== 'admin') {

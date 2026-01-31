@@ -5,6 +5,10 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Netlify Next.js runtime (API routes, middleware, etc.)
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 # Assurez-vous que Prisma est généré avant le build
 # (déjà dans package.json : "build": "prisma generate && next build")
 
