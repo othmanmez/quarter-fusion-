@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import { unstable_noStore as noStore } from 'next/cache';
+import Image from 'next/image';
 
 interface MenuItem {
   id: string;
@@ -172,14 +173,13 @@ async function BestSellersContent() {
                 )}
                 
                 {/* Image */}
-                <div className="h-48 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center relative overflow-hidden">
-                  <img
+                <div className="h-48 bg-gradient-to-br from-red-100 to-red-200 relative overflow-hidden">
+                  <Image
                     src={item.image || '/images/placeholder.svg'}
                     alt={item.title}
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/images/placeholder.svg';
-                    }}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 </div>
               </div>

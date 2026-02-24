@@ -77,10 +77,13 @@ export default function RevenueChart() {
                 borderRadius: '8px',
                 boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
               }}
-              formatter={(value: number, name: string) => [
-                name === 'revenue' ? `${value.toFixed(2)}€` : value,
-                name === 'revenue' ? 'Chiffre d\'affaires' : 'Commandes'
-              ]}
+              formatter={(value, name) => {
+                const num = typeof value === 'number' ? value : 0;
+                return [
+                  name === 'revenue' ? `${num.toFixed(2)}€` : num,
+                  name === 'revenue' ? 'Chiffre d\'affaires' : 'Commandes'
+                ];
+              }}
               labelStyle={{ color: '#374151', fontWeight: 'medium' }}
             />
             <Line 

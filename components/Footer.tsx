@@ -172,7 +172,7 @@ export default function Footer() {
               </a>
               {' & '}
               <a 
-                href="a-rajouter" 
+                href="https://portfolioothmn.netlify.app/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-red-400 transition-colors duration-200"

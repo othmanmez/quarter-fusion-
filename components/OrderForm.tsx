@@ -370,7 +370,11 @@ export default function OrderForm({
                   <p className="text-sm text-gray-600">
                     {cartItem.quantity} × {getCartItemUnitPrice(cartItem).toFixed(2)}€
                   </p>
-                  {renderCustomizations(cartItem.item.customizations)}
+                  {cartItem.customizations && cartItem.customizations.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {cartItem.customizations.join(', ')}
+                    </p>
+                  )}
                 </div>
                 <span className="font-semibold text-gray-900">
                   {getCartItemTotal(cartItem).toFixed(2)}€
