@@ -73,8 +73,8 @@ export async function PUT(
       drinkPrice,
     } = body;
 
-    // Validation (image non obligatoire lors de la modification)
-    if (!title || !description || price === undefined || !categoryId) {
+    // Validation (description et image non obligatoires lors de la modification)
+    if (!title || price === undefined || !categoryId) {
       return NextResponse.json(
         { error: 'Tous les champs sont requis' },
         { status: 400 }
@@ -147,7 +147,7 @@ export async function PUT(
       where: { id: id },
       data: {
         title: title.trim(),
-        description: description.trim(),
+        description: description ? description.trim() : '',
         price: basePrice,
         priceClickAndCollect: normalizedClickAndCollect,
         priceDelivery: normalizedDelivery,

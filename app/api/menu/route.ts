@@ -112,10 +112,10 @@ export async function POST(request: NextRequest) {
       available = true 
     } = body;
 
-    // Validation
-    if (!title || !description || price === undefined || !categoryId) {
+    // Validation (description optionnelle pour les boissons)
+    if (!title || price === undefined || !categoryId) {
       return NextResponse.json(
-        { error: 'Titre, description, prix et catégorie sont requis' },
+        { error: 'Titre, prix et catégorie sont requis' },
         { status: 400 }
       );
     }
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
     const menuItem = await prisma.menu.create({
       data: {
         title: title.trim(),
-        description: description.trim(),
+        description: description ? description.trim() : '',
         price: basePrice,
         priceClickAndCollect: normalizedClickAndCollect,
         priceDelivery: normalizedDelivery,
