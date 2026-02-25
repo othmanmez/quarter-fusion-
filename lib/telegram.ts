@@ -46,41 +46,58 @@ function formatOrderForTelegram(order: TelegramOrderNotification): string {
 
   lines.push('🍔 Quarter Fusion');
   lines.push('🔔 NOUVELLE COMMANDE À PRÉPARER');
+  lines.push('────────────────────────');
+  lines.push(`📌 Numéro : ${order.orderNumber}`);
+  lines.push(`🛒 Type : ${order.isDelivery ? 'Livraison' : 'Click & Collect'}`);
+  lines.push(`💳 Paiement : ${order.paymentMethod}`);
+  lines.push(`💰 Total : ${order.total.toFixed(2)}€`);
   lines.push('');
-  lines.push(`📌 Numéro: ${order.orderNumber}`);
-  lines.push(`🛒 Type: ${order.isDelivery ? 'Livraison' : 'Click & Collect'}`);
-  lines.push(`💳 Paiement: ${order.paymentMethod}`);
-  lines.push(`💰 Total: ${order.total.toFixed(2)}€`);
-  lines.push('');
-  lines.push(`👤 Client: ${order.customerName}`);
-  if (order.customerPhone) lines.push(`📞 Tél: ${order.customerPhone}`);
+  lines.push('👤 CLIENT');
+  lines.push(`- Nom : ${order.customerName}`);
+  if (order.customerPhone) lines.push(`- Tél : ${order.customerPhone}`);
   if (order.isDelivery) {
-    const addrParts = [order.deliveryAddress, order.city].map((p) => (p ?? '').trim()).filter(Boolean);
-    if (addrParts.length) lines.push(`📍 Adresse: ${addrParts.join(', ')}`);
+    const addr = (order.deliveryAddress ?? '').trim();
+    const city = (order.city ?? '').trim();
+    if (addr || city) {
+      lines.push('- Adresse :');
+      if (addr) lines.push(`  ${addr}`);
+      if (city) lines.push(`  ${city}`);
+    }
   }
   lines.push('');
-  lines.push('🧾 Détails:');
+  lines.push('🧾 COMMANDE');
   for (const item of order.items) {
-    const base = `- x${item.quantity} ${item.title}`;
     const extraTotal = (item.customizations || []).reduce((sum, c) => sum + (typeof c.priceExtra === 'number' ? c.priceExtra : 0), 0);
     const unit = (item.price + extraTotal).toFixed(2);
-    lines.push(`${base} (${unit}€ / unité)`);
+    lines.push(`• x${item.quantity} ${item.title}`);
+    lines.push(`  Prix unité : ${unit}€`);
 
-    const customs = (item.customizations || [])
-      .map((c) => {
-        const opts = (c.selectedOptions || []).filter(Boolean);
-        if (opts.length) return `${c.name}: ${opts.join(', ')}`;
-        return c.name;
-      })
-      .filter(Boolean);
-    if (customs.length) lines.push(`  • ${customs.join(' | ')}`);
+    const customs = (item.customizations || []).filter((c) => c && typeof c === 'object');
+    if (customs.length) {
+      lines.push('  Personnalisations :');
+      for (const c of customs) {
+        const name = String(c.name ?? '').trim();
+        if (!name) continue;
+        const opts = Array.isArray(c.selectedOptions) ? c.selectedOptions.filter(Boolean) : [];
+        if (opts.length) {
+          lines.push(`  - ${name} : ${opts.join(', ')}`);
+        } else {
+          lines.push(`  - ${name}`);
+        }
+      }
+    }
+
+    lines.push('');
   }
 
   if (order.notes && order.notes.trim()) {
+    lines.push('📝 NOTES');
+    lines.push(order.notes.trim());
     lines.push('');
-    lines.push(`📝 Notes: ${order.notes.trim()}`);
   }
 
+  // Eviter l'espace final inutile
+  while (lines.length > 0 && lines[lines.length - 1] === '') lines.pop();
   return lines.join('\n');
 }
 
