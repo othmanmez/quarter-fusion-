@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { notifyTelegramNewOrder } from '@/lib/telegram';
 
 // Configuration pour Next.js - route dynamique
 export const dynamic = 'force-dynamic';
@@ -374,6 +375,31 @@ export async function POST(request: NextRequest) {
         notes: orderData.formData.notes || undefined
       }
     });
+
+    // Notification Telegram (non bloquante)
+    try {
+      await notifyTelegramNewOrder({
+        orderNumber: savedOrder.orderNumber,
+        isDelivery: savedOrder.isDelivery,
+        total: savedOrder.total,
+        paymentMethod: savedOrder.paymentMethod,
+        customerName: savedOrder.customerName,
+        customerPhone: savedOrder.customerPhone,
+        deliveryAddress: savedOrder.deliveryAddress,
+        city: savedOrder.city,
+        notes: savedOrder.notes,
+        items: (savedOrder.items as any[]).map((it) => ({
+          title: String(it?.title ?? ''),
+          quantity: Number(it?.quantity ?? 0),
+          price: Number(it?.price ?? 0),
+          customizations: Array.isArray(it?.customizations) ? it.customizations : [],
+        })),
+        createdAt: savedOrder.createdAt,
+      });
+      console.log('✅ [TELEGRAM] Notification envoyée');
+    } catch (err) {
+      console.error('❌ [TELEGRAM] Erreur notification:', err);
+    }
 
     // Envoi email au client (non bloquant : la commande est déjà enregistrée)
     let clientEmailResult: any = null;
