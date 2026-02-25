@@ -6,9 +6,10 @@ import CustomizationModal, { SelectedCustomization } from './CustomizationModal'
 
 interface MenuSelectionProps {
   onNext: () => void;
+  mode?: 'click-and-collect' | 'delivery';
 }
 
-export default function MenuSelection({ onNext }: MenuSelectionProps) {
+export default function MenuSelection({ onNext, mode }: MenuSelectionProps) {
   const { addToCart } = useOrder();
   const [menu, setMenu] = useState<Record<string, MenuItem[]>>({});
   const [loading, setLoading] = useState(true);
@@ -19,12 +20,13 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
   const [showCustomizationModal, setShowCustomizationModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
-  // Récupérer le menu depuis l'API
+  // Récupérer le menu depuis l'API avec le bon mode pour avoir les bons prix
   useEffect(() => {
     const fetchMenu = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/menu');
+        const apiMode = mode === 'delivery' ? 'delivery' : 'click-and-collect';
+        const response = await fetch(`/api/menu?mode=${apiMode}`);
         const data = await response.json();
 
         if (data.success) {

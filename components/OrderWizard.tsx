@@ -216,7 +216,7 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
           {/* Contenu principal */}
           <div className="lg:col-span-2">
             {state.currentStep === 1 && (
-              <MenuSelection onNext={handleNext} />
+              <MenuSelection onNext={handleNext} mode={mode} />
             )}
             
             {state.currentStep === 2 && (
@@ -263,8 +263,8 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                 <>
                   {/* Liste des articles */}
                   <div className="space-y-3 mb-4">
-                    {state.cart.map((cartItem, index) => (
-                      <div key={`cart-item-${cartItem.item._id || ''}-${index}`} className="flex justify-between items-center">
+                    {state.cart.map((cartItem) => (
+                      <div key={cartItem.cartItemId} className="flex justify-between items-center">
                         <div className="flex-1">
                           <p className="text-sm font-medium text-black">
                             {cartItem.item.title}
@@ -280,14 +280,14 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                                 dispatch({ 
                                   type: 'UPDATE_QUANTITY', 
                                   payload: { 
-                                    itemId: cartItem.item._id || '', 
+                                    cartItemId: cartItem.cartItemId, 
                                     quantity: cartItem.quantity - 1 
                                   } 
                                 });
                               } else {
                                 dispatch({ 
                                   type: 'REMOVE_FROM_CART', 
-                                  payload: cartItem.item._id || '' 
+                                  payload: cartItem.cartItemId
                                 });
                               }
                             }}
@@ -303,7 +303,7 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                               dispatch({ 
                                 type: 'UPDATE_QUANTITY', 
                                 payload: { 
-                                  itemId: cartItem.item._id || '', 
+                                  cartItemId: cartItem.cartItemId, 
                                   quantity: cartItem.quantity + 1 
                                 } 
                               });
