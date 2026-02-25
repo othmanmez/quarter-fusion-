@@ -82,6 +82,7 @@ export default function CustomizationModal({
         setModePrice(item.price);
       }
       // Reset états
+      setQuantity(1);
       setDrinkWanted(false);
       setSelectedDrink('');
     }
