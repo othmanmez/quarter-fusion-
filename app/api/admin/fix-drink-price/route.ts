@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const resultNull = await prisma.menu.updateMany({
       where: {
         allowDrinkOption: true,
-        drinkPrice: null,
+        drinkPrice: { equals: null },
       },
       data: { drinkPrice: 2 },
     });
