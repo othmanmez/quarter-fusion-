@@ -96,26 +96,24 @@ export default function ClientMenuInteraction({ menuItems, categories, onAddToCa
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/0" />
-              
-              {/* Icône de personnalisation */}
-              <button
-                onClick={() => toggleCustomization(item.id)}
-                className="absolute top-3 right-3 w-8 h-8 bg-white bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all duration-200 shadow-sm"
-                title="Personnaliser"
-              >
-                <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                </svg>
-              </button>
             </div>
 
             {/* Contenu */}
             <div className="p-6">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
-                <span className="text-xl font-bold text-red-700">
-                  {item.price.toFixed(2)}€
-                </span>
+                <div className="text-right">
+                  <div className="text-xl font-bold text-red-700">
+                    {item.price.toFixed(2)}€
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleCustomization(item.id)}
+                    className="text-xs text-gray-700 hover:text-black underline underline-offset-2"
+                  >
+                    Personnalisation
+                  </button>
+                </div>
               </div>
               
               <p className="text-black text-sm mb-4 leading-relaxed">
