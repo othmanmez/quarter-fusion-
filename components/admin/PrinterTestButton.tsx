@@ -63,7 +63,7 @@ export default function PrinterTestButton() {
         <h2 className="text-lg font-semibold text-gray-900 flex items-center">
           🖨️ Test d'imprimante
         </h2>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm text-black mt-1">
           Testez votre imprimante thermique Epson WiFi
         </p>
       </div>
@@ -97,7 +97,7 @@ export default function PrinterTestButton() {
             {printerStatus.interface && (
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-700">Interface:</span>
-                <span className="text-sm text-gray-600 font-mono">
+                <span className="text-sm text-black font-mono">
                   {printerStatus.interface}
                 </span>
               </div>

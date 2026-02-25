@@ -76,7 +76,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               {onClose && (
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-400 hover:text-black transition-colors"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -84,7 +84,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </button>
               )}
             </div>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-black">
               Accédez au panneau d'administration de Quarter Fusion
             </p>
           </div>

@@ -206,7 +206,7 @@ export default function AdminOrdersPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-600 text-lg font-medium mb-2">Erreur</div>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-black mb-4">{error}</p>
           <button
             onClick={fetchOrders}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -226,7 +226,7 @@ export default function AdminOrdersPage() {
           <div className="flex justify-between items-center py-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Gestion des Commandes</h1>
-              <p className="text-gray-600">
+              <p className="text-black">
                 Gérez et suivez toutes les commandes
               </p>
             </div>
@@ -301,7 +301,7 @@ export default function AdminOrdersPage() {
           {filteredOrders.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-400 text-6xl mb-4">📋</div>
-              <h3 className="text-xl font-medium text-gray-600 mb-2">
+              <h3 className="text-xl font-medium text-black mb-2">
                 Aucune commande trouvée
               </h3>
               <p className="text-gray-500">
@@ -331,7 +331,7 @@ export default function AdminOrdersPage() {
                           {order.isDelivery ? '🚚 Livraison' : '🏪 Click & Collect'}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-black">
                         <p><strong>Client:</strong> {order.customerName}</p>
                         <p><strong>Téléphone:</strong> {order.customerPhone}</p>
                         {order.isDelivery && order.deliveryAddress && (
@@ -344,7 +344,7 @@ export default function AdminOrdersPage() {
                       <div className="text-2xl font-bold text-gray-900 mb-2">
                         {order.total.toFixed(2)}€
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-black">
                         {order.paymentMethod === 'ESPECES' ? '💵 Espèces' : '💳 Carte'}
                       </div>
                     </div>
@@ -397,7 +397,7 @@ export default function AdminOrdersPage() {
                                 {item.quantity}x {item.title}
                               </div>
                               {item.description && (
-                                <div className="text-sm text-gray-600">{item.description}</div>
+                                <div className="text-sm text-black">{item.description}</div>
                               )}
                               {item.customizations && item.customizations.length > 0 && (
                                 <div className="text-xs text-blue-600 mt-1">

@@ -7,7 +7,7 @@ export default function Navbar() {
 
   const navigation = [
     { name: "🏠 Accueil", href: "/" },
-    { name: "🥡 Click & Collect", href: "/click-and-collect" },
+    { name: "🍽️ Menu", href: "/click-and-collect" },
     { name: "🚗 Livraison", href: "/livraison" },
     { name: "📞 Contact", href: "/contact" }
   ];

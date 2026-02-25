@@ -162,7 +162,7 @@ export default function DeliveryCitiesManager() {
           <h2 className="text-lg font-semibold text-gray-900">
             🚗 Villes de livraison
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-black mt-1">
             Gérez les villes desservies et leurs frais de livraison
           </p>
         </div>
@@ -211,7 +211,7 @@ export default function DeliveryCitiesManager() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className="font-medium text-gray-900">{city.name}</span>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                    <td className="px-4 py-3 whitespace-nowrap text-black">
                       {city.postalCode || '-'}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -219,7 +219,7 @@ export default function DeliveryCitiesManager() {
                         {city.deliveryFee.toFixed(2)}€
                       </span>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-gray-600">
+                    <td className="px-4 py-3 whitespace-nowrap text-black">
                       {city.minOrder ? `${city.minOrder.toFixed(2)}€` : '-'}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">

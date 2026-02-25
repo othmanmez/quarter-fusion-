@@ -80,30 +80,30 @@ async function getBestSellers(): Promise<MenuItem[]> {
     // Toujours recharger depuis la base (sinon en prod ça peut rester “bloqué” avec un cache)
     noStore();
     
-    // Appeler directement Prisma au lieu de fetch pour éviter les problèmes de connexion
-    // C'est la même logique que dans app/api/menu/best-sellers/route.ts
-    const bestSellers = await prisma.menu.findMany({
-      where: {
-        badge: {
-          in: ['HOT', 'NEW', 'TOP']
-        },
-        available: true
-      },
+    // Priorité : menus explicitement marqués bestseller par l'admin
+    let bestSellers = await prisma.menu.findMany({
+      where: { isBestSeller: true },
       include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true
-          }
-        }
+        category: { select: { id: true, name: true, slug: true } }
       },
-      orderBy: [
-        { badge: 'asc' }, // HOT first, then NEW, then TOP
-        { createdAt: 'desc' }
-      ],
-      take: 3 // 3 best-sellers sur la page d'accueil
+      orderBy: { updatedAt: 'desc' },
+      take: 3,
     });
+
+    // Fallback si aucun bestseller défini : utiliser les badges
+    if (bestSellers.length === 0) {
+      bestSellers = await prisma.menu.findMany({
+        where: {
+          badge: { in: ['HOT', 'NEW', 'TOP'] },
+          available: true,
+        },
+        include: {
+          category: { select: { id: true, name: true, slug: true } }
+        },
+        orderBy: [{ badge: 'asc' }, { createdAt: 'desc' }],
+        take: 3,
+      });
+    }
 
     return bestSellers.map((item: any) => ({
       ...item,
@@ -126,7 +126,7 @@ async function BestSellersContent() {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Nos <span className="text-red-700">Best-Sellers</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-black max-w-3xl mx-auto">
               Découvrez nos plats les plus populaires, préparés avec passion et des ingrédients frais
             </p>
           </div>
@@ -146,7 +146,7 @@ async function BestSellersContent() {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Nos <span className="text-red-700">Best-Sellers</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-black max-w-3xl mx-auto">
             Découvrez nos plats les plus populaires, préparés avec passion et des ingrédients frais
           </p>
         </div>
@@ -189,7 +189,7 @@ async function BestSellersContent() {
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
                   {item.title}
                 </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                <p className="text-black mb-4 text-sm leading-relaxed">
                   {item.description}
                 </p>
                 <div className="flex justify-between items-center">

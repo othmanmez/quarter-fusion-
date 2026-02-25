@@ -10,7 +10,7 @@ export default function Steps() {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Notre Snack en <span className="text-red-700">3 étapes</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-black max-w-3xl mx-auto">
             Simple, rapide et délicieux. Voici comment nous préparons votre commande
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function Steps() {
               <h3 className="text-2xl font-bold text-gray-900 mb-3">
                 {step.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-black leading-relaxed">
                 {step.description}
               </p>
             </div>

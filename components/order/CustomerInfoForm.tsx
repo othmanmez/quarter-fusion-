@@ -1,11 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useOrder } from '../../contexts/OrderContext';
 import { getCartSubtotal } from '@/lib/pricing';
 
+interface BanFeature {
+  properties: {
+    label: string;
+    housenumber?: string;
+    street?: string;
+    postcode: string;
+    city: string;
+    context: string;
+    type: string;
+    score: number;
+  };
+}
+
 interface CustomerInfoFormProps {
   onConfirm: (orderData: any) => void;
+  onSendOtp: (email: string, prenom: string, orderData: any) => Promise<void>;
   onPrev: () => void;
   mode: 'click-and-collect' | 'delivery';
   isLoading: boolean;
@@ -27,12 +41,20 @@ interface DeliveryCity {
   active: boolean;
 }
 
-export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }: CustomerInfoFormProps) {
+export default function CustomerInfoForm({ onConfirm, onSendOtp, onPrev, mode, isLoading }: CustomerInfoFormProps) {
   const { state, dispatch } = useOrder();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [deliveryCities, setDeliveryCities] = useState<DeliveryCity[]>([]);
   const [selectedCityData, setSelectedCityData] = useState<DeliveryCity | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Autocomplétion adresse BAN
+  const [addressSuggestions, setAddressSuggestions] = useState<BanFeature[]>([]);
+  const [addressVerified, setAddressVerified] = useState(false);
+  const [addressSearching, setAddressSearching] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const addressDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
 
   // Récupérer les villes de livraison
   useEffect(() => {
@@ -74,6 +96,71 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
     }
   }, [state.customerInfo.deliveryCity, deliveryCities]);
 
+  // Fermer les suggestions en cliquant ailleurs
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Recherche d'adresse via API Adresse (BAN) avec debounce
+  const searchAddress = useCallback((query: string) => {
+    if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
+
+    if (query.length < 5) {
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    addressDebounceRef.current = setTimeout(async () => {
+      setAddressSearching(true);
+      try {
+        // Restriction géographique : département 95 (Val-d'Oise) + limitrophe
+        const params = new URLSearchParams({
+          q: query,
+          limit: '6',
+          type: 'housenumber',
+        });
+        const res = await fetch(`https://api-adresse.data.gouv.fr/search/?${params}`);
+        const data = await res.json();
+        const features: BanFeature[] = (data.features || []).filter(
+          (f: BanFeature) => f.properties.score > 0.4
+        );
+        setAddressSuggestions(features);
+        setShowSuggestions(features.length > 0);
+      } catch {
+        setAddressSuggestions([]);
+      } finally {
+        setAddressSearching(false);
+      }
+    }, 350);
+  }, []);
+
+  // Sélection d'une adresse dans la liste
+  const handleSelectAddress = (feature: BanFeature) => {
+    const { label, postcode, city } = feature.properties;
+    // Remplir l'adresse (numéro + rue)
+    const streetPart = label.replace(`, ${postcode} ${city}`, '').replace(`, ${city}`, '').trim();
+    dispatch({ type: 'UPDATE_CUSTOMER_INFO', payload: { deliveryAddress: streetPart } });
+    // Auto-sélectionner la ville si elle correspond à une ville de livraison
+    const matchedCity = deliveryCities.find(
+      c => c.name.toLowerCase() === city.toLowerCase() ||
+           (c.postalCode && c.postalCode === postcode)
+    );
+    if (matchedCity) {
+      dispatch({ type: 'UPDATE_CUSTOMER_INFO', payload: { deliveryCity: matchedCity.name } });
+    }
+    setAddressSuggestions([]);
+    setShowSuggestions(false);
+    setAddressVerified(true);
+    setErrors(prev => ({ ...prev, deliveryAddress: '', deliveryCity: '' }));
+  };
+
   // Validation des champs
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -101,6 +188,8 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
     if (mode === 'delivery') {
       if (!state.customerInfo.deliveryAddress?.trim()) {
         newErrors.deliveryAddress = 'L\'adresse de livraison est requise';
+      } else if (!addressVerified) {
+        newErrors.deliveryAddress = 'Veuillez sélectionner une adresse dans la liste pour la valider';
       }
       if (!state.customerInfo.deliveryCity?.trim()) {
         newErrors.deliveryCity = 'La ville de livraison est requise';
@@ -118,21 +207,27 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
       payload: { [field]: value }
     });
 
+    // Si on modifie l'adresse manuellement, la dévalider
+    if (field === 'deliveryAddress') {
+      setAddressVerified(false);
+      searchAddress(value);
+    }
+
     // Effacer l'erreur si le champ est maintenant valide
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  // Soumission du formulaire
-  const handleSubmit = (e: React.FormEvent) => {
+  // Soumission du formulaire → envoie l'OTP
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
       return;
     }
 
-    // Préparer les données de la commande dans le format attendu par l'API
+    // Préparer les données de la commande
     const orderData = {
       cart: state.cart.map(cartItem => ({
         item: {
@@ -159,17 +254,18 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
       type: mode === 'delivery' ? 'livraison' : 'click-and-collect'
     };
 
-    onConfirm(orderData);
+    // Envoyer l'OTP par email au lieu de confirmer directement
+    await onSendOtp(state.customerInfo.email, state.customerInfo.firstName, orderData);
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md">
       {/* En-tête */}
       <div className="p-6 border-b">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-black mb-2">
           Vos informations
         </h2>
-        <p className="text-gray-600">
+        <p className="text-black">
           Remplissez vos coordonnées pour finaliser votre commande
         </p>
       </div>
@@ -179,7 +275,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Prénom */}
           <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="firstName" className="block text-sm font-medium text-black mb-2">
               Prénom *
             </label>
             <input
@@ -199,7 +295,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
 
           {/* Nom */}
           <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="lastName" className="block text-sm font-medium text-black mb-2">
               Nom *
             </label>
             <input
@@ -219,7 +315,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
 
           {/* Téléphone */}
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="phone" className="block text-sm font-medium text-black mb-2">
               Téléphone *
             </label>
             <input
@@ -239,7 +335,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
               Email *
             </label>
             <input
@@ -259,7 +355,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
 
           {/* Moyen de paiement */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Moyen de paiement *
             </label>
             <div className="flex space-x-4">
@@ -272,7 +368,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
                   onChange={(e) => handleInputChange('paymentMethod', e.target.value)}
                   className="mr-2 text-red-600 focus:ring-red-500"
                 />
-                <span className="text-sm text-gray-700">Espèces</span>
+                <span className="text-sm text-black">Espèces</span>
               </label>
               <label className="flex items-center">
                 <input
@@ -283,7 +379,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
                   onChange={(e) => handleInputChange('paymentMethod', e.target.value)}
                   className="mr-2 text-red-600 focus:ring-red-500"
                 />
-                <span className="text-sm text-gray-700">Carte bancaire</span>
+                <span className="text-sm text-black">Carte bancaire</span>
               </label>
             </div>
           </div>
@@ -292,26 +388,90 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
           {mode === 'delivery' && (
             <>
               <div className="md:col-span-2">
-                <label htmlFor="deliveryAddress" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="deliveryAddress" className="block text-sm font-medium text-black mb-2">
                   Adresse de livraison *
                 </label>
-                <input
-                  type="text"
-                  id="deliveryAddress"
-                  value={state.customerInfo.deliveryAddress || ''}
-                  onChange={(e) => handleInputChange('deliveryAddress', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
-                    errors.deliveryAddress ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Numéro et nom de rue"
-                />
+                <div className="relative" ref={suggestionsRef}>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="deliveryAddress"
+                      value={state.customerInfo.deliveryAddress || ''}
+                      onChange={(e) => handleInputChange('deliveryAddress', e.target.value)}
+                      onFocus={() => addressSuggestions.length > 0 && setShowSuggestions(true)}
+                      autoComplete="off"
+                      className={`w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+                        errors.deliveryAddress
+                          ? 'border-red-500'
+                          : addressVerified
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-300'
+                      }`}
+                      placeholder="Tapez votre adresse (ex: 6 passage de l'aurore)"
+                    />
+                    {/* Indicateur état */}
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {addressSearching && (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500" />
+                      )}
+                      {addressVerified && !addressSearching && (
+                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Liste de suggestions */}
+                  {showSuggestions && addressSuggestions.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden">
+                      {addressSuggestions.map((feature, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleSelectAddress(feature)}
+                          className="w-full text-left px-4 py-3 hover:bg-red-50 border-b border-gray-100 last:border-0 transition-colors"
+                        >
+                          <div className="flex items-start space-x-2">
+                            <svg className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <div>
+                              <p className="text-sm font-medium text-black">{feature.properties.label}</p>
+                              <p className="text-xs text-gray-500">{feature.properties.context}</p>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Message si adresse non vérifiée */}
+                  {state.customerInfo.deliveryAddress && !addressVerified && !addressSearching && addressSuggestions.length === 0 && (state.customerInfo.deliveryAddress?.length ?? 0) >= 5 && (
+                    <p className="mt-1 text-xs text-orange-600 flex items-center">
+                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Adresse introuvable dans la base officielle. Vérifiez l'orthographe.
+                    </p>
+                  )}
+                  {addressVerified && (
+                    <p className="mt-1 text-xs text-green-700 flex items-center">
+                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Adresse vérifiée ✓
+                    </p>
+                  )}
+                </div>
                 {errors.deliveryAddress && (
                   <p className="mt-1 text-sm text-red-600">{errors.deliveryAddress}</p>
                 )}
               </div>
 
               <div className="md:col-span-2">
-                <label htmlFor="deliveryCity" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="deliveryCity" className="block text-sm font-medium text-black mb-2">
                   Ville *
                 </label>
                 <select
@@ -337,13 +497,13 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
                 {selectedCityData && (
                   <div className="mt-2 p-3 bg-blue-50 rounded-lg">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-700">Frais de livraison :</span>
-                      <span className="font-medium text-gray-900">{selectedCityData.deliveryFee.toFixed(2)}€</span>
+                      <span className="text-black">Frais de livraison :</span>
+                      <span className="font-medium text-black">{selectedCityData.deliveryFee.toFixed(2)}€</span>
                     </div>
                     {selectedCityData.minOrder && (
                       <div className="flex justify-between text-sm mt-1">
-                        <span className="text-gray-700">Minimum de commande :</span>
-                        <span className="font-medium text-gray-900">{selectedCityData.minOrder.toFixed(2)}€</span>
+                        <span className="text-black">Minimum de commande :</span>
+                        <span className="font-medium text-black">{selectedCityData.minOrder.toFixed(2)}€</span>
                       </div>
                     )}
                   </div>
@@ -354,7 +514,7 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
 
           {/* Notes */}
           <div className="md:col-span-2">
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="notes" className="block text-sm font-medium text-black mb-2">
               Notes spécifiques
             </label>
             <textarea
@@ -370,10 +530,10 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
 
         {/* Informations importantes */}
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-semibold text-gray-900 mb-2">
+          <h4 className="font-semibold text-black mb-2">
             Informations importantes
           </h4>
-          <ul className="text-sm text-gray-600 space-y-1">
+          <ul className="text-sm text-black space-y-1">
             <li>• Paiement à la réception de votre commande</li>
             {mode === 'click-and-collect' ? (
               <li>• Retrait en restaurant : 6 passage de l'aurore, 95800 Cergy</li>
@@ -402,10 +562,15 @@ export default function CustomerInfoForm({ onConfirm, onPrev, mode, isLoading }:
             {isLoading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Traitement...
+                Envoi du code...
               </>
             ) : (
-              'Confirmer la commande'
+              <>
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Recevoir mon code de vérification
+              </>
             )}
           </button>
         </div>

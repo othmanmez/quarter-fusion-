@@ -80,7 +80,7 @@ export default function FloatingCart({
                 <div key={cartItem.item.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
                   <div className="flex-1">
                     <h4 className="font-semibold text-gray-900 text-sm">{cartItem.item.title}</h4>
-                    <p className="text-xs text-gray-600">{cartItem.item.price.toFixed(2)}€</p>
+                    <p className="text-xs text-black">{cartItem.item.price.toFixed(2)}€</p>
                     {cartItem.customizations && cartItem.customizations.length > 0 && (
                       <p className="text-xs text-blue-600 font-medium">
                         {cartItem.customizations.join(', ')}

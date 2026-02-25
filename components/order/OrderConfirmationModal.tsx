@@ -31,7 +31,7 @@ export default function OrderConfirmationModal({
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Commande confirmée !
           </h2>
-          <p className="text-gray-600">
+          <p className="text-black">
             Votre commande a été enregistrée avec succès
           </p>
         </div>
@@ -39,7 +39,7 @@ export default function OrderConfirmationModal({
         {/* Numéro de commande */}
         <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-6 mb-6 border-2 border-red-200">
           <div className="text-center">
-            <p className="text-sm text-gray-600 mb-2">Numéro de commande</p>
+            <p className="text-sm text-black mb-2">Numéro de commande</p>
             <p className="text-2xl font-bold text-red-600 tracking-wide">
               {orderNumber}
             </p>
@@ -56,7 +56,7 @@ export default function OrderConfirmationModal({
             </div>
             <div>
               <p className="font-medium text-gray-900">Email de confirmation envoyé</p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black">
                 Un email de confirmation a été envoyé à <strong>{customerEmail}</strong>
               </p>
             </div>
@@ -70,7 +70,7 @@ export default function OrderConfirmationModal({
             </div>
             <div>
               <p className="font-medium text-gray-900">Préparation en cours</p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black">
                 Nous préparons votre commande. Vous serez contacté par téléphone pour confirmation.
               </p>
             </div>
@@ -84,7 +84,7 @@ export default function OrderConfirmationModal({
             </div>
             <div>
               <p className="font-medium text-gray-900">Besoin d'aide ?</p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black">
                 Appelez-nous au <strong className="text-red-600">01 30 17 31 78</strong>
               </p>
             </div>

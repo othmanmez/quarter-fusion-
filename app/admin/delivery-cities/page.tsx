@@ -173,7 +173,7 @@ export default function DeliveryCitiesPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             Villes de livraison
           </h1>
-          <p className="text-gray-600">
+          <p className="text-black">
             Gérez les villes et frais de livraison
           </p>
         </div>
@@ -224,13 +224,13 @@ export default function DeliveryCitiesPage() {
                     <td className="px-6 py-4 font-medium text-gray-900">
                       {city.name}
                     </td>
-                    <td className="px-6 py-4 text-gray-600">
+                    <td className="px-6 py-4 text-black">
                       {city.postalCode || '-'}
                     </td>
                     <td className="px-6 py-4 text-gray-900 font-medium">
                       {city.deliveryFee.toFixed(2)}€
                     </td>
-                    <td className="px-6 py-4 text-gray-600">
+                    <td className="px-6 py-4 text-black">
                       {city.minOrder ? `${city.minOrder.toFixed(2)}€` : '-'}
                     </td>
                     <td className="px-6 py-4">

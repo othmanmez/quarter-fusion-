@@ -34,6 +34,7 @@ model Menu {
   image       String
   available   Boolean  @default(true)
   badge       String?  // HOT, NEW, TOP
+  isBestSeller Boolean @default(false) // Mis en avant sur la page d'accueil (max 3)
   
   // Conditions de commande par mode
   availableForClickAndCollect Boolean @default(true)
@@ -53,6 +54,7 @@ model Menu {
   
   @@index([categoryId])
   @@index([available])
+  @@index([isBestSeller])
   @@index([availableForClickAndCollect])
   @@index([availableForDelivery])
 }

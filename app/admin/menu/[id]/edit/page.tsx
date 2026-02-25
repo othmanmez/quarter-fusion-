@@ -129,13 +129,8 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.description || !formData.priceClickAndCollect || !formData.priceDelivery || !formData.categoryId) {
-      setError('Tous les champs obligatoires doivent être remplis');
-      return;
-    }
-
-    if (parseFloat(formData.priceClickAndCollect) < 0 || parseFloat(formData.priceDelivery) < 0) {
-      setError('Les prix doivent être positifs');
+    if (!formData.title) {
+      setError('Le titre est requis');
       return;
     }
 
@@ -195,7 +190,7 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-600 text-lg font-medium mb-2">Erreur</div>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-black mb-4">{error}</p>
           <Link
             href="/admin/menu"
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -215,7 +210,7 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
           <div className="flex justify-between items-center py-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Modifier le Menu</h1>
-              <p className="text-gray-600">
+              <p className="text-black">
                 {menuItem?.title}
               </p>
             </div>
@@ -266,7 +261,6 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                required
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
                 placeholder="Décrivez le plat..."
@@ -285,7 +279,6 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
                   name="priceClickAndCollect"
                   value={formData.priceClickAndCollect}
                   onChange={handleInputChange}
-                  required
                   min="0"
                   step="0.01"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
@@ -295,7 +288,7 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
 
               <div>
                 <label htmlFor="priceDelivery" className="block text-sm font-medium text-gray-700 mb-2">
-                  Prix Livraison (€) *
+                  Prix Livraison (€)
                 </label>
                 <input
                   type="number"
@@ -303,7 +296,6 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
                   name="priceDelivery"
                   value={formData.priceDelivery}
                   onChange={handleInputChange}
-                  required
                   min="0"
                   step="0.01"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
@@ -313,14 +305,13 @@ export default function EditMenuPage({ params }: { params: Promise<{ id: string 
 
               <div>
                 <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-2">
-                  Catégorie *
+                  Catégorie
                 </label>
                 <select
                   id="categoryId"
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleInputChange}
-                  required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
                 >
                   <option value="">Sélectionner une catégorie</option>

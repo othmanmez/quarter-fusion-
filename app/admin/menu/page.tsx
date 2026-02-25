@@ -17,6 +17,7 @@ interface MenuItem {
   image: string;
   available: boolean;
   badge?: string;
+  isBestSeller?: boolean;
   availableForClickAndCollect: boolean;
   availableForDelivery: boolean;
   allowDrinkOption?: boolean;
@@ -47,6 +48,9 @@ export default function AdminMenuPage() {
   // Modal state for customizations
   const [showCustomizationsModal, setShowCustomizationsModal] = useState(false);
   const [customizingMenuItem, setCustomizingMenuItem] = useState<MenuItem | null>(null);
+
+  // Bestseller toggle
+  const [bestSellerLoading, setBestSellerLoading] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -187,6 +191,32 @@ export default function AdminMenuPage() {
     }
   };
 
+  const toggleBestSeller = async (item: MenuItem) => {
+    const newValue = !item.isBestSeller;
+    setBestSellerLoading(item.id);
+    try {
+      const response = await fetch('/api/menu/best-sellers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ menuId: item.id, isBestSeller: newValue }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setMenuItems(menuItems.map(m =>
+          m.id === item.id ? { ...m, isBestSeller: newValue } : m
+        ));
+      } else if (data.limitReached) {
+        alert('⭐ Vous avez déjà 3 bestsellers. Retirez-en un avant d\'en ajouter un nouveau.');
+      } else {
+        alert('Erreur : ' + (data.error || 'Impossible de modifier le bestseller'));
+      }
+    } catch {
+      alert('Erreur réseau');
+    } finally {
+      setBestSellerLoading(null);
+    }
+  };
+
   const handleEditMenuItem = (menuItem: MenuItem) => {
     setEditingMenuItem(menuItem);
     setShowEditModal(true);
@@ -224,7 +254,7 @@ export default function AdminMenuPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-600 text-lg font-medium mb-2">Erreur</div>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-black mb-4">{error}</p>
           <button
             onClick={fetchMenuItems}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -244,7 +274,7 @@ export default function AdminMenuPage() {
           <div className="flex justify-between items-center py-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Gestion des Menus</h1>
-              <p className="text-gray-600">
+              <p className="text-black">
                 Gérez vos plats, leur disponibilité et leurs personnalisations
               </p>
             </div>
@@ -267,6 +297,40 @@ export default function AdminMenuPage() {
             </div>
           </div>
           
+          {/* Info bestsellers */}
+          <div className="pb-4">
+            <div className={`border-l-4 p-4 rounded flex items-center justify-between ${
+              menuItems.filter(m => m.isBestSeller).length >= 3
+                ? 'bg-yellow-50 border-yellow-500'
+                : 'bg-orange-50 border-orange-400'
+            }`}>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⭐</span>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">
+                    Best-sellers page d&apos;accueil —{' '}
+                    <span className={menuItems.filter(m => m.isBestSeller).length >= 3 ? 'text-yellow-700' : 'text-orange-700'}>
+                      {menuItems.filter(m => m.isBestSeller).length} / 3 sélectionnés
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-600 mt-0.5">
+                    Cliquez sur l&apos;étoile d&apos;un plat pour l&apos;ajouter / le retirer des bestsellers (maximum 3).
+                    Ils restent affichés à vie jusqu&apos;à ce que vous les changiez.
+                  </p>
+                </div>
+              </div>
+              {menuItems.filter(m => m.isBestSeller).length > 0 && (
+                <div className="ml-4 flex flex-col gap-1">
+                  {menuItems.filter(m => m.isBestSeller).map(m => (
+                    <span key={m.id} className="text-xs bg-yellow-200 text-yellow-900 px-2 py-0.5 rounded-full font-medium">
+                      ⭐ {m.title}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Info sur les personnalisations */}
           <div className="pb-6">
             <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
@@ -371,6 +435,9 @@ export default function AdminMenuPage() {
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Prix C&C / Liv
                   </th>
+                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ⭐ Bestseller
+                  </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
@@ -427,6 +494,18 @@ export default function AdminMenuPage() {
                       )}€ / {(
                         (item.priceDelivery ?? item.price).toFixed(2)
                       )}€
+                    </td>
+                    <td className="px-3 py-3 whitespace-nowrap text-center">
+                      <button
+                        onClick={() => toggleBestSeller(item)}
+                        disabled={bestSellerLoading === item.id}
+                        title={item.isBestSeller ? 'Retirer des bestsellers' : 'Ajouter aux bestsellers'}
+                        className={`text-2xl transition-transform hover:scale-110 disabled:opacity-50 disabled:cursor-wait ${
+                          item.isBestSeller ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'
+                        }`}
+                      >
+                        {bestSellerLoading === item.id ? '⏳' : item.isBestSeller ? '⭐' : '☆'}
+                      </button>
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
                       <button
@@ -512,7 +591,7 @@ export default function AdminMenuPage() {
           {filteredMenus.length === 0 && (
             <div className="text-center py-12">
               <div className="text-gray-400 text-6xl mb-4">🍽️</div>
-              <h3 className="text-xl font-medium text-gray-600 mb-2">
+              <h3 className="text-xl font-medium text-black mb-2">
                 Aucun menu trouvé
               </h3>
               <p className="text-gray-500 mb-4">

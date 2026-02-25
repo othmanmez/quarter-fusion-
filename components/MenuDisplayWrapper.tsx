@@ -68,7 +68,7 @@ export default function MenuDisplayWrapper({ mode, onAddToCart, showAddToCart = 
     return (
       <div className="w-full text-center py-12">
         <div className="text-red-600 text-lg font-medium mb-2">Erreur</div>
-        <p className="text-gray-600 mb-4">{error}</p>
+        <p className="text-black mb-4">{error}</p>
         <button
           onClick={refetch}
           className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -83,7 +83,7 @@ export default function MenuDisplayWrapper({ mode, onAddToCart, showAddToCart = 
     return (
       <div className="text-center py-12">
         <div className="text-gray-400 text-6xl mb-4">🍽️</div>
-        <h3 className="text-xl font-medium text-gray-600 mb-2">
+        <h3 className="text-xl font-medium text-black mb-2">
           Aucun plat disponible
         </h3>
         <p className="text-gray-500">

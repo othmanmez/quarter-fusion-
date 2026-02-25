@@ -63,7 +63,7 @@ async function main() {
     price: 6.5,
     priceClickAndCollect: 6.5,
     priceDelivery: 7.5,
-    image: '/images/placeholder.svg',
+    image: '/images/tacos-1-viande.png',
     categoryId: cat.id,
     available: true,
     availableForClickAndCollect: true,

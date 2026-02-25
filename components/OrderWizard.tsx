@@ -7,6 +7,7 @@ import MenuSelection from './order/MenuSelection';
 import OrderSummary from './order/OrderSummary';
 import CustomerInfoForm from './order/CustomerInfoForm';
 import OrderConfirmation from './order/OrderConfirmation';
+import OtpVerification from './order/OtpVerification';
 
 interface OrderWizardProps {
   mode: 'click-and-collect' | 'delivery';
@@ -15,6 +16,12 @@ interface OrderWizardProps {
 export default function OrderWizard({ mode }: OrderWizardProps) {
   const { state, dispatch } = useOrder();
   const [isOrderComplete, setIsOrderComplete] = useState(false);
+  // État OTP
+  const [otpStep, setOtpStep] = useState(false); // true = afficher l'écran de saisie OTP
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpPrenom, setOtpPrenom] = useState('');
+  const [pendingOrderData, setPendingOrderData] = useState<any>(null);
+  const [otpSendLoading, setOtpSendLoading] = useState(false);
 
   // Définir le mode de commande au montage du composant
   useEffect(() => {
@@ -70,10 +77,55 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
     }
   };
 
+  // Envoi du code OTP
+  const handleSendOtp = async (email: string, prenom: string, orderData: any) => {
+    setOtpSendLoading(true);
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const response = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'send', email, prenom, orderData }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setOtpEmail(email);
+        setOtpPrenom(prenom);
+        setPendingOrderData(orderData);
+        setOtpStep(true);
+      } else {
+        alert(result.error || "Impossible d'envoyer le code. Vérifiez votre email.");
+      }
+    } catch {
+      alert("Erreur de connexion. Veuillez réessayer.");
+    } finally {
+      setOtpSendLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
+  // Après vérification OTP réussie → confirmer la commande
+  const handleOtpVerified = async (orderData: any) => {
+    await handleConfirmOrder(orderData);
+  };
+
+  // Renvoi du code OTP
+  const handleResendOtp = async () => {
+    await handleSendOtp(otpEmail, otpPrenom, pendingOrderData);
+  };
+
+  // Retour depuis l'écran OTP → retour au formulaire
+  const handleOtpBack = () => {
+    setOtpStep(false);
+    setPendingOrderData(null);
+  };
+
   // Fonction pour recommencer une nouvelle commande
   const handleNewOrder = () => {
     dispatch({ type: 'RESET_ORDER' });
     setIsOrderComplete(false);
+    setOtpStep(false);
+    setPendingOrderData(null);
   };
 
   // Si la commande est complète, afficher la confirmation
@@ -94,11 +146,11 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-black">
                 {mode === 'click-and-collect' ? 'Click & Collect' : 'Livraison'}
               </h1>
-              <span className="text-sm text-gray-500">
-                Étape {state.currentStep} sur 3
+              <span className="text-sm text-black">
+                {otpStep ? 'Vérification email' : `Étape ${state.currentStep} sur 3`}
               </span>
             </div>
             
@@ -147,7 +199,7 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
                     step <= state.currentStep
                       ? 'bg-red-600 text-white'
-                      : 'bg-gray-300 text-gray-600'
+                      : 'bg-gray-300 text-black'
                   }`}
                 >
                   {step < state.currentStep ? '✓' : step}
@@ -174,11 +226,23 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
               />
             )}
             
-            {state.currentStep === 3 && (
+            {state.currentStep === 3 && !otpStep && (
               <CustomerInfoForm 
                 onConfirm={handleConfirmOrder}
+                onSendOtp={handleSendOtp}
                 onPrev={handlePrev}
                 mode={mode}
+                isLoading={state.isLoading || otpSendLoading}
+              />
+            )}
+
+            {state.currentStep === 3 && otpStep && (
+              <OtpVerification
+                email={otpEmail}
+                prenom={otpPrenom}
+                onVerified={handleOtpVerified}
+                onResend={handleResendOtp}
+                onBack={handleOtpBack}
                 isLoading={state.isLoading}
               />
             )}
@@ -187,12 +251,12 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
           {/* Sidebar avec le panier */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-black mb-4">
                 Votre commande
               </h3>
               
               {state.cart.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">
+                <p className="text-black text-center py-8">
                   Votre panier est vide
                 </p>
               ) : (
@@ -202,10 +266,10 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                     {state.cart.map((cartItem, index) => (
                       <div key={`cart-item-${cartItem.item._id || ''}-${index}`} className="flex justify-between items-center">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-black">
                             {cartItem.item.title}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-black">
                             {cartItem.quantity} × {getCartItemUnitPrice(cartItem).toFixed(2)}€
                           </p>
                         </div>
@@ -263,16 +327,16 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                       return (
                         <>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm text-gray-600">Sous-total :</span>
-                      <span className="text-sm font-medium">
+                      <span className="text-sm text-black">Sous-total :</span>
+                      <span className="text-sm font-medium text-black">
                         {subtotal.toFixed(2)}€
                       </span>
                     </div>
                     
                     {mode === 'delivery' && (
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">Frais de livraison :</span>
-                        <span className="text-sm font-medium">{deliveryFee.toFixed(2)}€</span>
+                        <span className="text-sm text-black">Frais de livraison :</span>
+                        <span className="text-sm font-medium text-black">{deliveryFee.toFixed(2)}€</span>
                       </div>
                     )}
                     

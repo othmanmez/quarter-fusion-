@@ -130,7 +130,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-600 text-lg font-medium mb-2">Erreur</div>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-black mb-4">{error}</p>
           <Link
             href="/admin/categories"
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -150,7 +150,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
           <div className="flex justify-between items-center py-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Modifier la Catégorie</h1>
-              <p className="text-gray-600">
+              <p className="text-black">
                 {category?.name}
               </p>
             </div>

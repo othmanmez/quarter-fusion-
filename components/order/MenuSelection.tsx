@@ -74,7 +74,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
       <div className="bg-white rounded-lg shadow-md p-8">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-          <span className="ml-3 text-gray-600">Chargement du menu...</span>
+          <span className="ml-3 text-black">Chargement du menu...</span>
         </div>
       </div>
     );
@@ -87,7 +87,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
           <div className="text-red-600 text-lg font-medium mb-2">
             Erreur de chargement
           </div>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-black mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -103,10 +103,10 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
     <div className="bg-white rounded-lg shadow-md">
       {/* En-tête */}
       <div className="p-6 border-b">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-black mb-2">
           Choisissez vos plats
         </h2>
-        <p className="text-gray-800">
+        <p className="text-black">
           Sélectionnez les plats que vous souhaitez commander
         </p>
       </div>
@@ -121,7 +121,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
               className={`px-6 py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors duration-200 ${
                 selectedCategory === category
                   ? 'border-red-600 text-red-600'
-                  : 'border-transparent text-gray-700 hover:text-gray-900'
+                  : 'border-transparent text-black hover:text-black'
               }`}
             >
               {category}
@@ -168,10 +168,10 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
 
                 {/* Contenu */}
                 <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-black mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-gray-800 text-sm mb-4 line-clamp-2">
+                  <p className="text-black text-sm mb-4 line-clamp-2">
                     {item.description}
                   </p>
                   
@@ -192,7 +192,7 @@ export default function MenuSelection({ onNext }: MenuSelectionProps) {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500">
+            <p className="text-black">
               Aucun plat disponible dans cette catégorie
             </p>
           </div>

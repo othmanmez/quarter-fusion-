@@ -14,11 +14,11 @@ export default function ClickAndCollectPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Click & <span className="text-red-700">Collect</span>
+              Notre <span className="text-red-700">Menu</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-              Découvrez notre menu et nos prix Click & Collect
-            </p>
+            <p className="text-xl text-black max-w-3xl mx-auto mb-6">
+            Découvrez notre menu.
+            Les prix affichés correspondent aux tarifs Click & Collect. Les tarifs de livraison sont différents. Rendez-vous dans l’onglet « Commander » pour en savoir plus.</p>
             
             {/* Bouton pour commander */}
             <div className="flex justify-center">
@@ -45,10 +45,10 @@ export default function ClickAndCollectPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-              Notre Menu - Prix Click & Collect
+              Notre Menu
             </h2>
-            <p className="text-gray-600 mt-2">
-              Consultez nos plats et leurs prix pour le Click & Collect
+            <p className="text-black mt-2">
+              Consultez nos plats et leurs prix
             </p>
           </div>
           
@@ -71,7 +71,7 @@ export default function ClickAndCollectPage() {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">Commandez en ligne</h4>
-                    <p className="text-gray-600 text-sm">Sélectionnez vos plats préférés</p>
+                    <p className="text-black text-sm">Sélectionnez vos plats préférés</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -80,7 +80,7 @@ export default function ClickAndCollectPage() {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">Nous préparons</h4>
-                    <p className="text-gray-600 text-sm">Votre commande sera prête en 15-20 minutes</p>
+                    <p className="text-black text-sm">Votre commande sera prête en 15-20 minutes</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -89,7 +89,7 @@ export default function ClickAndCollectPage() {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">Récupérez</h4>
-                    <p className="text-gray-600 text-sm">Venez chercher votre commande en restaurant</p>
+                    <p className="text-black text-sm">Venez chercher votre commande en restaurant</p>
                   </div>
                 </div>
               </div>

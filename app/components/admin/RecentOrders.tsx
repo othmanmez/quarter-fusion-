@@ -83,7 +83,7 @@ export default async function RecentOrders() {
                 </div>
                 
                 {order.items && order.items.length > 0 && (
-                  <div className="mt-3 text-sm text-gray-600">
+                  <div className="mt-3 text-sm text-black">
                     {order.items.slice(0, 2).map((item, index) => (
                       <span key={index}>
                         {item.quantity}x {item.title}

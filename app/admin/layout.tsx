@@ -47,7 +47,7 @@ export default function AdminLayout({
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Quarter Fusion Admin
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-black mb-6">
               Veuillez vous connecter pour accéder au panneau d'administration
             </p>
             <button
@@ -126,7 +126,7 @@ export default function AdminLayout({
             <Link
               key={item.name}
               href={item.href}
-              className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+              className="text-black hover:bg-gray-50 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
             >
               <span className="mr-2">{item.icon}</span>
               {item.name}

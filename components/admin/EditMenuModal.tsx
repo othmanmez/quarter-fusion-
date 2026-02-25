@@ -116,16 +116,6 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
       return;
     }
 
-    if (!formData.categoryId) {
-      setError('La catégorie est requise');
-      return;
-    }
-
-    if (formData.priceClickAndCollect <= 0 || formData.priceDelivery <= 0) {
-      setError('Les prix doivent être supérieurs à 0');
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
@@ -180,7 +170,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
             </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 hover:text-black"
             >
               ✕
             </button>
@@ -220,7 +210,6 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                   id="priceClickAndCollect"
                   value={formData.priceClickAndCollect}
                   onChange={(e) => setFormData(prev => ({ ...prev, priceClickAndCollect: parseFloat(e.target.value) || 0 }))}
-                  required
                   min="0"
                   step="0.01"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
@@ -237,7 +226,6 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                   id="priceDelivery"
                   value={formData.priceDelivery}
                   onChange={(e) => setFormData(prev => ({ ...prev, priceDelivery: parseFloat(e.target.value) || 0 }))}
-                  required
                   min="0"
                   step="0.01"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
@@ -270,7 +258,6 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                   id="category"
                   value={formData.categoryId}
                   onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                  required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
                 >
                   <option value="">Sélectionner une catégorie</option>
@@ -348,7 +335,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                         step="0.01"
                         className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />
-                      <span className="ml-2 text-sm text-gray-600">€</span>
+                      <span className="ml-2 text-sm text-black">€</span>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
                       Ex: 1.50 pour ajouter une boisson

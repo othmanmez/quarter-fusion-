@@ -44,7 +44,7 @@ export default function OrderSummary({
                     {getCartItemTotal(cartItem).toFixed(2)}€
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">{cartItem.item.description}</p>
+                <p className="text-sm text-black mb-2">{cartItem.item.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">
                     Quantité : {cartItem.quantity} × {getCartItemUnitPrice(cartItem).toFixed(2)}€
@@ -57,7 +57,7 @@ export default function OrderSummary({
                 </div>
                 {cartItem.customizations && cartItem.customizations.length > 0 && (
                   <div className="mt-2">
-                    <p className="text-xs text-gray-600 font-medium">Personnalisations :</p>
+                    <p className="text-xs text-black font-medium">Personnalisations :</p>
                     <p className="text-xs text-blue-600">{cartItem.customizations.join(', ')}</p>
                   </div>
                 )}

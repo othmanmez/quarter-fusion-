@@ -48,10 +48,10 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
     <div className="bg-white rounded-lg shadow-md">
       {/* En-tête */}
       <div className="p-6 border-b">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-black mb-2">
           Récapitulatif de votre commande
         </h2>
-        <p className="text-gray-600">
+        <p className="text-black">
           Vérifiez vos articles avant de continuer
         </p>
       </div>
@@ -78,13 +78,13 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-semibold text-black">
                       {cartItem.item.title}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-black">
                       {cartItem.item.description}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-black mt-1">
                       {getCartItemUnitPrice(cartItem).toFixed(2)}€ l'unité
                     </p>
                     {renderCustomizations(cartItem.item.customizations)}
@@ -117,10 +117,15 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                     </div>
 
                     {/* Prix total pour cet article */}
-                    <div className="text-right">
-                      <p className="font-semibold text-gray-900">
+                    <div className="text-right min-w-[70px]">
+                      <p className="font-semibold text-black">
                         {getCartItemTotal(cartItem).toFixed(2)}€
                       </p>
+                      {cartItem.quantity > 1 && (
+                        <p className="text-xs text-black">
+                          {cartItem.quantity} × {getCartItemUnitPrice(cartItem).toFixed(2)}€
+                        </p>
+                      )}
                     </div>
 
                     {/* Bouton supprimer */}
@@ -142,14 +147,14 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
             <div className="border-t pt-6">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Sous-total :</span>
-                  <span className="font-medium">{subtotal.toFixed(2)}€</span>
+                  <span className="text-black">Sous-total :</span>
+                  <span className="font-medium text-black">{subtotal.toFixed(2)}€</span>
                 </div>
 
                 {state.orderMode === 'delivery' && (
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Frais de livraison :</span>
-                    <span className="font-medium">{deliveryFee.toFixed(2)}€</span>
+                    <span className="text-black">Frais de livraison :</span>
+                    <span className="font-medium text-black">{deliveryFee.toFixed(2)}€</span>
                   </div>
                 )}
 
@@ -162,10 +167,10 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
 
             {/* Informations supplémentaires */}
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-semibold text-gray-900 mb-2">
+              <h4 className="font-semibold text-black mb-2">
                 Informations importantes
               </h4>
-              <ul className="text-sm text-gray-600 space-y-1">
+              <ul className="text-sm text-black space-y-1">
                 <li>• Votre commande sera préparée dans les 15-20 minutes</li>
                 {state.orderMode === 'click-and-collect' ? (
                   <li>• Retrait en restaurant : 6 passage de l'aurore, 95800 Cergy</li>

@@ -274,7 +274,7 @@ export default function CustomizationModal({
         <div className="p-6">
           {/* Titre et prix */}
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{item.title}</h2>
-          <p className="text-gray-600 mb-4">{item.description}</p>
+          <p className="text-black mb-4">{item.description}</p>
           <div className="text-2xl font-bold text-red-600 mb-6">
             Prix de base : {item.price.toFixed(2)}€
           </div>
@@ -285,7 +285,7 @@ export default function CustomizationModal({
             </div>
           ) : customizations.length === 0 ? (
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <p className="text-gray-600 text-center">
+              <p className="text-black text-center">
                 Aucune personnalisation disponible pour ce plat
               </p>
             </div>
@@ -384,7 +384,7 @@ export default function CustomizationModal({
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
                       </div>
                     ) : availableDrinks.length === 0 ? (
-                      <p className="text-sm text-gray-600">Aucune boisson disponible</p>
+                      <p className="text-sm text-black">Aucune boisson disponible</p>
                     ) : (
                       <>
                         <label className="block text-sm font-medium text-gray-700 mb-2">

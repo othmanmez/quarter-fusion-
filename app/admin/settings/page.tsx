@@ -129,7 +129,7 @@ export default function SettingsPage() {
         <div className="bg-white shadow-sm rounded-lg border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Services de commande</h2>
-            <p className="text-sm text-gray-600 mt-1">Activez ou désactivez les prises de commande</p>
+            <p className="text-sm text-black mt-1">Activez ou désactivez les prises de commande</p>
           </div>
           
           <div className="px-6 py-4 space-y-6">
@@ -144,7 +144,7 @@ export default function SettingsPage() {
                     </span>
                   )}
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-black mt-1">
                   Permettre aux clients de commander et retirer sur place
                 </p>
               </div>
@@ -174,7 +174,7 @@ export default function SettingsPage() {
                     </span>
                   )}
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-black mt-1">
                   Permettre aux clients de commander en livraison
                 </p>
               </div>
@@ -199,7 +199,7 @@ export default function SettingsPage() {
         <div className="bg-white shadow-sm rounded-lg border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Paramètres de livraison</h2>
-            <p className="text-sm text-gray-600 mt-1">Configurez les conditions de livraison</p>
+            <p className="text-sm text-black mt-1">Configurez les conditions de livraison</p>
           </div>
           
           <div className="px-6 py-4 space-y-4">

@@ -19,7 +19,7 @@ export default function InfoSection() {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Informations <span className="text-red-700">pratiques</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-black max-w-3xl mx-auto">
             Tout ce que vous devez savoir pour nous rendre visite ou commander
           </p>
         </div>
@@ -39,7 +39,7 @@ export default function InfoSection() {
                 {days.map((day) => (
                   <div key={day.key} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
                     <span className="font-medium text-gray-700">{day.name}</span>
-                    <span className="text-gray-600">{siteData.hours[day.key as keyof typeof siteData.hours]}</span>
+                    <span className="text-black">{siteData.hours[day.key as keyof typeof siteData.hours]}</span>
                   </div>
                 ))}
               </div>
@@ -95,7 +95,7 @@ export default function InfoSection() {
                   <span className="font-medium text-red-700">{siteData.delivery.time}</span>
                 </div>
                 <div className="pt-3 border-t border-gray-100">
-                  <span className="text-sm text-gray-600">{siteData.delivery.zones}</span>
+                  <span className="text-sm text-black">{siteData.delivery.zones}</span>
                 </div>
               </div>
             </div>

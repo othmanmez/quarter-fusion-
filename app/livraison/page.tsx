@@ -17,7 +17,7 @@ export default function LivraisonPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Livraison à <span className="text-red-700">domicile</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+            <p className="text-xl text-black max-w-3xl mx-auto mb-6">
               Découvrez notre menu et nos prix de livraison
             </p>
             
@@ -48,7 +48,7 @@ export default function LivraisonPage() {
             <h2 className="text-3xl font-bold text-gray-900">
               Notre Menu - Prix Livraison
             </h2>
-            <p className="text-gray-600 mt-2">
+            <p className="text-black mt-2">
               Consultez nos plats et leurs prix pour la livraison (+ {siteData.delivery.fee} de frais de livraison)
             </p>
           </div>
@@ -85,7 +85,7 @@ export default function LivraisonPage() {
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 Conditions de livraison
               </h3>
-              <div className="space-y-3 text-gray-600">
+              <div className="space-y-3 text-black">
                 <div className="flex justify-between">
                   <span>Commande minimum :</span>
                   <span className="font-medium text-red-700">{siteData.delivery.minimum}</span>

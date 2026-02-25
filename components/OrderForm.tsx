@@ -367,7 +367,7 @@ export default function OrderForm({
               <div key={cartItem.item.id} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
                 <div className="flex-1">
                   <h4 className="font-medium text-gray-900">{cartItem.item.title}</h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-black">
                     {cartItem.quantity} × {getCartItemUnitPrice(cartItem).toFixed(2)}€
                   </p>
                   {cartItem.customizations && cartItem.customizations.length > 0 && (

@@ -30,18 +30,18 @@ async function main() {
   console.log('🥤 Canettes 33cl :');
   
   const canettes = [
-    { name: 'Coca-Cola 33cl', price: 1.5 },
-    { name: 'Coca-Cola Zéro 33cl', price: 1.5 },
-    { name: 'Coca-Cola Cherry 33cl', price: 1.5 },
-    { name: 'Pepsi 33cl', price: 1.5 },
-    { name: 'Pepsi Max 33cl', price: 1.5 },
-    { name: 'Fanta Orange 33cl', price: 1.5 },
-    { name: 'Fanta Citron 33cl', price: 1.5 },
-    { name: 'Sprite 33cl', price: 1.5 },
-    { name: '7Up 33cl', price: 1.5 },
-    { name: 'Ice Tea Pêche 33cl', price: 1.5 },
-    { name: 'Ice Tea Citron 33cl', price: 1.5 },
-    { name: 'Orangina 33cl', price: 1.5 },
+    { name: 'Coca-Cola 33cl', price: 1.5, image: '/images/boissons/coca-cola-33cl.png' },
+    { name: 'Coca-Cola Zéro 33cl', price: 1.5, image: '/images/boissons/coca-cola-zero-33cl.png' },
+    { name: 'Coca-Cola Cherry 33cl', price: 1.5, image: '/images/boissons/coca-cola-cherry-33cl.png' },
+    { name: 'Pepsi 33cl', price: 1.5, image: '/images/boissons/pepsi-33cl.png' },
+    { name: 'Pepsi Max 33cl', price: 1.5, image: '/images/boissons/pepsi-max-33cl.png' },
+    { name: 'Fanta Orange 33cl', price: 1.5, image: '/images/boissons/fanta-orange-33cl.png' },
+    { name: 'Fanta Citron 33cl', price: 1.5, image: '/images/boissons/fanta-citron-33cl.png' },
+    { name: 'Sprite 33cl', price: 1.5, image: '/images/boissons/sprite-33cl.png' },
+    { name: '7Up 33cl', price: 1.5, image: '/images/boissons/7up-33cl.png' },
+    { name: 'Ice Tea Pêche 33cl', price: 1.5, image: '/images/boissons/ice-tea-peche-33cl.png' },
+    { name: 'Ice Tea Citron 33cl', price: 1.5, image: '/images/boissons/ice-tea-citron-33cl.png' },
+    { name: 'Orangina 33cl', price: 1.5, image: '/images/boissons/orangina-33cl.png' },
   ];
 
   for (const canette of canettes) {
@@ -60,6 +60,7 @@ async function main() {
         data: {
           description: 'Canette 33cl - Incluse dans les menus burgers et duo, ou en supplément à +1,50€ sur sandwichs et tacos',
           price: canette.price,
+          image: canette.image,
           available: true,
           availableForClickAndCollect: true,
           availableForDelivery: true,
@@ -71,7 +72,7 @@ async function main() {
           title: canette.name,
           description: 'Canette 33cl - Incluse dans les menus burgers et duo, ou en supplément à +1,50€ sur sandwichs et tacos',
           price: canette.price,
-          image: '/images/placeholder.svg',
+          image: canette.image,
           categoryId: categoryId,
           available: true,
           availableForClickAndCollect: true,
@@ -88,10 +89,10 @@ async function main() {
   console.log('\n🍾 Bouteilles 1,5L :');
   
   const bouteilles = [
-    { name: 'Coca-Cola 1,5L', price: 3.5 },
-    { name: 'Pepsi 1,5L', price: 3.5 },
-    { name: 'Fanta Orange 1,5L', price: 3.5 },
-    { name: 'Sprite 1,5L', price: 3.5 },
+    { name: 'Coca-Cola 1,5L', price: 3.5, image: '/images/boissons/coca-cola-1-5l.png' },
+    { name: 'Pepsi 1,5L', price: 3.5, image: '/images/boissons/pepsi-1-5l.png' },
+    { name: 'Fanta Orange 1,5L', price: 3.5, image: '/images/boissons/fanta-orange-1-5l.png' },
+    { name: 'Sprite 1,5L', price: 3.5, image: '/images/boissons/sprite-1-5l.png' },
   ];
 
   for (const bouteille of bouteilles) {
@@ -109,6 +110,7 @@ async function main() {
         data: {
           description: 'Bouteille 1,5L - Incluse uniquement dans les menus à partager (non vendue à l\'unité)',
           price: bouteille.price,
+          image: bouteille.image,
           available: false, // Non vendue à l'unité
           availableForClickAndCollect: false,
           availableForDelivery: false,
@@ -120,7 +122,7 @@ async function main() {
           title: bouteille.name,
           description: 'Bouteille 1,5L - Incluse uniquement dans les menus à partager (non vendue à l\'unité)',
           price: bouteille.price,
-          image: '/images/placeholder.svg',
+          image: bouteille.image,
           categoryId: categoryId,
           available: false, // Non vendue à l'unité
           availableForClickAndCollect: false,
@@ -136,8 +138,8 @@ async function main() {
   console.log('\n💧 Eau :');
   
   const eaux = [
-    { name: 'Eau minérale 50cl', price: 1.0 },
-    { name: 'Eau gazeuse 50cl', price: 1.0 },
+    { name: 'Eau minérale 50cl', price: 1.0, image: '/images/boissons/eau-minerale-50cl.png' },
+    { name: 'Eau gazeuse 50cl', price: 1.0, image: '/images/boissons/eau-gazeuse-50cl.png' },
   ];
 
   for (const eau of eaux) {
@@ -155,6 +157,7 @@ async function main() {
         data: {
           description: 'Eau 50cl - Prix modifiable depuis le back-office',
           price: eau.price,
+          image: eau.image,
           available: true,
           availableForClickAndCollect: true,
           availableForDelivery: true,
@@ -166,7 +169,7 @@ async function main() {
           title: eau.name,
           description: 'Eau 50cl - Prix modifiable depuis le back-office',
           price: eau.price,
-          image: '/images/placeholder.svg',
+          image: eau.image,
           categoryId: categoryId,
           available: true,
           availableForClickAndCollect: true,

@@ -34,6 +34,11 @@ export default function MenuDisplay({ onAddToCart, showAddToCart = false, mode }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getImageSrc = (src?: string) => {
+    const cleaned = (src || '').trim();
+    return cleaned !== '' ? cleaned : '/images/placeholder.svg';
+  };
+
   useEffect(() => {
     fetchMenuData();
   }, [mode]);
@@ -101,7 +106,7 @@ export default function MenuDisplay({ onAddToCart, showAddToCart = false, mode }
     return (
       <div className="w-full text-center py-12">
         <div className="text-red-600 text-lg font-medium mb-2">Erreur</div>
-        <p className="text-gray-600 mb-4">{error}</p>
+        <p className="text-black mb-4">{error}</p>
         <button
           onClick={fetchMenuData}
           className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
@@ -150,9 +155,18 @@ export default function MenuDisplay({ onAddToCart, showAddToCart = false, mode }
             key={item.id}
             className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300"
           >
-            {/* Image placeholder */}
-            <div className="h-48 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center relative">
-              <div className="text-red-600 text-4xl">🍔</div>
+            {/* Image */}
+            <div className="h-48 bg-gray-100 flex items-center justify-center relative overflow-hidden">
+              <img
+                src={getImageSrc(item.image)}
+                alt={item.title}
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/images/placeholder.svg';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/0" />
               
               {/* Icône de personnalisation */}
               <button
@@ -160,7 +174,7 @@ export default function MenuDisplay({ onAddToCart, showAddToCart = false, mode }
                 className="absolute top-3 right-3 w-8 h-8 bg-white bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all duration-200 shadow-sm"
                 title="Personnaliser"
               >
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                 </svg>
               </button>
@@ -175,7 +189,7 @@ export default function MenuDisplay({ onAddToCart, showAddToCart = false, mode }
                 </span>
               </div>
               
-              <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+              <p className="text-black text-sm mb-4 leading-relaxed">
                 {item.description}
               </p>
 
@@ -263,7 +277,7 @@ export default function MenuDisplay({ onAddToCart, showAddToCart = false, mode }
       {filteredItems.length === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-400 text-6xl mb-4">🍽️</div>
-          <h3 className="text-xl font-medium text-gray-600 mb-2">
+          <h3 className="text-xl font-medium text-black mb-2">
             Aucun plat trouvé
           </h3>
           <p className="text-gray-500">

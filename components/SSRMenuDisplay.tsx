@@ -60,7 +60,7 @@ export default async function SSRMenuDisplay({ mode, onAddToCart, showAddToCart 
     return (
       <div className="text-center py-12">
         <div className="text-gray-400 text-6xl mb-4">🍽️</div>
-        <h3 className="text-xl font-medium text-gray-600 mb-2">
+        <h3 className="text-xl font-medium text-black mb-2">
           Aucun plat disponible
         </h3>
         <p className="text-gray-500">

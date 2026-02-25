@@ -160,7 +160,7 @@ export default function Footer() {
           
           {/* Signature développeur */}
           <div className="mt-4 pt-4 border-t border-gray-800">
-            <p className="text-gray-600">
+            <p className="text-black">
               Développement web par{' '}
               <a 
                 href="https://samy-dev.fr" 
@@ -180,7 +180,7 @@ export default function Footer() {
                 Othman Meziane
               </a>
               {' • '} 
-              <span className="text-gray-600">Développeurs Full-Stack</span>
+              <span className="text-black">Développeurs Full-Stack</span>
             </p>
           </div>
         </div>

@@ -195,7 +195,7 @@ export default function CustomizationsModal({
             <h3 className="text-xl font-bold text-gray-900">
               Personnalisations : {menuTitle}
             </h3>
-            <p className="text-sm text-gray-600 mb-2">
+            <p className="text-sm text-black mb-2">
               Configurez les options et suppléments disponibles pour ce plat
             </p>
             <div className="bg-blue-50 border-l-4 border-blue-400 p-3 text-xs">
@@ -209,7 +209,7 @@ export default function CustomizationsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
+            className="text-gray-400 hover:text-black text-2xl"
           >
             ×
           </button>
@@ -252,7 +252,7 @@ export default function CustomizationsModal({
                           </div>
                           <div className="space-y-1">
                             {custom.options.map((opt, idx) => (
-                              <div key={idx} className="text-sm text-gray-600">
+                              <div key={idx} className="text-sm text-black">
                                 • {opt.name}
                                 {opt.priceExtra > 0 && (
                                   <span className="text-green-600 font-medium ml-2">
@@ -309,7 +309,7 @@ export default function CustomizationsModal({
                     className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
                   >
                     <div className="font-medium text-sm text-gray-900">🍯 Choix de sauce</div>
-                    <div className="text-xs text-gray-600">Sauces classiques gratuites</div>
+                    <div className="text-xs text-black">Sauces classiques gratuites</div>
                   </button>
                   <button
                     onClick={() => {
@@ -329,7 +329,7 @@ export default function CustomizationsModal({
                     className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
                   >
                     <div className="font-medium text-sm text-gray-900">➕ Suppléments</div>
-                    <div className="text-xs text-gray-600">Ingrédients additionnels</div>
+                    <div className="text-xs text-black">Ingrédients additionnels</div>
                   </button>
                   <button
                     onClick={() => {
@@ -348,7 +348,7 @@ export default function CustomizationsModal({
                     className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
                   >
                     <div className="font-medium text-sm text-gray-900">🚫 Retirer ingrédient</div>
-                    <div className="text-xs text-gray-600">Options de suppression</div>
+                    <div className="text-xs text-black">Options de suppression</div>
                   </button>
                 </div>
               </div>
@@ -358,7 +358,7 @@ export default function CustomizationsModal({
             {!showAddForm && (
               <button
                 onClick={() => setShowAddForm(true)}
-                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-red-500 hover:text-red-600 transition-colors"
+                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-black hover:border-red-500 hover:text-red-600 transition-colors"
               >
                 + Ajouter une personnalisation personnalisée
               </button>
@@ -377,7 +377,7 @@ export default function CustomizationsModal({
                       setShowAddForm(false);
                       resetForm();
                     }}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-black"
                   >
                     Annuler
                   </button>

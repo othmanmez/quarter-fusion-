@@ -10,7 +10,7 @@ export default function CGVPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Conditions Générales de <span className="text-red-700">Vente</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-black max-w-3xl mx-auto">
               Conditions applicables aux commandes sur {siteData.restaurant.name}
             </p>
           </div>

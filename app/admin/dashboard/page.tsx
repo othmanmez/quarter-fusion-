@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             Tableau de bord
           </h1>
-          <p className="text-gray-600">
+          <p className="text-black">
             Bienvenue sur votre espace d'administration Quarter Fusion
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
               <span className="text-2xl">🍽️</span>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Plats au menu</p>
+              <p className="text-sm font-medium text-black">Plats au menu</p>
               <p className="text-2xl font-bold text-gray-900">{loading ? '...' : stats.totalMenuItems}</p>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function AdminDashboardPage() {
               <span className="text-2xl">📂</span>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Catégories</p>
+              <p className="text-sm font-medium text-black">Catégories</p>
               <p className="text-2xl font-bold text-gray-900">{loading ? '...' : stats.totalCategories}</p>
             </div>
           </div>
@@ -104,7 +104,7 @@ export default function AdminDashboardPage() {
               <span className="text-2xl">⭐</span>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Best-Sellers</p>
+              <p className="text-sm font-medium text-black">Best-Sellers</p>
               <p className="text-2xl font-bold text-gray-900">{loading ? '...' : stats.bestSellersCount}</p>
             </div>
           </div>
@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
               <span className="text-2xl">✅</span>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Plats disponibles</p>
+              <p className="text-sm font-medium text-black">Plats disponibles</p>
               <p className="text-2xl font-bold text-gray-900">{loading ? '...' : stats.availableItems}</p>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function AdminDashboardPage() {
             <span className="text-2xl mr-3">➕</span>
             <div className="text-left">
               <p className="font-medium text-gray-900">Ajouter un plat</p>
-              <p className="text-sm text-gray-600">Nouveau menu</p>
+              <p className="text-sm text-black">Nouveau menu</p>
             </div>
           </Link>
 
@@ -139,7 +139,7 @@ export default function AdminDashboardPage() {
             <span className="text-2xl mr-3">🍽️</span>
             <div className="text-left">
               <p className="font-medium text-gray-900">Gérer les menus</p>
-              <p className="text-sm text-gray-600">Modifier, supprimer</p>
+              <p className="text-sm text-black">Modifier, supprimer</p>
             </div>
           </Link>
 
@@ -147,7 +147,7 @@ export default function AdminDashboardPage() {
             <span className="text-2xl mr-3">📂</span>
             <div className="text-left">
               <p className="font-medium text-gray-900">Catégories</p>
-              <p className="text-sm text-gray-600">Organiser le menu</p>
+              <p className="text-sm text-black">Organiser le menu</p>
             </div>
           </Link>
 
@@ -155,7 +155,7 @@ export default function AdminDashboardPage() {
             <span className="text-2xl mr-3">⚙️</span>
             <div className="text-left">
               <p className="font-medium text-gray-900">Paramètres</p>
-              <p className="text-sm text-gray-600">Configuration</p>
+              <p className="text-sm text-black">Configuration</p>
             </div>
           </Link>
 
@@ -163,7 +163,7 @@ export default function AdminDashboardPage() {
             <span className="text-2xl mr-3">🚚</span>
             <div className="text-left">
               <p className="font-medium text-gray-900">Villes de livraison</p>
-              <p className="text-sm text-gray-600">Zones et frais</p>
+              <p className="text-sm text-black">Zones et frais</p>
             </div>
           </Link>
         </div>
@@ -214,7 +214,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
             <div className="mt-4 pt-4 border-t border-red-200">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black">
                 📖 <strong>Guide complet</strong> : Consultez le fichier <code className="bg-white px-2 py-1 rounded">GUIDE-ADMIN.md</code> à la racine du projet
               </p>
             </div>

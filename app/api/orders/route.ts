@@ -12,7 +12,26 @@ interface OrderItem {
     description: string;
   };
   quantity: number;
-  customizations?: string[];
+  customizations?: Array<string | { name: string; selectedOptions?: string[]; priceExtra?: number }>;
+}
+
+function getItemUnitPrice(item: OrderItem): number {
+  const base = item.item.price ?? 0;
+  const extras = Array.isArray(item.customizations)
+    ? item.customizations.reduce((sum, c) => {
+        if (typeof c === 'object' && typeof c.priceExtra === 'number') return sum + c.priceExtra;
+        return sum;
+      }, 0)
+    : 0;
+  return base + extras;
+}
+
+function getItemTotalPrice(item: OrderItem): number {
+  return getItemUnitPrice(item) * item.quantity;
+}
+
+function getCartTotal(cart: OrderItem[]): number {
+  return cart.reduce((sum, item) => sum + getItemTotalPrice(item), 0);
 }
 
 interface OrderFormData {
@@ -46,25 +65,38 @@ const transporter = nodemailer.createTransport({
 });
 
 // Template email pour le client
-function generateClientEmailHTML(orderData: OrderRequest) {
-  const { cart, formData, total, type } = orderData;
-  const orderNumber = `QF-${Date.now()}`;
+function generateClientEmailHTML(orderData: OrderRequest, orderNumber: string) {
+  const { cart, formData, type } = orderData;
   const isDelivery = type === 'livraison';
+  const computedTotal = getCartTotal(cart) + (isDelivery ? (orderData.total - getCartTotal(cart)) : 0);
   
-  const itemsHTML = cart.map(item => `
+  const itemsHTML = cart.map(item => {
+    const customizationLabels = (item.customizations || []).map(c => {
+      if (typeof c === 'string') return c;
+      if (c.name) {
+        const opts = (c.selectedOptions || []).join(', ');
+        const extra = typeof c.priceExtra === 'number' && c.priceExtra > 0 ? ` (+${c.priceExtra.toFixed(2)}€)` : '';
+        return opts ? `${c.name}: ${opts}${extra}` : `${c.name}${extra}`;
+      }
+      return '';
+    }).filter(Boolean);
+
+    return `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
         <strong>${item.item.title}</strong><br>
         <small style="color: #666;">${item.item.description}</small>
-        ${item.customizations && item.customizations.length > 0 ? 
-          `<br><small style="color: #007bff;">Personnalisations: ${item.customizations.join(', ')}</small>` : 
+        ${customizationLabels.length > 0 ? 
+          `<br><small style="color: #007bff;">Personnalisations: ${customizationLabels.join(', ')}</small>` : 
           ''
         }
+        <br><small style="color: #888;">${getItemUnitPrice(item).toFixed(2)}€ / unité</small>
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${(item.item.price * item.quantity).toFixed(2)}€</td>
+      <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${getItemTotalPrice(item).toFixed(2)}€</td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 
   return `
     <!DOCTYPE html>
@@ -124,7 +156,15 @@ function generateClientEmailHTML(orderData: OrderRequest) {
           </table>
           
           <div class="total">
-            <strong>Total à payer : ${total.toFixed(2)}€</strong>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span>Sous-total :</span>
+              <span>${getCartTotal(cart).toFixed(2)}€</span>
+            </div>
+            ${isDelivery ? `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Frais de livraison :</span><span>${(orderData.total - getCartTotal(cart)).toFixed(2)}€</span></div>` : ''}
+            <div style="display:flex; justify-content:space-between; font-size:1.1em; font-weight:bold; border-top:2px solid #dc2626; margin-top:8px; padding-top:8px;">
+              <span>Total à payer :</span>
+              <span>${orderData.total.toFixed(2)}€</span>
+            </div>
           </div>
           
           ${formData.notes ? `
@@ -150,7 +190,7 @@ function generateClientEmailHTML(orderData: OrderRequest) {
         
         <div class="footer">
           <p>Quarter Fusion<br>
-          123 Avenue de la République, 95800 Cergy<br>
+          6 passage de l'aurore, 95800 Cergy<br>
           Tél : 01 30 17 31 78</p>
         </div>
       </div>
@@ -160,25 +200,37 @@ function generateClientEmailHTML(orderData: OrderRequest) {
 }
 
 // Template email pour l'admin
-function generateAdminEmailHTML(orderData: OrderRequest) {
-  const { cart, formData, total, type } = orderData;
-  const orderNumber = `QF-${Date.now()}`;
+function generateAdminEmailHTML(orderData: OrderRequest, orderNumber: string) {
+  const { cart, formData, type } = orderData;
   const isDelivery = type === 'livraison';
   
-  const itemsHTML = cart.map(item => `
+  const itemsHTML = cart.map(item => {
+    const customizationLabels = (item.customizations || []).map(c => {
+      if (typeof c === 'string') return c;
+      if (c.name) {
+        const opts = (c.selectedOptions || []).join(', ');
+        const extra = typeof c.priceExtra === 'number' && c.priceExtra > 0 ? ` (+${c.priceExtra.toFixed(2)}€)` : '';
+        return opts ? `${c.name}: ${opts}${extra}` : `${c.name}${extra}`;
+      }
+      return '';
+    }).filter(Boolean);
+
+    return `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
         <strong>${item.item.title}</strong><br>
         <small style="color: #666;">${item.item.description}</small>
-        ${item.customizations && item.customizations.length > 0 ? 
-          `<br><small style="color: #007bff;">Personnalisations: ${item.customizations.join(', ')}</small>` : 
+        ${customizationLabels.length > 0 ? 
+          `<br><small style="color: #007bff;">Personnalisations: ${customizationLabels.join(', ')}</small>` : 
           ''
         }
+        <br><small style="color: #888;">${getItemUnitPrice(item).toFixed(2)}€ / unité</small>
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${(item.item.price * item.quantity).toFixed(2)}€</td>
+      <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${getItemTotalPrice(item).toFixed(2)}€</td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 
   return `
     <!DOCTYPE html>
@@ -213,7 +265,7 @@ function generateAdminEmailHTML(orderData: OrderRequest) {
           <div class="info-box urgent">
             <strong>🚨 NOUVELLE COMMANDE À TRAITER</strong><br>
             Type : ${isDelivery ? 'Livraison' : 'Click & Collect'}<br>
-            Montant : ${total.toFixed(2)}€
+            Montant : ${orderData.total.toFixed(2)}€
           </div>
           
           <h3>Informations client :</h3>
@@ -240,7 +292,15 @@ function generateAdminEmailHTML(orderData: OrderRequest) {
           </table>
           
           <div class="total">
-            <strong>Total : ${total.toFixed(2)}€</strong>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span>Sous-total :</span>
+              <span>${getCartTotal(cart).toFixed(2)}€</span>
+            </div>
+            ${isDelivery ? `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Frais de livraison :</span><span>${(orderData.total - getCartTotal(cart)).toFixed(2)}€</span></div>` : ''}
+            <div style="display:flex; justify-content:space-between; font-size:1.1em; font-weight:bold; border-top:2px solid #dc2626; margin-top:8px; padding-top:8px;">
+              <span>Total :</span>
+              <span>${orderData.total.toFixed(2)}€</span>
+            </div>
           </div>
           
           ${formData.notes ? `
@@ -293,11 +353,16 @@ export async function POST(request: NextRequest) {
           quantity: cartItem.quantity,
           price: cartItem.item.price,
           description: cartItem.item.description,
-          customizations: cartItem.customizations?.map(custom => ({
-            name: custom,
-            selectedOptions: [custom],
-            priceExtra: 0
-          })) || []
+          customizations: (cartItem.customizations || []).map(custom => {
+            if (typeof custom === 'string') {
+              return { name: custom, selectedOptions: [custom], priceExtra: 0 };
+            }
+            return {
+              name: custom.name || '',
+              selectedOptions: custom.selectedOptions || [],
+              priceExtra: typeof custom.priceExtra === 'number' ? custom.priceExtra : 0,
+            };
+          })
         })),
         total: orderData.total,
         deliveryAddress: orderData.formData.adresse,
@@ -310,21 +375,36 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Envoi email au client
-    const clientEmailResult = await transporter.sendMail({
-      from: `"Quarter Fusion" <${process.env.EMAIL_USER}>`,
-      to: orderData.formData.email,
-      subject: `Confirmation de commande - Quarter Fusion`,
-      html: generateClientEmailHTML(orderData),
-    });
+    // Envoi email au client (non bloquant : la commande est déjà enregistrée)
+    let clientEmailResult: any = null;
+    let adminEmailResult: any = null;
+    let emailError: string | null = null;
 
-    // Envoi email à l'admin
-    const adminEmailResult = await transporter.sendMail({
-      from: `"Quarter Fusion" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
-      subject: `Nouvelle commande reçue - Quarter Fusion`,
-      html: generateAdminEmailHTML(orderData),
-    });
+    try {
+      clientEmailResult = await transporter.sendMail({
+        from: `"Quarter Fusion" <${process.env.EMAIL_USER}>`,
+        to: orderData.formData.email,
+        subject: `Confirmation de commande #${orderNumber} - Quarter Fusion`,
+        html: generateClientEmailHTML(orderData, orderNumber),
+      });
+      console.log('✅ [EMAIL] Email client envoyé:', clientEmailResult.messageId);
+    } catch (err: any) {
+      emailError = err.message || 'Erreur email client';
+      console.error('❌ [EMAIL] Erreur envoi email client:', err);
+    }
+
+    try {
+      adminEmailResult = await transporter.sendMail({
+        from: `"Quarter Fusion" <${process.env.EMAIL_USER}>`,
+        to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
+        subject: `Nouvelle commande #${orderNumber} - Quarter Fusion`,
+        html: generateAdminEmailHTML(orderData, orderNumber),
+      });
+      console.log('✅ [EMAIL] Email admin envoyé:', adminEmailResult.messageId);
+    } catch (err: any) {
+      emailError = emailError ? `${emailError} | Admin: ${err.message}` : err.message;
+      console.error('❌ [EMAIL] Erreur envoi email admin:', err);
+    }
 
     // Impression automatique du ticket (si activée)
     let printStatus = { success: false, message: 'Impression désactivée' };
@@ -423,8 +503,9 @@ export async function POST(request: NextRequest) {
       orderNumber,
       orderId: savedOrder.id,
       emailsSent: {
-        client: clientEmailResult.messageId,
-        admin: adminEmailResult.messageId
+        client: clientEmailResult?.messageId || null,
+        admin: adminEmailResult?.messageId || null,
+        error: emailError || null,
       },
       printStatus
     });

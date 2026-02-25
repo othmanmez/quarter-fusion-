@@ -9,7 +9,7 @@ export default function SocialLinks() {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Suivez-nous sur les <span className="text-red-700">réseaux sociaux</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-black max-w-3xl mx-auto">
             Découvrez nos dernières créations, offres spéciales et coulisses en temps réel
           </p>
         </div>
@@ -35,7 +35,7 @@ export default function SocialLinks() {
               </h3>
               
               {/* Description */}
-              <p className="text-gray-600 mb-4">
+              <p className="text-black mb-4">
                 {social.name === 'TikTok' && 'Vidéos courtes et recettes'}
                 {social.name === 'Instagram' && 'Photos et stories gourmandes'}
                 {social.name === 'Snapchat' && 'Coups de cœur du jour'}
@@ -54,7 +54,7 @@ export default function SocialLinks() {
 
         {/* Call to action */}
         <div className="text-center mt-12">
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-lg text-black mb-6">
             Restez connecté pour ne manquer aucune de nos offres spéciales !
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

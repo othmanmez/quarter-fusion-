@@ -48,7 +48,7 @@ export default async function DashboardStats() {
               {card.icon}
             </div>
             <div className="ml-4 flex-1">
-              <p className="text-sm font-medium text-gray-600">{card.title}</p>
+              <p className="text-sm font-medium text-black">{card.title}</p>
               <p className="text-2xl font-semibold text-gray-900">{card.value}</p>
               <div className="flex items-center mt-1">
                 <span 

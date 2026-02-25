@@ -26,7 +26,7 @@ export default function AdminGuard({ children, fallback }: AdminGuardProps) {
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
             Accès non autorisé
           </h1>
-          <p className="text-gray-600">
+          <p className="text-black">
             Vous devez être connecté en tant qu'administrateur pour accéder à cette page.
           </p>
         </div>

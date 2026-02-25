@@ -68,10 +68,10 @@ export default function CommanderPage() {
       <section className="py-16 bg-gradient-to-b from-red-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-black-900 mb-4">
               Comment souhaitez-vous <span className="text-red-700">commander</span> ?
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-black max-w-3xl mx-auto">
               Choisissez votre mode de commande préféré pour déguster nos délicieux plats
             </p>
           </div>
@@ -99,7 +99,7 @@ export default function CommanderPage() {
                     </span>
                   )}
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-black mb-6">
                   Commandez en ligne et venez récupérer votre commande directement au restaurant
                 </p>
                 <div className="space-y-3 text-sm text-gray-500 mb-6">
@@ -149,7 +149,7 @@ export default function CommanderPage() {
                     </span>
                   )}
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-black mb-6">
                   Recevez votre commande directement chez vous, chaud et savoureux
                 </p>
                 <div className="space-y-3 text-sm text-gray-500 mb-6">

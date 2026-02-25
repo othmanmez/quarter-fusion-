@@ -8,9 +8,10 @@ interface OrderConfirmationProps {
   orderNumber: string;
   onNewOrder: () => void;
   mode: 'click-and-collect' | 'delivery';
+  deliveryFee?: number;
 }
 
-export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: OrderConfirmationProps) {
+export default function OrderConfirmation({ orderNumber, onNewOrder, mode, deliveryFee: deliveryFeeProp }: OrderConfirmationProps) {
   const { state } = useOrder();
 
   const renderCustomizations = (customizations?: any[]) => {
@@ -36,9 +37,8 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
     );
   };
 
-  // Calculer le total
   const subtotal = getCartSubtotal(state.cart);
-  const deliveryFee = mode === 'delivery' ? 2.50 : 0;
+  const deliveryFee = mode === 'delivery' ? (deliveryFeeProp ?? 2.50) : 0;
   const total = subtotal + deliveryFee;
 
   return (
@@ -64,7 +64,7 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
           <div className="p-6">
             {/* Numéro de commande */}
             <div className="text-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              <h2 className="text-lg font-semibold text-black mb-2">
                 Numéro de commande
               </h2>
               <div className="bg-gray-100 rounded-lg p-4">
@@ -76,34 +76,34 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
 
             {/* Informations client */}
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              <h3 className="text-lg font-semibold text-black mb-3">
                 Informations client
               </h3>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="font-medium text-gray-700">Nom :</span>
-                    <p className="text-gray-900">{state.customerInfo.firstName} {state.customerInfo.lastName}</p>
+                    <span className="font-medium text-black">Nom :</span>
+                    <p className="text-black">{state.customerInfo.firstName} {state.customerInfo.lastName}</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Téléphone :</span>
-                    <p className="text-gray-900">{state.customerInfo.phone}</p>
+                    <span className="font-medium text-black">Téléphone :</span>
+                    <p className="text-black">{state.customerInfo.phone}</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Email :</span>
-                    <p className="text-gray-900">{state.customerInfo.email}</p>
+                    <span className="font-medium text-black">Email :</span>
+                    <p className="text-black">{state.customerInfo.email}</p>
                   </div>
                   <div>
-                    <span className="font-medium text-gray-700">Paiement :</span>
-                    <p className="text-gray-900 capitalize">
+                    <span className="font-medium text-black">Paiement :</span>
+                    <p className="text-black capitalize">
                       {state.customerInfo.paymentMethod === 'especes' ? 'Espèces' : 'Carte bancaire'}
                     </p>
                   </div>
                   {mode === 'delivery' && (
                     <>
                       <div className="md:col-span-2">
-                        <span className="font-medium text-gray-700">Adresse de livraison :</span>
-                        <p className="text-gray-900">
+                        <span className="font-medium text-black">Adresse de livraison :</span>
+                        <p className="text-black">
                           {state.customerInfo.deliveryAddress}, {state.customerInfo.deliveryCity}
                         </p>
                       </div>
@@ -115,7 +115,7 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
 
             {/* Récapitulatif de la commande */}
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              <h3 className="text-lg font-semibold text-black mb-3">
                 Récapitulatif de votre commande
               </h3>
               <div className="bg-gray-50 rounded-lg p-4">
@@ -123,12 +123,15 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
                   {state.cart.map((cartItem) => (
                     <div key={cartItem.item._id} className="flex justify-between items-center">
                       <div>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-black">
                           {cartItem.quantity} × {cartItem.item.title}
                         </span>
+                        {cartItem.quantity > 1 && (
+                          <p className="text-xs text-black">{cartItem.quantity} × {(cartItem.item.price).toFixed(2)}€</p>
+                        )}
                         {renderCustomizations(cartItem.item.customizations)}
                       </div>
-                      <span className="text-gray-700">
+                      <span className="text-black font-medium">
                         {getCartItemTotal(cartItem).toFixed(2)}€
                       </span>
                     </div>
@@ -137,17 +140,17 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
                 
                 <div className="border-t mt-4 pt-4 space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Sous-total :</span>
-                    <span className="font-medium">{subtotal.toFixed(2)}€</span>
+                    <span className="text-black">Sous-total :</span>
+                    <span className="font-medium text-black">{subtotal.toFixed(2)}€</span>
                   </div>
                   {mode === 'delivery' && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Frais de livraison :</span>
-                      <span className="font-medium">{deliveryFee.toFixed(2)}€</span>
+                      <span className="text-black">Frais de livraison :</span>
+                      <span className="font-medium text-black">{deliveryFee.toFixed(2)}€</span>
                     </div>
                   )}
                   <div className="flex justify-between text-lg font-bold border-t pt-2">
-                    <span>Total :</span>
+                    <span className="text-black">Total :</span>
                     <span className="text-red-600">{total.toFixed(2)}€</span>
                   </div>
                 </div>
@@ -157,18 +160,18 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
             {/* Notes */}
             {state.customerInfo.notes && (
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Notes spéciales
-                </h3>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-gray-700">{state.customerInfo.notes}</p>
-                </div>
+              <h3 className="text-lg font-semibold text-black mb-3">
+                Notes spéciales
+              </h3>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-black">{state.customerInfo.notes}</p>
+              </div>
               </div>
             )}
 
             {/* Informations importantes */}
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              <h3 className="text-lg font-semibold text-black mb-3">
                 Prochaines étapes
               </h3>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -200,11 +203,11 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode }: Ord
 
             {/* Contact */}
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              <h3 className="text-lg font-semibold text-black mb-3">
                 Besoin d'aide ?
               </h3>
               <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-700 mb-2">
+                <p className="text-sm text-black mb-2">
                   Pour toute question concernant votre commande :
                 </p>
                 <div className="flex items-center justify-center space-x-4">

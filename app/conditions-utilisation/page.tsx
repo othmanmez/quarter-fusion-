@@ -10,7 +10,7 @@ export default function ConditionsUtilisationPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               Conditions <span className="text-red-700">d'utilisation</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-black max-w-3xl mx-auto">
               Règles d'utilisation du site {siteData.restaurant.name}
             </p>
           </div>
