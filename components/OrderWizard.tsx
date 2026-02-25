@@ -363,14 +363,36 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                   </div>
 
                   {/* Bouton pour passer à l'étape suivante */}
-                  {state.currentStep === 1 && state.cart.length > 0 && (
-                    <button
-                      onClick={handleNext}
-                      className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200"
-                    >
-                      Continuer ({state.cart.reduce((count, item) => count + item.quantity, 0)} articles)
-                    </button>
-                  )}
+                  {state.currentStep === 1 && state.cart.length > 0 && (() => {
+                    const subtotal = getCartSubtotal(state.cart);
+                    const belowMinimum = mode === 'delivery' && subtotal < 20;
+                    return (
+                      <>
+                        {belowMinimum && (
+                          <div className="mt-4 p-3 bg-orange-50 border border-orange-300 rounded-lg text-center">
+                            <p className="text-sm font-semibold text-orange-700">
+                              Livraison impossible
+                            </p>
+                            <p className="text-xs text-orange-600 mt-1">
+                              Minimum de commande : 20,00€ hors frais de livraison<br />
+                              (panier actuel : {subtotal.toFixed(2)}€)
+                            </p>
+                          </div>
+                        )}
+                        <button
+                          onClick={handleNext}
+                          disabled={belowMinimum}
+                          className={`w-full mt-4 py-2 px-4 rounded-lg font-medium transition-colors duration-200 ${
+                            belowMinimum
+                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                              : 'bg-red-600 hover:bg-red-700 text-white'
+                          }`}
+                        >
+                          Continuer ({state.cart.reduce((count, item) => count + item.quantity, 0)} articles)
+                        </button>
+                      </>
+                    );
+                  })()}
                 </>
               )}
             </div>

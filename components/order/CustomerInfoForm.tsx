@@ -194,6 +194,10 @@ export default function CustomerInfoForm({ onConfirm, onSendOtp, onPrev, mode, i
     }
 
     if (mode === 'delivery') {
+      const subtotal = getCartSubtotal(state.cart);
+      if (subtotal < 20) {
+        newErrors.general = `Livraison impossible — montant minimum 20,00€ hors frais de livraison (panier actuel : ${subtotal.toFixed(2)}€)`;
+      }
       if (!state.customerInfo.deliveryAddress?.trim()) {
         newErrors.deliveryAddress = 'L\'adresse de livraison est requise';
       } else if (!addressVerified) {
@@ -280,6 +284,12 @@ export default function CustomerInfoForm({ onConfirm, onSendOtp, onPrev, mode, i
 
       {/* Formulaire */}
       <form onSubmit={handleSubmit} className="p-6">
+        {errors.general && (
+          <div className="mb-6 p-4 bg-orange-50 border border-orange-300 rounded-lg">
+            <p className="text-sm font-semibold text-orange-700">Livraison impossible</p>
+            <p className="text-sm text-orange-600 mt-1">{errors.general}</p>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Prénom */}
           <div>
@@ -486,13 +496,13 @@ export default function CustomerInfoForm({ onConfirm, onSendOtp, onPrev, mode, i
                   id="deliveryCity"
                   value={state.customerInfo.deliveryCity || ''}
                   onChange={(e) => handleInputChange('deliveryCity', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-black ${
                     errors.deliveryCity ? 'border-red-500' : 'border-gray-300'
                   }`}
                 >
-                  <option value="">Sélectionnez votre ville</option>
+                  <option value="" className="text-black">Sélectionnez votre ville</option>
                   {deliveryCities.map((city) => (
-                    <option key={city.id} value={city.name}>
+                    <option key={city.id} value={city.name} className="text-black">
                       {city.name} {city.postalCode && `(${city.postalCode})`} - {city.deliveryFee.toFixed(2)}€
                     </option>
                   ))}
