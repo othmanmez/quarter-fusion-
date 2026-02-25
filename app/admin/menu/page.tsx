@@ -52,6 +52,23 @@ export default function AdminMenuPage() {
   // Bestseller toggle
   const [bestSellerLoading, setBestSellerLoading] = useState<string | null>(null);
 
+  // Migration drinkPrice
+  const handleFixDrinkPrice = async () => {
+    if (!confirm('Mettre tous les prix de boisson à 2€ pour les menus qui ont cette option ?')) return;
+    try {
+      const res = await fetch('/api/admin/fix-drink-price', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert(`✅ ${data.message}`);
+        fetchMenuItems();
+      } else {
+        alert('Erreur : ' + (data.error || 'inconnue'));
+      }
+    } catch {
+      alert('Erreur réseau');
+    }
+  };
+
   useEffect(() => {
     if (status === 'loading') return;
     
@@ -279,6 +296,13 @@ export default function AdminMenuPage() {
               </p>
             </div>
             <div className="flex gap-3">
+              <button
+                onClick={handleFixDrinkPrice}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm"
+                title="Corriger prix boisson → 2€"
+              >
+                🥤 Fixer boisson 2€
+              </button>
               {menuItems.length > 0 && (
                 <button
                   onClick={handleDeleteAll}

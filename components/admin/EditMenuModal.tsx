@@ -323,14 +323,17 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                 {formData.allowDrinkOption && (
                   <div className="flex-1">
                     <label htmlFor="drinkPrice" className="block text-sm font-medium text-gray-700 mb-1">
-                      Prix de l'option boisson
+                      Prix de l'option boisson (€)
                     </label>
                     <div className="flex items-center">
                       <input
                         type="number"
                         id="drinkPrice"
                         value={formData.drinkPrice}
-                        onChange={(e) => setFormData(prev => ({ ...prev, drinkPrice: parseFloat(e.target.value) || 0 }))}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value);
+                          setFormData(prev => ({ ...prev, drinkPrice: isNaN(val) ? 0 : val }));
+                        }}
                         min="0"
                         step="0.01"
                         className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -338,7 +341,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                       <span className="ml-2 text-sm text-black">€</span>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      Ex: 1.50 pour ajouter une boisson
+                      Prix appliqué quand le client ajoute une boisson au menu
                     </p>
                   </div>
                 )}
