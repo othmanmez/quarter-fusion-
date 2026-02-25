@@ -46,7 +46,7 @@ export interface OrderState {
 
 // Actions pour le reducer
 type OrderAction =
-  | { type: 'ADD_TO_CART'; payload: MenuItem }
+  | { type: 'ADD_TO_CART'; payload: MenuItem; quantity?: number }
   | { type: 'REMOVE_FROM_CART'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { cartItemId: string; quantity: number } }
   | { type: 'CLEAR_CART' }
@@ -88,20 +88,21 @@ function orderReducer(state: OrderState, action: OrderAction): OrderState {
   switch (action.type) {
     case 'ADD_TO_CART': {
       const newKey = getCartItemKey(action.payload);
+      const qty = action.quantity ?? 1;
       const existingItem = state.cart.find(cartItem => cartItem.cartItemId === newKey);
       if (existingItem) {
         return {
           ...state,
           cart: state.cart.map(cartItem =>
             cartItem.cartItemId === newKey
-              ? { ...cartItem, quantity: cartItem.quantity + 1 }
+              ? { ...cartItem, quantity: cartItem.quantity + qty }
               : cartItem
           ),
         };
       } else {
         return {
           ...state,
-          cart: [...state.cart, { cartItemId: newKey, item: action.payload, quantity: 1 }],
+          cart: [...state.cart, { cartItemId: newKey, item: action.payload, quantity: qty }],
         };
       }
     }
@@ -171,7 +172,7 @@ interface OrderContextType {
   state: OrderState;
   dispatch: React.Dispatch<OrderAction>;
   // Méthodes utilitaires
-  addToCart: (item: MenuItem) => void;
+  addToCart: (item: MenuItem, quantity?: number) => void;
   removeFromCart: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -189,8 +190,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(orderReducer, initialState);
 
   // Méthodes utilitaires
-  const addToCart = (item: MenuItem) => {
-    dispatch({ type: 'ADD_TO_CART', payload: item });
+  const addToCart = (item: MenuItem, quantity: number = 1) => {
+    dispatch({ type: 'ADD_TO_CART', payload: item, quantity });
   };
 
   const removeFromCart = (cartItemId: string) => {
