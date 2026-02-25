@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       select: { id: true, title: true, drinkPrice: true },
     });
 
-    const toFix = items.filter(i => i.drinkPrice === 1.5 || i.drinkPrice == null);
+    const toFix = items.filter(i => i.drinkPrice === 1.5);
 
     return NextResponse.json({
       success: true,
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
         id: i.id,
         title: i.title,
         drinkPrice: i.drinkPrice,
-        needsFix: i.drinkPrice === 1.5 || i.drinkPrice == null,
+        needsFix: i.drinkPrice === 1.5,
       })),
     });
   } catch (error) {
@@ -51,19 +51,10 @@ export async function POST(request: NextRequest) {
       data: { drinkPrice: 2 },
     });
 
-    // Aussi corriger les null
-    const resultNull = await prisma.menu.updateMany({
-      where: {
-        allowDrinkOption: true,
-        drinkPrice: { equals: null },
-      },
-      data: { drinkPrice: 2 },
-    });
-
     return NextResponse.json({
       success: true,
-      message: `${result.count + resultNull.count} article(s) mis à jour : drinkPrice → 2€`,
-      updated: result.count + resultNull.count,
+      message: `${result.count} article(s) mis à jour : drinkPrice → 2€`,
+      updated: result.count,
     });
   } catch (error) {
     console.error(error);
