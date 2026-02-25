@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const siteUrl = 'https://www.quarter-fusion.fr';
+const siteUrl = 'https://www.quarterfusion.fr';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

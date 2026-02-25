@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://www.quarter-fusion.fr";
+const siteUrl = "https://www.quarterfusion.fr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -113,7 +113,7 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "FastFoodRestaurant",
             "name": "Quarter Fusion",
-            "url": "https://www.quarter-fusion.fr",
+            "url": "https://www.quarterfusion.fr",
             "telephone": "01 30 17 31 78",
             "address": {
               "@type": "PostalAddress",
@@ -137,7 +137,7 @@ export default function RootLayout({
             ],
             "servesCuisine": ["Snack", "Fast Food", "Poulet", "Burger"],
             "priceRange": "€",
-            "hasMenu": "https://www.quarter-fusion.fr/click-and-collect",
+            "hasMenu": "https://www.quarterfusion.fr/click-and-collect",
             "acceptsReservations": false,
             "sameAs": [
               "https://www.tiktok.com/@quarter.fusion95",

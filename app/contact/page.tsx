@@ -6,11 +6,11 @@ export const metadata: Metadata = {
   title: 'Contact & Horaires – Quarter Fusion Cergy',
   description: 'Contactez Quarter Fusion à Cergy : téléphone 01 30 17 31 78, adresse 6 passage de l\'aurore 95800 Cergy. Ouvert tous les jours de 18h à 2h.',
   keywords: ['contact quarter fusion', 'horaires quarter fusion', 'adresse cergy snack', 'téléphone quarter fusion'],
-  alternates: { canonical: 'https://www.quarter-fusion.fr/contact' },
+  alternates: { canonical: 'https://www.quarterfusion.fr/contact' },
   openGraph: {
     title: 'Contact & Horaires – Quarter Fusion Cergy',
     description: 'Quarter Fusion – 6 passage de l\'aurore, 95800 Cergy. Ouvert 7j/7 de 18h à 2h.',
-    url: 'https://www.quarter-fusion.fr/contact',
+    url: 'https://www.quarterfusion.fr/contact',
   },
 };
 

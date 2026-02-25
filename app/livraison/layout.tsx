@@ -15,12 +15,12 @@ export const metadata: Metadata = {
     'commande en ligne cergy',
   ],
   alternates: {
-    canonical: 'https://www.quarter-fusion.fr/livraison',
+    canonical: 'https://www.quarterfusion.fr/livraison',
   },
   openGraph: {
     title: 'Livraison à domicile – Quarter Fusion Cergy',
     description: 'Commandez en livraison sur Cergy et ses environs. Poulet croustillant, burgers, sandwichs livrés chez vous.',
-    url: 'https://www.quarter-fusion.fr/livraison',
+    url: 'https://www.quarterfusion.fr/livraison',
   },
 };
 

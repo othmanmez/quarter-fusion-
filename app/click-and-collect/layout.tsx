@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     'emporter cergy',
   ],
   alternates: {
-    canonical: 'https://www.quarter-fusion.fr/click-and-collect',
+    canonical: 'https://www.quarterfusion.fr/click-and-collect',
   },
   openGraph: {
     title: 'Menu & Click and Collect – Quarter Fusion Cergy',
     description: 'Découvrez notre menu et commandez en Click & Collect au 6 passage de l\'aurore, Cergy.',
-    url: 'https://www.quarter-fusion.fr/click-and-collect',
+    url: 'https://www.quarterfusion.fr/click-and-collect',
   },
 };
 
