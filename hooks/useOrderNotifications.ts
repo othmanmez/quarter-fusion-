@@ -22,6 +22,8 @@ export function useOrderNotifications({
   const audioErrorLogged = useRef<boolean>(false); // Flag pour éviter les logs répétitifs
   const fetchErrorLogged = useRef<boolean>(false);
   const consecutiveFailures = useRef<number>(0);
+  const alarmTimeoutRef = useRef<number | null>(null);
+  const alarmRunningRef = useRef<boolean>(false);
 
   // Initialiser l'audio
   useEffect(() => {
@@ -52,45 +54,51 @@ export function useOrderNotifications({
   }, []);
 
   // Fonction pour générer un son avec Web Audio API (fallback)
-  const playSystemSound = async (): Promise<boolean> => {
+  const playSystemSound = async (durationMs: number): Promise<boolean> => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       if (audioContext.state === 'suspended') {
         await audioContext.resume();
       }
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      const start = performance.now();
+      const beepPair = () => {
+        const now = audioContext.currentTime;
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+        const osc1 = audioContext.createOscillator();
+        const gain1 = audioContext.createGain();
+        osc1.connect(gain1);
+        gain1.connect(audioContext.destination);
+        osc1.frequency.value = 900;
+        osc1.type = 'sine';
+        gain1.gain.setValueAtTime(0.6, now); // plus fort
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc1.start(now);
+        osc1.stop(now + 0.25);
 
-      // Son de notification (fréquence 800Hz, durée 200ms)
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
+        const osc2 = audioContext.createOscillator();
+        const gain2 = audioContext.createGain();
+        osc2.connect(gain2);
+        gain2.connect(audioContext.destination);
+        osc2.frequency.value = 1100;
+        osc2.type = 'sine';
+        gain2.gain.setValueAtTime(0.6, now + 0.35);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.60);
+        osc2.start(now + 0.35);
+        osc2.stop(now + 0.60);
+      };
 
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+      // Rejouer une paire de bips toutes les ~900ms pendant la durée demandée
+      beepPair();
+      const intervalId = window.setInterval(() => {
+        if (performance.now() - start >= durationMs) {
+          window.clearInterval(intervalId);
+          // Fermer le contexte pour libérer les ressources
+          try { audioContext.close(); } catch { /* ignore */ }
+          return;
+        }
+        beepPair();
+      }, 900);
 
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.2);
-
-      // Deuxième bip après 100ms
-      setTimeout(() => {
-        const oscillator2 = audioContext.createOscillator();
-        const gainNode2 = audioContext.createGain();
-
-        oscillator2.connect(gainNode2);
-        gainNode2.connect(audioContext.destination);
-
-        oscillator2.frequency.value = 1000;
-        oscillator2.type = 'sine';
-
-        gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-
-        oscillator2.start(audioContext.currentTime);
-        oscillator2.stop(audioContext.currentTime + 0.2);
-      }, 100);
       return true;
     } catch (error) {
       return false;
@@ -98,18 +106,36 @@ export function useOrderNotifications({
   };
 
   // Fonction pour jouer le son
-  const playNotificationSound = async (): Promise<boolean> => {
+  const playNotificationSound = async (durationMs: number = 6000): Promise<boolean> => {
     try {
       if (audioRef.current) {
+        // Jouer en boucle pendant la durée demandée
+        audioRef.current.loop = true;
         audioRef.current.currentTime = 0;
         await audioRef.current.play();
+
+        if (alarmTimeoutRef.current) window.clearTimeout(alarmTimeoutRef.current);
+        alarmTimeoutRef.current = window.setTimeout(() => {
+          try {
+            if (audioRef.current) {
+              audioRef.current.pause();
+              audioRef.current.currentTime = 0;
+              audioRef.current.loop = false;
+            }
+          } catch {
+            // ignore
+          } finally {
+            alarmRunningRef.current = false;
+          }
+        }, durationMs);
+
         return true;
       }
     } catch {
       // fallback
     }
 
-    const ok = await playSystemSound();
+    const ok = await playSystemSound(durationMs);
     return ok;
   };
 
@@ -122,7 +148,7 @@ export function useOrderNotifications({
       // ignore
     }
     // Jouer un petit bip pour "débloquer" l'audio (interaction utilisateur requise)
-    const ok = await playNotificationSound();
+    const ok = await playNotificationSound(1200);
     if (!ok) setNeedsSoundActivation(true);
   };
 
@@ -182,8 +208,11 @@ export function useOrderNotifications({
             
             // Jouer le son de notification (si armé)
             if (soundArmed) {
-              const ok = await playNotificationSound();
-              if (!ok) setNeedsSoundActivation(true);
+              if (!alarmRunningRef.current) {
+                alarmRunningRef.current = true;
+                const ok = await playNotificationSound(6000);
+                if (!ok) setNeedsSoundActivation(true);
+              }
             } else {
               setNeedsSoundActivation(true);
             }
