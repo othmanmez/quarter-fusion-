@@ -176,12 +176,9 @@ export default function CustomizationModal({
       });
     });
     
-    // Ajouter le prix de la boisson si sélectionnée
+    // Ajouter le prix de la boisson si sélectionnée (on utilise item.drinkPrice, le prix spécial menu)
     if (drinkWanted && selectedDrink) {
-      const drink = availableDrinks.find(d => d.id === selectedDrink);
-      if (drink) {
-        total += drink.price * quantity;
-      }
+      total += (item.drinkPrice ?? 0) * quantity;
     }
     
     return total;
@@ -223,14 +220,14 @@ export default function CustomizationModal({
       })
       .filter(Boolean) as SelectedCustomization[];
 
-    // Ajouter la boisson si sélectionnée
+    // Ajouter la boisson si sélectionnée (prix = item.drinkPrice, le prix spécial menu)
     if (drinkWanted && selectedDrink) {
       const drink = availableDrinks.find(d => d.id === selectedDrink);
       if (drink) {
         selectedCustoms.push({
           name: `Boisson`,
           selectedOptions: [drink.title],
-          priceExtra: drink.price || 0
+          priceExtra: item.drinkPrice ?? 0
         });
       }
     }

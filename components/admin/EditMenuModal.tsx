@@ -55,7 +55,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
     availableForClickAndCollect: true,
     availableForDelivery: true,
     allowDrinkOption: false,
-    drinkPrice: 1.5,
+    drinkPrice: 2,
   });
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
           availableForClickAndCollect: menuItem.availableForClickAndCollect,
           availableForDelivery: menuItem.availableForDelivery,
           allowDrinkOption: menuItem.allowDrinkOption || false,
-          drinkPrice: menuItem.drinkPrice ?? 1.5,
+          drinkPrice: menuItem.drinkPrice ?? 2,
         });
         setError(null);
       }

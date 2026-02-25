@@ -72,9 +72,9 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
           <>
             {/* Articles */}
             <div className="space-y-4 mb-6">
-              {state.cart.map((cartItem, index) => (
+              {state.cart.map((cartItem) => (
                 <div
-                  key={`cart-item-${cartItem.item._id}-${index}`}
+                  key={cartItem.cartItemId}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
                   <div className="flex-1">
@@ -96,9 +96,9 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                       <button
                         onClick={() => {
                           if (cartItem.quantity > 1) {
-                            updateQuantity(cartItem.item._id || '', cartItem.quantity - 1);
+                            updateQuantity(cartItem.cartItemId, cartItem.quantity - 1);
                           } else {
-                            removeFromCart(cartItem.item._id || '');
+                            removeFromCart(cartItem.cartItemId);
                           }
                         }}
                         className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors duration-200"
@@ -109,7 +109,7 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                         {cartItem.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(cartItem.item._id || '', cartItem.quantity + 1)}
+                        onClick={() => updateQuantity(cartItem.cartItemId, cartItem.quantity + 1)}
                         className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors duration-200"
                       >
                         +
@@ -130,7 +130,7 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
 
                     {/* Bouton supprimer */}
                     <button
-                      onClick={() => removeFromCart(cartItem.item._id || '')}
+                      onClick={() => removeFromCart(cartItem.cartItemId)}
                       className="text-red-600 hover:text-red-800 p-1"
                       title="Supprimer"
                     >

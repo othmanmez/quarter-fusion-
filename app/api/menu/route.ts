@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
     const nextDrinkPrice =
       parsedDrinkPrice !== undefined && !Number.isNaN(parsedDrinkPrice)
         ? parsedDrinkPrice
-        : 1.5;
+        : 2;
 
     const menuItem = await prisma.menu.create({
       data: {

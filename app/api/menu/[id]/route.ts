@@ -141,7 +141,7 @@ export async function PUT(
     const nextDrinkPrice =
       parsedDrinkPrice !== undefined && !Number.isNaN(parsedDrinkPrice)
         ? parsedDrinkPrice
-        : (existingMenu.drinkPrice ?? 1.5);
+        : (existingMenu.drinkPrice ?? 2);
 
     const updatedMenuItem = await prisma.menu.update({
       where: { id: id },

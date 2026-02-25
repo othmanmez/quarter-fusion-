@@ -19,6 +19,7 @@ export interface MenuItem {
 }
 
 export interface CartItem {
+  cartItemId: string;
   item: MenuItem;
   quantity: number;
 }
@@ -47,7 +48,7 @@ export interface OrderState {
 type OrderAction =
   | { type: 'ADD_TO_CART'; payload: MenuItem }
   | { type: 'REMOVE_FROM_CART'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { itemId: string; quantity: number } }
+  | { type: 'UPDATE_QUANTITY'; payload: { cartItemId: string; quantity: number } }
   | { type: 'CLEAR_CART' }
   | { type: 'UPDATE_CUSTOMER_INFO'; payload: Partial<CustomerInfo> }
   | { type: 'SET_ORDER_MODE'; payload: 'click-and-collect' | 'delivery' }
@@ -72,16 +73,27 @@ const initialState: OrderState = {
   isLoading: false,
 };
 
+// Génère une clé unique pour identifier une ligne du panier (même article + mêmes personnalisations)
+function getCartItemKey(item: MenuItem): string {
+  const customizationsKey = JSON.stringify(
+    (item.customizations || []).map(c =>
+      typeof c === 'string' ? c : `${c.name}:${(c.selectedOptions || []).sort().join(',')}`
+    ).sort()
+  );
+  return `${item._id || item.id}__${customizationsKey}`;
+}
+
 // Reducer
 function orderReducer(state: OrderState, action: OrderAction): OrderState {
   switch (action.type) {
-    case 'ADD_TO_CART':
-      const existingItem = state.cart.find(cartItem => cartItem.item._id === action.payload._id);
+    case 'ADD_TO_CART': {
+      const newKey = getCartItemKey(action.payload);
+      const existingItem = state.cart.find(cartItem => cartItem.cartItemId === newKey);
       if (existingItem) {
         return {
           ...state,
           cart: state.cart.map(cartItem =>
-            cartItem.item._id === action.payload._id
+            cartItem.cartItemId === newKey
               ? { ...cartItem, quantity: cartItem.quantity + 1 }
               : cartItem
           ),
@@ -89,21 +101,22 @@ function orderReducer(state: OrderState, action: OrderAction): OrderState {
       } else {
         return {
           ...state,
-          cart: [...state.cart, { item: action.payload, quantity: 1 }],
+          cart: [...state.cart, { cartItemId: newKey, item: action.payload, quantity: 1 }],
         };
       }
+    }
 
     case 'REMOVE_FROM_CART':
       return {
         ...state,
-        cart: state.cart.filter(cartItem => cartItem.item._id !== action.payload),
+        cart: state.cart.filter(cartItem => cartItem.cartItemId !== action.payload),
       };
 
     case 'UPDATE_QUANTITY':
       return {
         ...state,
         cart: state.cart.map(cartItem =>
-          cartItem.item._id === action.payload.itemId
+          cartItem.cartItemId === action.payload.cartItemId
             ? { ...cartItem, quantity: action.payload.quantity }
             : cartItem
         ),
@@ -159,8 +172,8 @@ interface OrderContextType {
   dispatch: React.Dispatch<OrderAction>;
   // Méthodes utilitaires
   addToCart: (item: MenuItem) => void;
-  removeFromCart: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
+  removeFromCart: (cartItemId: string) => void;
+  updateQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   getCartItemCount: () => number;
@@ -180,15 +193,15 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'ADD_TO_CART', payload: item });
   };
 
-  const removeFromCart = (itemId: string) => {
-    dispatch({ type: 'REMOVE_FROM_CART', payload: itemId });
+  const removeFromCart = (cartItemId: string) => {
+    dispatch({ type: 'REMOVE_FROM_CART', payload: cartItemId });
   };
 
-  const updateQuantity = (itemId: string, quantity: number) => {
+  const updateQuantity = (cartItemId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(itemId);
+      removeFromCart(cartItemId);
     } else {
-      dispatch({ type: 'UPDATE_QUANTITY', payload: { itemId, quantity } });
+      dispatch({ type: 'UPDATE_QUANTITY', payload: { cartItemId, quantity } });
     }
   };
 
