@@ -38,8 +38,11 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
   // Calculer le sous-total
   const subtotal = getCartSubtotal(state.cart);
 
-  // Calculer les frais de livraison
-  const deliveryFee = state.orderMode === 'delivery' ? 2.50 : 0;
+  const hasDeliveryDetails =
+    state.orderMode === 'delivery' &&
+    Boolean(state.customerInfo.deliveryAddress?.trim()) &&
+    Boolean(state.customerInfo.deliveryCity?.trim());
+  const deliveryFee = hasDeliveryDetails ? (state.customerInfo.deliveryFee ?? 0) : 0;
 
   // Calculer le total
   const total = subtotal + deliveryFee;
@@ -151,10 +154,17 @@ export default function OrderSummary({ onNext, onPrev }: OrderSummaryProps) {
                   <span className="font-medium text-black">{subtotal.toFixed(2)}€</span>
                 </div>
 
-                {state.orderMode === 'delivery' && (
+                {state.orderMode === 'delivery' && hasDeliveryDetails && (
                   <div className="flex justify-between items-center">
                     <span className="text-black">Frais de livraison :</span>
                     <span className="font-medium text-black">{deliveryFee.toFixed(2)}€</span>
+                  </div>
+                )}
+
+                {state.orderMode === 'delivery' && !hasDeliveryDetails && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-black">Frais de livraison :</span>
+                    <span className="font-medium text-black">à calculer</span>
                   </div>
                 )}
 

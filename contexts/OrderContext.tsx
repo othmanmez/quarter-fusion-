@@ -33,6 +33,7 @@ export interface CustomerInfo {
   notes: string;
   deliveryAddress?: string;
   deliveryCity?: string;
+  deliveryFee?: number;
 }
 
 export interface OrderState {
@@ -67,6 +68,7 @@ const initialState: OrderState = {
     email: '',
     paymentMethod: 'especes',
     notes: '',
+    deliveryFee: 0,
   },
   orderMode: 'click-and-collect',
   currentStep: 1,

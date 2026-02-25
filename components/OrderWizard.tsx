@@ -321,7 +321,11 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                   <div className="border-t pt-4">
                     {(() => {
                       const subtotal = getCartSubtotal(state.cart);
-                      const deliveryFee = mode === 'delivery' ? 2.5 : 0;
+                      const hasDeliveryDetails =
+                        mode === 'delivery' &&
+                        Boolean(state.customerInfo.deliveryAddress?.trim()) &&
+                        Boolean(state.customerInfo.deliveryCity?.trim());
+                      const deliveryFee = hasDeliveryDetails ? (state.customerInfo.deliveryFee ?? 0) : 0;
                       const total = subtotal + deliveryFee;
 
                       return (
@@ -333,10 +337,17 @@ export default function OrderWizard({ mode }: OrderWizardProps) {
                       </span>
                     </div>
                     
-                    {mode === 'delivery' && (
+                    {mode === 'delivery' && hasDeliveryDetails && (
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm text-black">Frais de livraison :</span>
                         <span className="text-sm font-medium text-black">{deliveryFee.toFixed(2)}€</span>
+                      </div>
+                    )}
+
+                    {mode === 'delivery' && !hasDeliveryDetails && (
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-black">Frais de livraison :</span>
+                        <span className="text-sm font-medium text-black">à calculer</span>
                       </div>
                     )}
                     

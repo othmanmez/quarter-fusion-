@@ -90,11 +90,19 @@ export default function CustomerInfoForm({ onConfirm, onSendOtp, onPrev, mode, i
 
   // Mettre à jour les frais quand la ville change
   useEffect(() => {
-    if (state.customerInfo.deliveryCity) {
-      const cityData = deliveryCities.find(c => c.name === state.customerInfo.deliveryCity);
-      setSelectedCityData(cityData || null);
+    if (mode !== 'delivery') return;
+
+    const cityName = (state.customerInfo.deliveryCity || '').trim();
+    if (!cityName) {
+      setSelectedCityData(null);
+      dispatch({ type: 'UPDATE_CUSTOMER_INFO', payload: { deliveryFee: 0 } });
+      return;
     }
-  }, [state.customerInfo.deliveryCity, deliveryCities]);
+
+    const cityData = deliveryCities.find(c => c.name === cityName);
+    setSelectedCityData(cityData || null);
+    dispatch({ type: 'UPDATE_CUSTOMER_INFO', payload: { deliveryFee: cityData?.deliveryFee ?? 0 } });
+  }, [mode, state.customerInfo.deliveryCity, deliveryCities, dispatch]);
 
   // Fermer les suggestions en cliquant ailleurs
   useEffect(() => {

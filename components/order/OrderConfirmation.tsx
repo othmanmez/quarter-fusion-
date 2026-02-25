@@ -38,7 +38,11 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode, deliv
   };
 
   const subtotal = getCartSubtotal(state.cart);
-  const deliveryFee = mode === 'delivery' ? (deliveryFeeProp ?? 2.50) : 0;
+  const hasDeliveryDetails =
+    mode === 'delivery' &&
+    Boolean(state.customerInfo.deliveryAddress?.trim()) &&
+    Boolean(state.customerInfo.deliveryCity?.trim());
+  const deliveryFee = hasDeliveryDetails ? (deliveryFeeProp ?? state.customerInfo.deliveryFee ?? 0) : 0;
   const total = subtotal + deliveryFee;
 
   return (
@@ -143,10 +147,16 @@ export default function OrderConfirmation({ orderNumber, onNewOrder, mode, deliv
                     <span className="text-black">Sous-total :</span>
                     <span className="font-medium text-black">{subtotal.toFixed(2)}€</span>
                   </div>
-                  {mode === 'delivery' && (
+                  {mode === 'delivery' && hasDeliveryDetails && (
                     <div className="flex justify-between text-sm">
                       <span className="text-black">Frais de livraison :</span>
                       <span className="font-medium text-black">{deliveryFee.toFixed(2)}€</span>
+                    </div>
+                  )}
+                  {mode === 'delivery' && !hasDeliveryDetails && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-black">Frais de livraison :</span>
+                      <span className="font-medium text-black">à calculer</span>
                     </div>
                   )}
                   <div className="flex justify-between text-lg font-bold border-t pt-2">
