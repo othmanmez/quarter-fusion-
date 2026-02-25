@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ImageUploadField } from '@/app/components/admin/ImageUploadField';
+import { CupSoda, X } from 'lucide-react';
 
 interface MenuItem {
   id: string;
@@ -172,7 +173,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
               onClick={onClose}
               className="text-gray-400 hover:text-black"
             >
-              ✕
+              <X className="w-5 h-5" />
             </button>
           </div>
 
@@ -293,7 +294,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
               <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <span className="text-2xl">🥤</span>
+                    <CupSoda className="w-6 h-6 text-blue-700" />
                   </div>
                   <div className="ml-3">
                     <h4 className="text-sm font-medium text-blue-900">

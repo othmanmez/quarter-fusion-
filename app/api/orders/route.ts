@@ -520,6 +520,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
+    const { auth } = await import('@/lib/auth');
+    const session = await auth();
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+    }
+
     const { prisma } = await import('@/lib/prisma');
     
     const orders = await prisma.order.findMany({

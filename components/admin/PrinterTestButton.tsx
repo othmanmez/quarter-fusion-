@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Printer, Search, Loader2, BookOpen, CheckCircle2, XCircle } from 'lucide-react';
 
 export default function PrinterTestButton() {
   const [testing, setTesting] = useState(false);
@@ -61,7 +62,10 @@ export default function PrinterTestButton() {
     <div className="bg-white shadow-sm rounded-lg border border-gray-200">
       <div className="px-6 py-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-          🖨️ Test d'imprimante
+          <span className="inline-flex items-center gap-2">
+            <Printer className="w-5 h-5" />
+            Test d&apos;imprimante
+          </span>
         </h2>
         <p className="text-sm text-black mt-1">
           Testez votre imprimante thermique Epson WiFi
@@ -79,7 +83,10 @@ export default function PrinterTestButton() {
                   ? 'bg-green-100 text-green-800' 
                   : 'bg-red-100 text-red-800'
               }`}>
-                {printerStatus.enabled ? '✅ Oui' : '❌ Non'}
+                <span className="inline-flex items-center gap-1">
+                  {printerStatus.enabled ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                  {printerStatus.enabled ? 'Oui' : 'Non'}
+                </span>
               </span>
             </div>
             
@@ -90,7 +97,10 @@ export default function PrinterTestButton() {
                   ? 'bg-green-100 text-green-800' 
                   : 'bg-red-100 text-red-800'
               }`}>
-                {printerStatus.connected ? '✅ Oui' : '❌ Non'}
+                <span className="inline-flex items-center gap-1">
+                  {printerStatus.connected ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                  {printerStatus.connected ? 'Oui' : 'Non'}
+                </span>
               </span>
             </div>
             
@@ -112,7 +122,10 @@ export default function PrinterTestButton() {
             disabled={checking}
             className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
-            {checking ? '⏳ Vérification...' : '🔍 Vérifier le statut'}
+            <span className="inline-flex items-center justify-center gap-2">
+              {checking ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              {checking ? 'Vérification...' : 'Vérifier le statut'}
+            </span>
           </button>
 
           <button
@@ -120,14 +133,20 @@ export default function PrinterTestButton() {
             disabled={testing}
             className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
-            {testing ? '⏳ Impression...' : '🖨️ Imprimer un test'}
+            <span className="inline-flex items-center justify-center gap-2">
+              {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />}
+              {testing ? 'Impression...' : 'Imprimer un test'}
+            </span>
           </button>
         </div>
 
         {/* Instructions */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h3 className="text-sm font-medium text-blue-900 mb-2">
-            📘 Instructions
+            <span className="inline-flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              Instructions
+            </span>
           </h3>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Cliquez sur "Vérifier le statut" pour tester la connexion</li>

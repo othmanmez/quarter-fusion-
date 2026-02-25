@@ -1,4 +1,5 @@
 import { getDashboardData } from '@/lib/admin/dashboard';
+import { Package, Wallet, ShoppingCart, Hourglass, TrendingUp, TrendingDown } from 'lucide-react';
 
 export default async function DashboardStats() {
   const data = await getDashboardData();
@@ -8,7 +9,7 @@ export default async function DashboardStats() {
     {
       title: 'Commandes aujourd\'hui',
       value: stats.ordersToday,
-      icon: '📦',
+      icon: <Package className="w-6 h-6" />,
       color: 'bg-blue-500',
       change: '+12%',
       trend: 'up' as const,
@@ -16,7 +17,7 @@ export default async function DashboardStats() {
     {
       title: 'Chiffre d\'affaires',
       value: `${stats.revenueToday.toFixed(2)}€`,
-      icon: '💰',
+      icon: <Wallet className="w-6 h-6" />,
       color: 'bg-green-500',
       change: '+8%',
       trend: 'up' as const,
@@ -24,7 +25,7 @@ export default async function DashboardStats() {
     {
       title: 'Panier moyen',
       value: `${stats.averageOrderValue.toFixed(2)}€`,
-      icon: '🛒',
+      icon: <ShoppingCart className="w-6 h-6" />,
       color: 'bg-purple-500',
       change: '+2%',
       trend: 'up' as const,
@@ -32,7 +33,7 @@ export default async function DashboardStats() {
     {
       title: 'En attente',
       value: stats.pendingOrders,
-      icon: '⏳',
+      icon: <Hourglass className="w-6 h-6" />,
       color: stats.pendingOrders > 5 ? 'bg-red-500' : 'bg-orange-500',
       change: stats.pendingOrders > 0 ? 'Action requise' : 'Tout ok',
       trend: stats.pendingOrders > 5 ? 'down' : 'up' as const,
@@ -56,7 +57,10 @@ export default async function DashboardStats() {
                     card.trend === 'up' ? 'text-green-600' : 'text-red-600'
                   }`}
                 >
-                  {card.trend === 'up' ? '↗' : '↘'} {card.change}
+                  <span className="inline-flex items-center gap-1">
+                    {card.trend === 'up' ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                    {card.change}
+                  </span>
                 </span>
               </div>
             </div>

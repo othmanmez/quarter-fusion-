@@ -6,6 +6,15 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import EditMenuModal from '../../../components/admin/EditMenuModal';
 import CustomizationsModal from '../../../components/admin/CustomizationsModal';
+import {
+  CupSoda,
+  Trash2,
+  Star,
+  Loader2,
+  Palette,
+  Pencil,
+  UtensilsCrossed,
+} from 'lucide-react';
 
 interface MenuItem {
   id: string;
@@ -301,7 +310,10 @@ export default function AdminMenuPage() {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm"
                 title="Corriger prix boisson → 2€"
               >
-                🥤 Fixer boisson 2€
+                <span className="inline-flex items-center gap-2">
+                  <CupSoda className="w-4 h-4" />
+                  Fixer boisson 2€
+                </span>
               </button>
               {menuItems.length > 0 && (
                 <button
@@ -309,7 +321,10 @@ export default function AdminMenuPage() {
                   className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg font-medium"
                   title="Supprimer tous les menus"
                 >
-                  🗑️ Supprimer tout
+                  <span className="inline-flex items-center gap-2">
+                    <Trash2 className="w-4 h-4" />
+                    Supprimer tout
+                  </span>
                 </button>
               )}
             <Link
@@ -329,7 +344,7 @@ export default function AdminMenuPage() {
                 : 'bg-orange-50 border-orange-400'
             }`}>
               <div className="flex items-center gap-3">
-                <span className="text-2xl">⭐</span>
+                <Star className="w-6 h-6 text-orange-600 fill-orange-600" />
                 <div>
                   <p className="text-sm font-semibold text-gray-900">
                     Best-sellers page d&apos;accueil —{' '}
@@ -347,7 +362,10 @@ export default function AdminMenuPage() {
                 <div className="ml-4 flex flex-col gap-1">
                   {menuItems.filter(m => m.isBestSeller).map(m => (
                     <span key={m.id} className="text-xs bg-yellow-200 text-yellow-900 px-2 py-0.5 rounded-full font-medium">
-                      ⭐ {m.title}
+                      <span className="inline-flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5 text-yellow-900 fill-yellow-900" />
+                        {m.title}
+                      </span>
                     </span>
                   ))}
                 </div>
@@ -360,7 +378,7 @@ export default function AdminMenuPage() {
             <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <span className="text-2xl">🎨</span>
+                  <Palette className="w-6 h-6 text-purple-700" />
                 </div>
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-purple-900">
@@ -368,7 +386,7 @@ export default function AdminMenuPage() {
                   </h3>
                   <div className="mt-2 text-sm text-purple-800">
                     <p>
-                      Cliquez sur <strong className="bg-purple-600 text-white px-2 py-0.5 rounded text-xs">🎨 Personnaliser</strong> pour configurer les options de chaque plat (sauces, suppléments, ingrédients à retirer, etc.).
+                      Cliquez sur <strong className="bg-purple-600 text-white px-2 py-0.5 rounded text-xs inline-flex items-center gap-1"><Palette className="w-3.5 h-3.5" /> Personnaliser</strong> pour configurer les options de chaque plat (sauces, suppléments, ingrédients à retirer, etc.).
                       Les boissons ne peuvent pas être personnalisées.
                     </p>
                   </div>
@@ -524,11 +542,15 @@ export default function AdminMenuPage() {
                         onClick={() => toggleBestSeller(item)}
                         disabled={bestSellerLoading === item.id}
                         title={item.isBestSeller ? 'Retirer des bestsellers' : 'Ajouter aux bestsellers'}
-                        className={`text-2xl transition-transform hover:scale-110 disabled:opacity-50 disabled:cursor-wait ${
-                          item.isBestSeller ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'
-                        }`}
+                        className="transition-transform hover:scale-110 disabled:opacity-50 disabled:cursor-wait inline-flex items-center justify-center"
                       >
-                        {bestSellerLoading === item.id ? '⏳' : item.isBestSeller ? '⭐' : '☆'}
+                        {bestSellerLoading === item.id ? (
+                          <Loader2 className="w-6 h-6 animate-spin text-gray-500" />
+                        ) : item.isBestSeller ? (
+                          <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+                        ) : (
+                          <Star className="w-6 h-6 text-gray-300 hover:text-yellow-300" />
+                        )}
                       </button>
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
@@ -582,27 +604,39 @@ export default function AdminMenuPage() {
                             className="px-3 py-1.5 bg-purple-600 text-white text-xs font-medium rounded hover:bg-purple-700 transition-colors"
                             title="Gérer les personnalisations (sauces, suppléments, etc.)"
                           >
-                            🎨 Personnaliser
+                            <span className="inline-flex items-center gap-1">
+                              <Palette className="w-3.5 h-3.5" />
+                              Personnaliser
+                            </span>
                           </button>
                         ) : (
                           <span 
                             className="px-3 py-1.5 bg-gray-200 text-gray-500 text-xs font-medium rounded cursor-not-allowed"
                             title="Les boissons n'ont pas de personnalisations"
                           >
-                            🎨 Personnaliser
+                            <span className="inline-flex items-center gap-1">
+                              <Palette className="w-3.5 h-3.5" />
+                              Personnaliser
+                            </span>
                           </span>
                         )}
                         <button
                           onClick={() => handleEditMenuItem(item)}
                           className="text-indigo-600 hover:text-indigo-900 font-medium"
                         >
-                          ✏️ Modifier
+                          <span className="inline-flex items-center gap-1">
+                            <Pencil className="w-4 h-4" />
+                            Modifier
+                          </span>
                         </button>
                         <button
                           onClick={() => handleDelete(item.id, item.title)}
                           className="text-red-600 hover:text-red-900 font-medium"
                         >
-                          🗑️ Supprimer
+                          <span className="inline-flex items-center gap-1">
+                            <Trash2 className="w-4 h-4" />
+                            Supprimer
+                          </span>
                         </button>
                       </div>
                     </td>
@@ -614,7 +648,9 @@ export default function AdminMenuPage() {
 
           {filteredMenus.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">🍽️</div>
+              <div className="flex justify-center mb-4">
+                <UtensilsCrossed className="w-16 h-16 text-gray-300" />
+              </div>
               <h3 className="text-xl font-medium text-black mb-2">
                 Aucun menu trouvé
               </h3>

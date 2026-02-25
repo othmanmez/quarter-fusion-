@@ -3,6 +3,19 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import {
+  RefreshCw,
+  Printer,
+  Trash2,
+  Loader2,
+  Truck,
+  Store,
+  ClipboardList,
+  Banknote,
+  CreditCard,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
 
 interface OrderItem {
   title: string;
@@ -62,6 +75,7 @@ export default function AdminOrdersPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -182,6 +196,28 @@ export default function AdminOrdersPage() {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
+  const deleteOrder = async (orderId: string, orderNumber: string) => {
+    const ok = confirm(`Supprimer définitivement la commande ${orderNumber} ?\n\nCette action est irréversible.`);
+    if (!ok) return;
+
+    setDeletingOrderId(orderId);
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setOrders(prev => prev.filter(o => o.id !== orderId));
+        if (expandedOrder === orderId) setExpandedOrder(null);
+      } else {
+        alert('Erreur suppression: ' + (data.error || 'Erreur inconnue'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erreur réseau lors de la suppression');
+    } finally {
+      setDeletingOrderId(null);
+    }
+  };
+
   // Filtrer les commandes
   const filteredOrders = orders.filter(order => {
     const matchesStatus = selectedStatus === 'all' || order.status === selectedStatus;
@@ -192,6 +228,23 @@ export default function AdminOrdersPage() {
       order.customerPhone.includes(searchTerm);
     return matchesStatus && matchesSearch;
   });
+
+  // --- Chiffre d'affaires (basé sur la liste filtrée) ---
+  const effectiveOrders = filteredOrders.filter(o => o.status !== 'ANNULEE');
+  const revenue = effectiveOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const avgBasket = effectiveOrders.length > 0 ? revenue / effectiveOrders.length : 0;
+
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const revenueToday = effectiveOrders
+    .filter(o => new Date(o.createdAt) >= startOfDay)
+    .reduce((sum, o) => sum + (o.total || 0), 0);
+
+  const revenueMonth = effectiveOrders
+    .filter(o => new Date(o.createdAt) >= startOfMonth)
+    .reduce((sum, o) => sum + (o.total || 0), 0);
 
   if (status === 'loading' || loading) {
     return (
@@ -232,9 +285,10 @@ export default function AdminOrdersPage() {
             </div>
             <button
               onClick={fetchOrders}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium"
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2"
             >
-              🔄 Actualiser
+              <RefreshCw className="w-4 h-4" />
+              <span>Actualiser</span>
             </button>
           </div>
         </div>
@@ -281,6 +335,38 @@ export default function AdminOrdersPage() {
           </div>
         </div>
 
+        {/* Chiffre d'affaires */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Chiffre d&apos;affaires</h2>
+            <p className="text-xs text-gray-500">
+              Basé sur la liste filtrée (hors annulées)
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="text-xs font-medium text-gray-500">Commandes</div>
+              <div className="text-2xl font-bold text-gray-900">{effectiveOrders.length}</div>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="text-xs font-medium text-gray-500">CA total</div>
+              <div className="text-2xl font-bold text-gray-900">{revenue.toFixed(2)}€</div>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="text-xs font-medium text-gray-500">CA aujourd&apos;hui</div>
+              <div className="text-2xl font-bold text-gray-900">{revenueToday.toFixed(2)}€</div>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="text-xs font-medium text-gray-500">CA mois</div>
+              <div className="text-2xl font-bold text-gray-900">{revenueMonth.toFixed(2)}€</div>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="text-xs font-medium text-gray-500">Panier moyen</div>
+              <div className="text-2xl font-bold text-gray-900">{avgBasket.toFixed(2)}€</div>
+            </div>
+          </div>
+        </div>
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
           {Object.entries(STATUS_LABELS).map(([status, label]) => {
@@ -300,7 +386,9 @@ export default function AdminOrdersPage() {
         <div className="bg-white rounded-lg shadow overflow-hidden">
           {filteredOrders.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">📋</div>
+              <div className="flex justify-center mb-4">
+                <ClipboardList className="w-16 h-16 text-gray-300" />
+              </div>
               <h3 className="text-xl font-medium text-black mb-2">
                 Aucune commande trouvée
               </h3>
@@ -328,7 +416,17 @@ export default function AdminOrdersPage() {
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           order.isDelivery ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                         }`}>
-                          {order.isDelivery ? '🚚 Livraison' : '🏪 Click & Collect'}
+                          {order.isDelivery ? (
+                            <>
+                              <Truck className="w-3.5 h-3.5 mr-1" />
+                              Livraison
+                            </>
+                          ) : (
+                            <>
+                              <Store className="w-3.5 h-3.5 mr-1" />
+                              Click & Collect
+                            </>
+                          )}
                         </span>
                       </div>
                       <div className="text-sm text-black">
@@ -345,7 +443,17 @@ export default function AdminOrdersPage() {
                         {order.total.toFixed(2)}€
                       </div>
                       <div className="text-sm text-black">
-                        {order.paymentMethod === 'ESPECES' ? '💵 Espèces' : '💳 Carte'}
+                        {order.paymentMethod === 'ESPECES' ? (
+                          <span className="inline-flex items-center gap-1">
+                            <Banknote className="w-4 h-4" />
+                            Espèces
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1">
+                            <CreditCard className="w-4 h-4" />
+                            Carte
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -372,16 +480,39 @@ export default function AdminOrdersPage() {
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={() => toggleOrderDetails(order.id)}
-                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                      className="text-red-600 hover:text-red-700 text-sm font-medium inline-flex items-center gap-1"
                     >
-                      {expandedOrder === order.id ? '▼ Masquer les détails' : '▶ Voir les détails'}
+                      {expandedOrder === order.id ? (
+                        <>
+                          <ChevronDown className="w-4 h-4" />
+                          Masquer les détails
+                        </>
+                      ) : (
+                        <>
+                          <ChevronRight className="w-4 h-4" />
+                          Voir les détails
+                        </>
+                      )}
                     </button>
                     <button
                       onClick={() => handlePrint(order)}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center space-x-2"
                     >
-                      <span>🖨️</span>
+                      <Printer className="w-4 h-4" />
                       <span>Imprimer</span>
+                    </button>
+                    <button
+                      onClick={() => deleteOrder(order.id, order.orderNumber)}
+                      disabled={deletingOrderId === order.id}
+                      className="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-wait inline-flex items-center space-x-2"
+                      title="Supprimer définitivement"
+                    >
+                      {deletingOrderId === order.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                      <span>Supprimer</span>
                     </button>
                   </div>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { Car, Pencil, Trash2, Plus } from 'lucide-react';
 
 interface DeliveryCity {
   id: string;
@@ -160,7 +161,10 @@ export default function DeliveryCitiesManager() {
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">
-            🚗 Villes de livraison
+            <span className="inline-flex items-center gap-2">
+              <Car className="w-5 h-5" />
+              Villes de livraison
+            </span>
           </h2>
           <p className="text-sm text-black mt-1">
             Gérez les villes desservies et leurs frais de livraison
@@ -170,7 +174,10 @@ export default function DeliveryCitiesManager() {
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
         >
-          + Ajouter une ville
+          <span className="inline-flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Ajouter une ville
+          </span>
         </button>
       </div>
 
@@ -239,13 +246,19 @@ export default function DeliveryCitiesManager() {
                         onClick={() => handleEdit(city)}
                         className="text-blue-600 hover:text-blue-800 font-medium text-sm"
                       >
-                        ✏️ Modifier
+                        <span className="inline-flex items-center gap-1">
+                          <Pencil className="w-4 h-4" />
+                          Modifier
+                        </span>
                       </button>
                       <button
                         onClick={() => handleDelete(city.id)}
                         className="text-red-600 hover:text-red-800 font-medium text-sm"
                       >
-                        🗑️ Supprimer
+                        <span className="inline-flex items-center gap-1">
+                          <Trash2 className="w-4 h-4" />
+                          Supprimer
+                        </span>
                       </button>
                     </td>
                   </tr>

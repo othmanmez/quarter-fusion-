@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { CupSoda } from 'lucide-react';
 
 interface CustomizationOption {
   name: string;
@@ -344,7 +345,7 @@ export default function CustomizationModal({
             <div className="mb-6 border-t pt-6">
               <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
                 <div className="flex items-center">
-                  <span className="text-3xl mr-3">🥤</span>
+                  <CupSoda className="w-7 h-7 mr-3 text-blue-700" />
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-900">
                       Ajoutez une boisson

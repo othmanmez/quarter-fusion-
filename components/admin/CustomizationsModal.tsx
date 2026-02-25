@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Lightbulb, Rocket, Pencil, Trash2, Droplets, PlusCircle, Ban } from 'lucide-react';
 
 interface CustomizationOption {
   name: string;
@@ -199,7 +200,10 @@ export default function CustomizationsModal({
               Configurez les options et suppléments disponibles pour ce plat
             </p>
             <div className="bg-blue-50 border-l-4 border-blue-400 p-3 text-xs">
-              <p className="text-blue-900 font-medium mb-1">💡 Exemples de personnalisations :</p>
+              <p className="text-blue-900 font-medium mb-1 inline-flex items-center gap-2">
+                <Lightbulb className="w-4 h-4" />
+                Exemples de personnalisations :
+              </p>
               <ul className="text-blue-800 space-y-1">
                 <li>• <strong>Choix unique</strong> : Sauce (Ketchup, Mayo, BBQ), Taille (Petite, Moyenne, Grande)</li>
                 <li>• <strong>Choix multiples</strong> : Suppléments (Fromage +1€, Bacon +1.50€, Oignons gratuit)</li>
@@ -269,14 +273,14 @@ export default function CustomizationsModal({
                             className="text-blue-600 hover:text-blue-800 p-1"
                             title="Modifier"
                           >
-                            ✏️
+                            <Pencil className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => custom.id && handleDelete(custom.id, custom.name)}
                             className="text-red-600 hover:text-red-800 p-1"
                             title="Supprimer"
                           >
-                            🗑️
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
@@ -289,7 +293,10 @@ export default function CustomizationsModal({
             {/* Modèles rapides */}
             {!showAddForm && customizations.length === 0 && (
               <div className="border rounded-lg p-4 bg-gray-50">
-                <h4 className="font-medium text-gray-900 mb-3">🚀 Modèles rapides</h4>
+                <h4 className="font-medium text-gray-900 mb-3 inline-flex items-center gap-2">
+                  <Rocket className="w-4 h-4" />
+                  Modèles rapides
+                </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <button
                     onClick={() => {
@@ -308,7 +315,10 @@ export default function CustomizationsModal({
                     }}
                     className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
                   >
-                    <div className="font-medium text-sm text-gray-900">🍯 Choix de sauce</div>
+                    <div className="font-medium text-sm text-gray-900 inline-flex items-center gap-2">
+                      <Droplets className="w-4 h-4" />
+                      Choix de sauce
+                    </div>
                     <div className="text-xs text-black">Sauces classiques gratuites</div>
                   </button>
                   <button
@@ -328,7 +338,10 @@ export default function CustomizationsModal({
                     }}
                     className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
                   >
-                    <div className="font-medium text-sm text-gray-900">➕ Suppléments</div>
+                    <div className="font-medium text-sm text-gray-900 inline-flex items-center gap-2">
+                      <PlusCircle className="w-4 h-4" />
+                      Suppléments
+                    </div>
                     <div className="text-xs text-black">Ingrédients additionnels</div>
                   </button>
                   <button
@@ -347,7 +360,10 @@ export default function CustomizationsModal({
                     }}
                     className="p-3 border border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 text-left transition-colors"
                   >
-                    <div className="font-medium text-sm text-gray-900">🚫 Retirer ingrédient</div>
+                    <div className="font-medium text-sm text-gray-900 inline-flex items-center gap-2">
+                      <Ban className="w-4 h-4" />
+                      Retirer ingrédient
+                    </div>
                     <div className="text-xs text-black">Options de suppression</div>
                   </button>
                 </div>
@@ -489,7 +505,7 @@ export default function CustomizationsModal({
                             onClick={() => handleRemoveOption(index)}
                             className="px-3 py-2 text-red-600 hover:text-red-800"
                           >
-                            🗑️
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         )}
                       </div>
