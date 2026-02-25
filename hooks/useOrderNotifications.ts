@@ -7,12 +7,16 @@ interface UseOrderNotificationsProps {
   checkInterval?: number; // en millisecondes
 }
 
+const SOUND_ARMED_KEY = 'qf_admin_sound_armed_v1';
+
 export function useOrderNotifications({ 
   enabled = true, 
   checkInterval = 10000 // 10 secondes par défaut
 }: UseOrderNotificationsProps = {}) {
   const [lastOrderCount, setLastOrderCount] = useState<number>(0);
   const [newOrdersCount, setNewOrdersCount] = useState<number>(0);
+  const [soundArmed, setSoundArmed] = useState<boolean>(false);
+  const [needsSoundActivation, setNeedsSoundActivation] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const audioErrorLogged = useRef<boolean>(false); // Flag pour éviter les logs répétitifs
@@ -22,6 +26,13 @@ export function useOrderNotifications({
   // Initialiser l'audio
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      try {
+        const saved = window.localStorage.getItem(SOUND_ARMED_KEY);
+        setSoundArmed(saved === '1');
+      } catch {
+        // ignore
+      }
+
       // Essayer de charger le fichier audio
       audioRef.current = new Audio('/notification.mp3');
       audioRef.current.volume = 1.0;
@@ -41,9 +52,12 @@ export function useOrderNotifications({
   }, []);
 
   // Fonction pour générer un son avec Web Audio API (fallback)
-  const playSystemSound = () => {
+  const playSystemSound = async (): Promise<boolean> => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
@@ -77,25 +91,39 @@ export function useOrderNotifications({
         oscillator2.start(audioContext.currentTime);
         oscillator2.stop(audioContext.currentTime + 0.2);
       }, 100);
+      return true;
     } catch (error) {
-      console.error('Erreur lors de la génération du son système:', error);
+      return false;
     }
   };
 
   // Fonction pour jouer le son
-  const playNotificationSound = () => {
-    if (audioRef.current) {
-      // Essayer de jouer le fichier audio
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch((error) => {
-        console.warn('Impossible de jouer le fichier audio, utilisation du son système:', error);
-        // Fallback : utiliser le son système
-        playSystemSound();
-      });
-    } else {
-      // Si pas de fichier audio, utiliser le son système
-      playSystemSound();
+  const playNotificationSound = async (): Promise<boolean> => {
+    try {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        await audioRef.current.play();
+        return true;
+      }
+    } catch {
+      // fallback
     }
+
+    const ok = await playSystemSound();
+    return ok;
+  };
+
+  const armSound = async () => {
+    setNeedsSoundActivation(false);
+    setSoundArmed(true);
+    try {
+      window.localStorage.setItem(SOUND_ARMED_KEY, '1');
+    } catch {
+      // ignore
+    }
+    // Jouer un petit bip pour "débloquer" l'audio (interaction utilisateur requise)
+    const ok = await playNotificationSound();
+    if (!ok) setNeedsSoundActivation(true);
   };
 
   // Fonction pour afficher une notification navigateur
@@ -103,8 +131,8 @@ export function useOrderNotifications({
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('Quarter Fusion - Nouvelle commande !', {
         body: `${count} nouvelle${count > 1 ? 's' : ''} commande${count > 1 ? 's' : ''} reçue${count > 1 ? 's' : ''}`,
-        icon: '/images/logo-snack.png',
-        badge: '/images/logo-snack.png',
+        icon: '/icon.png',
+        badge: '/icon.png',
         tag: 'new-order',
         requireInteraction: true
       });
@@ -152,8 +180,13 @@ export function useOrderNotifications({
             const newCount = currentCount - lastOrderCount;
             setNewOrdersCount(prev => prev + newCount);
             
-            // Jouer le son de notification
-            playNotificationSound();
+            // Jouer le son de notification (si armé)
+            if (soundArmed) {
+              const ok = await playNotificationSound();
+              if (!ok) setNeedsSoundActivation(true);
+            } else {
+              setNeedsSoundActivation(true);
+            }
             
             // Afficher la notification navigateur
             showBrowserNotification(newCount);
@@ -178,7 +211,7 @@ export function useOrderNotifications({
     const interval = setInterval(checkNewOrders, checkInterval);
 
     return () => clearInterval(interval);
-  }, [enabled, isInitialized, lastOrderCount, checkInterval]);
+  }, [enabled, isInitialized, lastOrderCount, checkInterval, soundArmed]);
 
   // Fonction pour réinitialiser le compteur de nouvelles commandes
   const resetNewOrdersCount = () => {
@@ -188,7 +221,10 @@ export function useOrderNotifications({
   return {
     newOrdersCount,
     resetNewOrdersCount,
-    playNotificationSound
+    playNotificationSound,
+    soundArmed,
+    needsSoundActivation,
+    armSound,
   };
 }
 

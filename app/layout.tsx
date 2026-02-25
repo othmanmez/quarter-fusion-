@@ -21,6 +21,13 @@ export const metadata: Metadata = {
   title: "Quarter Fusion - Restaurant de Snack à Paris",
   description: "Découvrez Quarter Fusion, votre restaurant de snack préféré à Paris. Plats délicieux, livraison rapide et service impeccable. Commandez en ligne !",
   keywords: "restaurant, snack, paris, livraison, commande en ligne, poulet, burger, frites",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
+  },
   authors: [
     { name: "Quarter Fusion" },
     { name: "Samy Ajouid - Développeur Full-Stack", url: "https://samy-dev.fr" },
