@@ -65,11 +65,11 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
         const fallbackPrice = menuItem.price;
         setFormData({
           title: menuItem.title,
-          description: menuItem.description,
+          description: menuItem.description ?? '',
           priceClickAndCollect: menuItem.priceClickAndCollect ?? fallbackPrice,
           priceDelivery: menuItem.priceDelivery ?? fallbackPrice,
           categoryId: menuItem.category.id,
-          image: menuItem.image,
+          image: menuItem.image ?? '',
           badge: menuItem.badge || '',
           available: menuItem.available,
           availableForClickAndCollect: menuItem.availableForClickAndCollect,
@@ -127,12 +127,12 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
         },
         body: JSON.stringify({
           title: formData.title.trim(),
-          description: formData.description.trim(),
+          description: (formData.description ?? '').trim(),
           price: formData.priceClickAndCollect,
           priceClickAndCollect: formData.priceClickAndCollect,
           priceDelivery: formData.priceDelivery,
           categoryId: formData.categoryId,
-          image: formData.image.trim(),
+          image: (formData.image ?? '').trim(),
           badge: formData.badge.trim().toUpperCase() || undefined,
           available: formData.available,
           availableForClickAndCollect: formData.availableForClickAndCollect,
