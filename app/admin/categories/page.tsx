@@ -211,17 +211,17 @@ export default function AdminCategoriesPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500">Total catégories</div>
+            <div className="text-sm font-medium text-black">Total catégories</div>
             <div className="text-2xl font-bold text-gray-900">{categories.length}</div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500">Catégories utilisées</div>
+            <div className="text-sm font-medium text-black">Catégories utilisées</div>
             <div className="text-2xl font-bold text-green-600">
               {categories.filter(c => c._count.menus > 0).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500">Catégories vides</div>
+            <div className="text-sm font-medium text-black">Catégories vides</div>
             <div className="text-2xl font-bold text-red-600">
               {categories.filter(c => c._count.menus === 0).length}
             </div>
@@ -234,19 +234,19 @@ export default function AdminCategoriesPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Catégorie
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Slug
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Menus
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Créée le
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-black uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -273,7 +273,7 @@ export default function AdminCategoriesPage() {
                         {category._count.menus} menu(s)
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                       {new Date(category.createdAt).toLocaleDateString('fr-FR')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -300,11 +300,11 @@ export default function AdminCategoriesPage() {
 
           {filteredCategories.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-gray-400 text-6xl mb-4">📂</div>
+              <div className="text-black text-6xl mb-4">📂</div>
               <h3 className="text-xl font-medium text-black mb-2">
                 Aucune catégorie trouvée
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="text-black mb-4">
                 {searchTerm 
                   ? 'Aucune catégorie ne correspond à votre recherche.'
                   : 'Commencez par créer votre première catégorie.'
@@ -334,7 +334,7 @@ export default function AdminCategoriesPage() {
                 </h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-black"
+                  className="text-black hover:text-black"
                 >
                   ✕
                 </button>
@@ -342,7 +342,7 @@ export default function AdminCategoriesPage() {
               
               <form onSubmit={handleAddCategory} className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="name" className="block text-sm font-medium text-black mb-1">
                     Nom *
                   </label>
                   <input
@@ -351,13 +351,13 @@ export default function AdminCategoriesPage() {
                     value={newCategory.name}
                     onChange={handleNameChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                     placeholder="Ex: Burgers"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="slug" className="block text-sm font-medium text-black mb-1">
                     Slug (généré automatiquement)
                   </label>
                   <input
@@ -365,10 +365,10 @@ export default function AdminCategoriesPage() {
                     id="slug"
                     value={newCategory.slug}
                     readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-black cursor-not-allowed"
                     placeholder="burgers"
                   />
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-black">
                     Généré automatiquement à partir du nom
                   </p>
                 </div>
@@ -377,7 +377,7 @@ export default function AdminCategoriesPage() {
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg font-medium"
+                    className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg font-medium"
                   >
                     Annuler
                   </button>

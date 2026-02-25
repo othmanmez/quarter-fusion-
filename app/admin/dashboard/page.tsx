@@ -64,7 +64,7 @@ export default function AdminDashboardPage() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-black">
             👤 {user?.name || user?.email}
           </div>
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" 
@@ -182,7 +182,7 @@ export default function AdminDashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="font-medium text-gray-900 mb-2">✨ Best-Sellers (page d'accueil) :</p>
-                <ul className="space-y-1 text-gray-700">
+                <ul className="space-y-1 text-black">
                   <li>• Les 3 plats avec badge HOT/NEW/TOP</li>
                   <li>• Seulement 3 plats affichés</li>
                   <li>• Modifier un plat → Sélectionner badge</li>
@@ -190,7 +190,7 @@ export default function AdminDashboardPage() {
               </div>
               <div>
                 <p className="font-medium text-gray-900 mb-2">🖼️ Ajouter des images :</p>
-                <ul className="space-y-1 text-gray-700">
+                <ul className="space-y-1 text-black">
                   <li>• Upload sur <a href="https://imgur.com" target="_blank" className="text-red-600 hover:underline">Imgur.com</a></li>
                   <li>• Copier le lien de l'image</li>
                   <li>• Coller dans le champ "Image"</li>
@@ -198,7 +198,7 @@ export default function AdminDashboardPage() {
               </div>
               <div>
                 <p className="font-medium text-gray-900 mb-2">⚙️ Activer/Désactiver services :</p>
-                <ul className="space-y-1 text-gray-700">
+                <ul className="space-y-1 text-black">
                   <li>• Paramètres → Toggles</li>
                   <li>• Click & Collect / Livraison</li>
                   <li>• Badge "Fermé" affiché si OFF</li>
@@ -206,7 +206,7 @@ export default function AdminDashboardPage() {
               </div>
               <div>
                 <p className="font-medium text-gray-900 mb-2">🎨 Badges :</p>
-                <ul className="space-y-1 text-gray-700">
+                <ul className="space-y-1 text-black">
                   <li>• HOT 🔥 : Plat tendance</li>
                   <li>• NEW ✨ : Nouvelle création</li>
                   <li>• TOP ⭐ : Meilleure vente</li>

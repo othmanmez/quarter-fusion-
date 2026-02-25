@@ -352,7 +352,7 @@ export default function AdminMenuPage() {
                       {menuItems.filter(m => m.isBestSeller).length} / 3 sélectionnés
                     </span>
                   </p>
-                  <p className="text-xs text-gray-600 mt-0.5">
+                  <p className="text-xs text-black mt-0.5">
                     Cliquez sur l&apos;étoile d&apos;un plat pour l&apos;ajouter / le retirer des bestsellers (maximum 3).
                     Ils restent affichés à vie jusqu&apos;à ce que vous les changiez.
                   </p>
@@ -403,7 +403,7 @@ export default function AdminMenuPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Search */}
             <div>
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="search" className="block text-sm font-medium text-black mb-2">
                 Rechercher
               </label>
               <input
@@ -412,20 +412,20 @@ export default function AdminMenuPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Rechercher par titre ou description..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
               />
             </div>
 
             {/* Category Filter */}
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="category" className="block text-sm font-medium text-black mb-2">
                 Catégorie
               </label>
               <select
                 id="category"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
               >
                 <option value="all">Toutes les catégories</option>
                 {categories.map((category) => (
@@ -441,23 +441,23 @@ export default function AdminMenuPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500">Total menus</div>
+            <div className="text-sm font-medium text-black">Total menus</div>
             <div className="text-2xl font-bold text-gray-900">{menuItems.length}</div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500">Disponibles</div>
+            <div className="text-sm font-medium text-black">Disponibles</div>
             <div className="text-2xl font-bold text-green-600">
               {menuItems.filter(m => m.available).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500">Indisponibles</div>
+            <div className="text-sm font-medium text-black">Indisponibles</div>
             <div className="text-2xl font-bold text-red-600">
               {menuItems.filter(m => !m.available).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-sm font-medium text-gray-500">Catégories</div>
+            <div className="text-sm font-medium text-black">Catégories</div>
             <div className="text-2xl font-bold text-gray-900">{categories.length}</div>
           </div>
         </div>
@@ -468,28 +468,28 @@ export default function AdminMenuPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Menu
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Catégorie
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Prix C&C / Liv
                   </th>
-                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-center text-xs font-medium text-black uppercase tracking-wider">
                     ⭐ Bestseller
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Modes
                   </th>
-                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-center text-xs font-medium text-black uppercase tracking-wider">
                     Personnalisations
                   </th>
-                  <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-right text-xs font-medium text-black uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -519,7 +519,7 @@ export default function AdminMenuPage() {
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-gray-500 truncate max-w-xs">
+                          <div className="text-xs text-black truncate max-w-xs">
                             {item.description}
                           </div>
                         </div>
@@ -545,7 +545,7 @@ export default function AdminMenuPage() {
                         className="transition-transform hover:scale-110 disabled:opacity-50 disabled:cursor-wait inline-flex items-center justify-center"
                       >
                         {bestSellerLoading === item.id ? (
-                          <Loader2 className="w-6 h-6 animate-spin text-gray-500" />
+                          <Loader2 className="w-6 h-6 animate-spin text-black" />
                         ) : item.isBestSeller ? (
                           <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
                         ) : (
@@ -565,7 +565,7 @@ export default function AdminMenuPage() {
                         {item.available ? '✓ Dispo' : '✗ Indispo'}
                       </button>
                     </td>
-                    <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-3 py-3 whitespace-nowrap text-sm text-black">
                       <div className="flex space-x-2">
                         <span className={`text-xs ${item.availableForClickAndCollect ? 'text-green-600' : 'text-red-600'}`}>
                           C&C {item.availableForClickAndCollect ? '✓' : '✗'}
@@ -582,12 +582,12 @@ export default function AdminMenuPage() {
                             {item.customizations.length} configurée{item.customizations.length > 1 ? 's' : ''}
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-black">
                             Aucune
                           </span>
                         )
                       ) : (
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-black">
                           N/A
                         </span>
                       )}
@@ -611,7 +611,7 @@ export default function AdminMenuPage() {
                           </button>
                         ) : (
                           <span 
-                            className="px-3 py-1.5 bg-gray-200 text-gray-500 text-xs font-medium rounded cursor-not-allowed"
+                            className="px-3 py-1.5 bg-gray-200 text-black text-xs font-medium rounded cursor-not-allowed"
                             title="Les boissons n'ont pas de personnalisations"
                           >
                             <span className="inline-flex items-center gap-1">
@@ -654,7 +654,7 @@ export default function AdminMenuPage() {
               <h3 className="text-xl font-medium text-black mb-2">
                 Aucun menu trouvé
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="text-black mb-4">
                 {searchTerm || selectedCategory !== 'all' 
                   ? 'Aucun menu ne correspond à vos critères de recherche.'
                   : 'Commencez par ajouter votre premier menu.'

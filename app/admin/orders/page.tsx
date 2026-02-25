@@ -300,7 +300,7 @@ export default function AdminOrdersPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Search */}
             <div>
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="search" className="block text-sm font-medium text-black mb-2">
                 Rechercher
               </label>
               <input
@@ -309,20 +309,20 @@ export default function AdminOrdersPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Rechercher par numéro, nom, email ou téléphone..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
               />
             </div>
 
             {/* Status Filter */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="status" className="block text-sm font-medium text-black mb-2">
                 Statut
               </label>
               <select
                 id="status"
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
               >
                 <option value="all">Tous les statuts</option>
                 {Object.entries(STATUS_LABELS).map(([value, label]) => (
@@ -339,29 +339,29 @@ export default function AdminOrdersPage() {
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Chiffre d&apos;affaires</h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-black">
               Basé sur la liste filtrée (hors annulées)
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-xs font-medium text-gray-500">Commandes</div>
+              <div className="text-xs font-medium text-black">Commandes</div>
               <div className="text-2xl font-bold text-gray-900">{effectiveOrders.length}</div>
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-xs font-medium text-gray-500">CA total</div>
+              <div className="text-xs font-medium text-black">CA total</div>
               <div className="text-2xl font-bold text-gray-900">{revenue.toFixed(2)}€</div>
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-xs font-medium text-gray-500">CA aujourd&apos;hui</div>
+              <div className="text-xs font-medium text-black">CA aujourd&apos;hui</div>
               <div className="text-2xl font-bold text-gray-900">{revenueToday.toFixed(2)}€</div>
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-xs font-medium text-gray-500">CA mois</div>
+              <div className="text-xs font-medium text-black">CA mois</div>
               <div className="text-2xl font-bold text-gray-900">{revenueMonth.toFixed(2)}€</div>
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="text-xs font-medium text-gray-500">Panier moyen</div>
+              <div className="text-xs font-medium text-black">Panier moyen</div>
               <div className="text-2xl font-bold text-gray-900">{avgBasket.toFixed(2)}€</div>
             </div>
           </div>
@@ -373,7 +373,7 @@ export default function AdminOrdersPage() {
             const count = orders.filter(o => o.status === status).length;
             return (
               <div key={status} className="bg-white rounded-lg shadow p-4">
-                <div className="text-xs font-medium text-gray-500">{label}</div>
+                <div className="text-xs font-medium text-black">{label}</div>
                 <div className={`text-2xl font-bold ${STATUS_COLORS[status].split(' ')[1]}`}>
                   {count}
                 </div>
@@ -392,7 +392,7 @@ export default function AdminOrdersPage() {
               <h3 className="text-xl font-medium text-black mb-2">
                 Aucune commande trouvée
               </h3>
-              <p className="text-gray-500">
+              <p className="text-black">
                 {searchTerm || selectedStatus !== 'all' 
                   ? 'Aucune commande ne correspond à vos critères de recherche.'
                   : 'Les nouvelles commandes apparaîtront ici.'
@@ -460,13 +460,13 @@ export default function AdminOrdersPage() {
 
                   {/* Status Update */}
                   <div className="flex items-center space-x-2 mb-4">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-black">
                       Changer le statut:
                     </label>
                     <select
                       value={order.status}
                       onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                      className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-sm"
+                      className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-sm text-black"
                     >
                       {Object.entries(STATUS_LABELS).map(([value, label]) => (
                         <option key={value} value={value}>
@@ -550,7 +550,7 @@ export default function AdminOrdersPage() {
                       {order.notes && (
                         <div className="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400">
                           <p className="text-sm font-semibold text-gray-900">Notes:</p>
-                          <p className="text-sm text-gray-700">{order.notes}</p>
+                          <p className="text-sm text-black">{order.notes}</p>
                         </div>
                       )}
                     </div>

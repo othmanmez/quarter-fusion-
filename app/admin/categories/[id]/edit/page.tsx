@@ -190,7 +190,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
                 Nom *
               </label>
               <input
@@ -199,14 +199,14 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
                 value={formData.name}
                 onChange={handleNameChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                 placeholder="Ex: Burgers"
               />
             </div>
 
             {/* Slug (read-only, auto-generated) */}
             <div>
-              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="slug" className="block text-sm font-medium text-black mb-2">
                 Slug (généré automatiquement)
               </label>
               <input
@@ -214,10 +214,10 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
                 id="slug"
                 value={formData.slug}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-black cursor-not-allowed"
                 placeholder="burgers"
               />
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-black">
                 Généré automatiquement à partir du nom. Utilisé dans les URLs.
               </p>
             </div>
@@ -250,7 +250,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
             <div className="flex justify-end space-x-4">
               <Link
                 href="/admin/categories"
-                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg font-medium"
+                className="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-lg font-medium"
               >
                 Annuler
               </Link>

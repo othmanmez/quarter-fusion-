@@ -76,7 +76,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               {onClose && (
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-black transition-colors"
+                  className="text-black hover:text-black transition-colors"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -93,7 +93,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <div className="px-6 py-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="modal-email" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="modal-email" className="block text-sm font-medium text-black mb-1">
                   Identifiant
                 </label>
                 <input
@@ -101,14 +101,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-black"
                   placeholder="Votre identifiant"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="modal-password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="modal-password" className="block text-sm font-medium text-black mb-1">
                   Mot de passe
                 </label>
                 <input
@@ -116,7 +116,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-black"
                   placeholder="••••••••"
                   required
                 />

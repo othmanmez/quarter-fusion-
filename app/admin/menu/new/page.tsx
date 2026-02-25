@@ -156,7 +156,7 @@ export default function NewMenuPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="title" className="block text-sm font-medium text-black mb-2">
                 Titre *
               </label>
               <input
@@ -166,14 +166,14 @@ export default function NewMenuPage() {
                 value={formData.title}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                 placeholder="Ex: Burger Quarter Fusion"
               />
             </div>
 
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="description" className="block text-sm font-medium text-black mb-2">
                 Description *
               </label>
               <textarea
@@ -182,7 +182,7 @@ export default function NewMenuPage() {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                 placeholder="Décrivez le plat..."
               />
             </div>
@@ -190,7 +190,7 @@ export default function NewMenuPage() {
             {/* Price and Category */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label htmlFor="priceClickAndCollect" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="priceClickAndCollect" className="block text-sm font-medium text-black mb-2">
                   Prix Click & Collect (€) *
                 </label>
                 <input
@@ -201,13 +201,13 @@ export default function NewMenuPage() {
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                   placeholder="0.00"
                 />
               </div>
 
               <div>
-                <label htmlFor="priceDelivery" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="priceDelivery" className="block text-sm font-medium text-black mb-2">
                   Prix Livraison (€)
                 </label>
                 <input
@@ -218,13 +218,13 @@ export default function NewMenuPage() {
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                   placeholder="0.00"
                 />
               </div>
 
               <div>
-                <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="categoryId" className="block text-sm font-medium text-black mb-2">
                   Catégorie *
                 </label>
                 <select
@@ -232,7 +232,7 @@ export default function NewMenuPage() {
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                 >
                   <option value="">Sélectionner une catégorie</option>
                   {categories.map((category) => (
@@ -256,7 +256,7 @@ export default function NewMenuPage() {
 
             {/* Badge */}
             <div>
-              <label htmlFor="badge" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="badge" className="block text-sm font-medium text-black mb-2">
                 Badge (optionnel)
               </label>
               <select
@@ -264,7 +264,7 @@ export default function NewMenuPage() {
                 name="badge"
                 value={formData.badge}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
               >
                 <option value="">Aucun badge</option>
                 <option value="HOT">HOT</option>
@@ -286,7 +286,7 @@ export default function NewMenuPage() {
                     onChange={handleInputChange}
                     className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Menu disponible</span>
+                  <span className="ml-2 text-sm text-black">Menu disponible</span>
                 </label>
 
                 <label className="flex items-center">
@@ -297,7 +297,7 @@ export default function NewMenuPage() {
                     onChange={handleInputChange}
                     className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Disponible pour Click & Collect</span>
+                  <span className="ml-2 text-sm text-black">Disponible pour Click & Collect</span>
                 </label>
 
                 <label className="flex items-center">
@@ -308,7 +308,7 @@ export default function NewMenuPage() {
                     onChange={handleInputChange}
                     className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Disponible pour la livraison</span>
+                  <span className="ml-2 text-sm text-black">Disponible pour la livraison</span>
                 </label>
               </div>
             </div>
@@ -317,7 +317,7 @@ export default function NewMenuPage() {
             <div className="flex justify-end space-x-4">
               <Link
                 href="/admin/menu"
-                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-lg font-medium"
+                className="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-lg font-medium"
               >
                 Annuler
               </Link>

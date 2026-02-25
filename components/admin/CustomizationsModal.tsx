@@ -213,7 +213,7 @@ export default function CustomizationsModal({
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-black text-2xl"
+            className="text-black hover:text-black text-2xl"
           >
             ×
           </button>
@@ -249,7 +249,7 @@ export default function CustomizationsModal({
               {custom.type === 'TOGGLE' && 'Oui/Non'}
                             </span>
             {custom.type === 'MULTIPLE_CHOICE' && custom.maxSelections && (
-              <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+              <span className="px-2 py-0.5 bg-gray-100 text-black text-xs rounded">
                 Max {custom.maxSelections}
               </span>
             )}
@@ -393,7 +393,7 @@ export default function CustomizationsModal({
                       setShowAddForm(false);
                       resetForm();
                     }}
-                    className="text-gray-400 hover:text-black"
+                    className="text-black hover:text-black"
                   >
                     Annuler
                   </button>
@@ -401,21 +401,21 @@ export default function CustomizationsModal({
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black mb-1">
                       Nom de la personnalisation *
                     </label>
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                       placeholder="Ex: Sauce, Taille, Supplément..."
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black mb-1">
                       Type *
                     </label>
                     <select
@@ -428,7 +428,7 @@ export default function CustomizationsModal({
                           maxSelections: nextType === 'MULTIPLE_CHOICE' ? prev.maxSelections : null
                         }));
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                     >
                       <option value="SINGLE_CHOICE">Choix unique (radio)</option>
                       <option value="MULTIPLE_CHOICE">Choix multiples (checkbox)</option>
@@ -437,7 +437,7 @@ export default function CustomizationsModal({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-black mb-1">
                       Max choix (si multiple)
                     </label>
                     <input
@@ -453,10 +453,10 @@ export default function CustomizationsModal({
                         }));
                       }}
                       disabled={formData.type !== 'MULTIPLE_CHOICE'}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100 disabled:text-gray-400"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black disabled:bg-gray-100 disabled:text-black"
                       placeholder="Ex: 2"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-black mt-1">
                       Limite le nombre d'options sélectionnables
                     </p>
                   </div>
@@ -470,13 +470,13 @@ export default function CustomizationsModal({
                     onChange={(e) => setFormData(prev => ({ ...prev, required: e.target.checked }))}
                     className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="required" className="ml-2 text-sm text-gray-700">
+                  <label htmlFor="required" className="ml-2 text-sm text-black">
                     Obligatoire (le client doit choisir)
                   </label>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-black mb-2">
                     Options disponibles
                   </label>
                   <div className="space-y-2">
@@ -486,7 +486,7 @@ export default function CustomizationsModal({
                           type="text"
                           value={option.name}
                           onChange={(e) => handleOptionChange(index, 'name', e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                           placeholder="Nom de l'option"
                           required
                         />
@@ -496,7 +496,7 @@ export default function CustomizationsModal({
                           min="0"
                           value={option.priceExtra}
                           onChange={(e) => handleOptionChange(index, 'priceExtra', parseFloat(e.target.value) || 0)}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                           placeholder="Prix +"
                         />
                         {formData.options.length > 1 && (
@@ -527,7 +527,7 @@ export default function CustomizationsModal({
                       setShowAddForm(false);
                       resetForm();
                     }}
-                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="px-4 py-2 text-black border border-gray-300 rounded-md hover:bg-gray-50"
                   >
                     Annuler
                   </button>

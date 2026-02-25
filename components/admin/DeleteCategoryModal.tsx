@@ -48,7 +48,7 @@ export default function DeleteCategoryModal({ category, isOpen, onClose, onDelet
             </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-black"
+              className="text-black hover:text-black"
             >
               ✕
             </button>
@@ -108,7 +108,7 @@ export default function DeleteCategoryModal({ category, isOpen, onClose, onDelet
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg font-medium"
+              className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg font-medium"
             >
               Annuler
             </button>

@@ -95,7 +95,7 @@ export default function EditCategoryModal({ category, isOpen, onClose, onSave }:
             </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-black"
+              className="text-black hover:text-black"
             >
               ✕
             </button>
@@ -145,7 +145,7 @@ export default function EditCategoryModal({ category, isOpen, onClose, onSave }:
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-black mb-1">
                 Nom *
               </label>
               <input
@@ -154,13 +154,13 @@ export default function EditCategoryModal({ category, isOpen, onClose, onSave }:
                 value={formData.name}
                 onChange={handleNameChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 text-black"
                 placeholder="Ex: Burgers"
               />
             </div>
 
             <div>
-              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="slug" className="block text-sm font-medium text-black mb-1">
                 Slug (généré automatiquement)
               </label>
               <input
@@ -168,10 +168,10 @@ export default function EditCategoryModal({ category, isOpen, onClose, onSave }:
                 id="slug"
                 value={formData.slug}
                 readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-black cursor-not-allowed"
                 placeholder="burgers"
               />
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-black">
                 Généré automatiquement à partir du nom
               </p>
             </div>
@@ -180,7 +180,7 @@ export default function EditCategoryModal({ category, isOpen, onClose, onSave }:
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg font-medium"
+                className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg font-medium"
               >
                 Annuler
               </button>

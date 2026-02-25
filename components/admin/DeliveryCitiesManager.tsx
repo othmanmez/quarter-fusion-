@@ -183,7 +183,7 @@ export default function DeliveryCitiesManager() {
 
       <div className="p-6">
         {cities.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-black">
             <p>Aucune ville de livraison configurée.</p>
             <p className="text-sm mt-2">Ajoutez votre première ville pour commencer !</p>
           </div>
@@ -192,22 +192,22 @@ export default function DeliveryCitiesManager() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Ville
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Code postal
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Frais de livraison
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Commande min.
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                     Statut
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-black uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -280,7 +280,7 @@ export default function DeliveryCitiesManager() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Nom de la ville */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-black mb-1">
                   Nom de la ville *
                 </label>
                 <input
@@ -289,13 +289,13 @@ export default function DeliveryCitiesManager() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Ex: Cergy"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                 />
               </div>
 
               {/* Code postal */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-black mb-1">
                   Code postal
                 </label>
                 <input
@@ -303,13 +303,13 @@ export default function DeliveryCitiesManager() {
                   value={formData.postalCode}
                   onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                   placeholder="Ex: 95000"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                 />
               </div>
 
               {/* Frais de livraison */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-black mb-1">
                   Frais de livraison (€) *
                 </label>
                 <input
@@ -320,13 +320,13 @@ export default function DeliveryCitiesManager() {
                   onChange={(e) => setFormData({ ...formData, deliveryFee: parseFloat(e.target.value) })}
                   placeholder="2.50"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                 />
               </div>
 
               {/* Commande minimum */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-black mb-1">
                   Commande minimum (€)
                 </label>
                 <input
@@ -336,9 +336,9 @@ export default function DeliveryCitiesManager() {
                   value={formData.minOrder}
                   onChange={(e) => setFormData({ ...formData, minOrder: e.target.value })}
                   placeholder="20.00 (optionnel)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-black"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-black mt-1">
                   Laissez vide pour utiliser le montant minimum global
                 </p>
               </div>
@@ -352,7 +352,7 @@ export default function DeliveryCitiesManager() {
                   onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
                   className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                 />
-                <label htmlFor="active" className="ml-2 text-sm text-gray-700">
+                <label htmlFor="active" className="ml-2 text-sm text-black">
                   Ville active (disponible pour la livraison)
                 </label>
               </div>
@@ -362,7 +362,7 @@ export default function DeliveryCitiesManager() {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  className="flex-1 px-4 py-2 border border-gray-300 text-black rounded-lg hover:bg-gray-50 transition-colors font-medium"
                 >
                   Annuler
                 </button>

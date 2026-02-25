@@ -118,7 +118,7 @@ export default function SettingsPage() {
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-gray-900">Paramètres</h1>
-          <p className="mt-2 text-sm text-gray-700">
+          <p className="mt-2 text-sm text-black">
             Gérez les paramètres de votre restaurant et les prises de commande
           </p>
         </div>
@@ -205,7 +205,7 @@ export default function SettingsPage() {
           <div className="px-6 py-4 space-y-4">
             {/* Montant minimum */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-black mb-2">
                 Commande minimum (€)
               </label>
               <input
@@ -221,17 +221,17 @@ export default function SettingsPage() {
                   const value = parseFloat(e.target.value) || 0;
                   handleNumberChange('minOrderAmount', value);
                 }}
-                className="w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-black"
                 disabled={saving}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-black mt-1">
                 Montant minimum pour valider une commande en livraison
               </p>
             </div>
 
             {/* Frais de livraison */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-black mb-2">
                 Frais de livraison (€)
               </label>
               <input
@@ -247,17 +247,17 @@ export default function SettingsPage() {
                   const value = parseFloat(e.target.value) || 0;
                   handleNumberChange('deliveryFee', value);
                 }}
-                className="w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-black"
                 disabled={saving}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-black mt-1">
                 Frais appliqués sur chaque livraison
               </p>
             </div>
 
             {/* Délai estimé */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-black mb-2">
                 Délai de préparation estimé
               </label>
               <input
@@ -272,10 +272,10 @@ export default function SettingsPage() {
                   });
                 }}
                 placeholder="Ex: 30-45 minutes"
-                className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-black"
                 disabled={saving}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-black mt-1">
                 Temps estimé affiché aux clients
               </p>
             </div>

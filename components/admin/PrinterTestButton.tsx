@@ -77,7 +77,7 @@ export default function PrinterTestButton() {
         {printerStatus && (
           <div className="bg-gray-50 rounded-lg p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Impression activée:</span>
+              <span className="text-sm font-medium text-black">Impression activée:</span>
               <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                 printerStatus.enabled 
                   ? 'bg-green-100 text-green-800' 
@@ -91,7 +91,7 @@ export default function PrinterTestButton() {
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Imprimante connectée:</span>
+              <span className="text-sm font-medium text-black">Imprimante connectée:</span>
               <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                 printerStatus.connected 
                   ? 'bg-green-100 text-green-800' 
@@ -106,7 +106,7 @@ export default function PrinterTestButton() {
             
             {printerStatus.interface && (
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Interface:</span>
+                <span className="text-sm font-medium text-black">Interface:</span>
                 <span className="text-sm text-black font-mono">
                   {printerStatus.interface}
                 </span>

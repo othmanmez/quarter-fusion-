@@ -94,7 +94,7 @@ export default function AdminLayout({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="border-transparent text-gray-500 hover:border-red-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    className="border-transparent text-black hover:border-red-300 hover:text-black inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                   >
                     <span className="mr-2">{item.icon}</span>
                     {item.name}
@@ -104,7 +104,7 @@ export default function AdminLayout({
             </div>
             <div className="flex items-center">
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-black">
                   {user?.email}
                 </span>
                 <button

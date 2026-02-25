@@ -171,7 +171,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
             </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-black"
+              className="text-black hover:text-black"
             >
               <X className="w-5 h-5" />
             </button>
@@ -187,7 +187,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Title */}
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="title" className="block text-sm font-medium text-black mb-1">
                   Titre *
                 </label>
                 <input
@@ -203,7 +203,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
 
               {/* Prix Click & Collect */}
               <div>
-                <label htmlFor="priceClickAndCollect" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="priceClickAndCollect" className="block text-sm font-medium text-black mb-1">
                   Prix Click & Collect (€) *
                 </label>
                 <input
@@ -219,7 +219,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
 
               {/* Prix Livraison */}
               <div>
-                <label htmlFor="priceDelivery" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="priceDelivery" className="block text-sm font-medium text-black mb-1">
                   Prix Livraison (€) *
                 </label>
                 <input
@@ -236,7 +236,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
 
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="description" className="block text-sm font-medium text-black mb-1">
                 Description
               </label>
               <textarea
@@ -252,7 +252,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Category */}
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="category" className="block text-sm font-medium text-black mb-1">
                   Catégorie *
                 </label>
                 <select
@@ -272,7 +272,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
 
               {/* Badge */}
               <div>
-                <label htmlFor="badge" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="badge" className="block text-sm font-medium text-black mb-1">
                   Badge
                 </label>
                 <select
@@ -316,14 +316,14 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                     onChange={(e) => setFormData(prev => ({ ...prev, allowDrinkOption: e.target.checked }))}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="allowDrinkOption" className="ml-2 text-sm font-medium text-gray-700">
+                  <label htmlFor="allowDrinkOption" className="ml-2 text-sm font-medium text-black">
                     Activer l'option boisson
                   </label>
                 </div>
 
                 {formData.allowDrinkOption && (
                   <div className="flex-1">
-                    <label htmlFor="drinkPrice" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="drinkPrice" className="block text-sm font-medium text-black mb-1">
                       Prix de l'option boisson (€)
                     </label>
                     <div className="flex items-center">
@@ -341,7 +341,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                       />
                       <span className="ml-2 text-sm text-black">€</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-black mt-1">
                       Prix appliqué quand le client ajoute une boisson au menu
                     </p>
                   </div>
@@ -361,7 +361,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
 
             {/* Availability Options */}
             <div className="border-t pt-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Disponibilité</h4>
+              <h4 className="text-sm font-medium text-black mb-3">Disponibilité</h4>
               <div className="space-y-2">
                 <label className="flex items-center">
                   <input
@@ -370,7 +370,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                     onChange={(e) => setFormData(prev => ({ ...prev, available: e.target.checked }))}
                     className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Menu disponible</span>
+                  <span className="ml-2 text-sm text-black">Menu disponible</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -379,7 +379,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                     onChange={(e) => setFormData(prev => ({ ...prev, availableForClickAndCollect: e.target.checked }))}
                     className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Disponible en click & collect</span>
+                  <span className="ml-2 text-sm text-black">Disponible en click & collect</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -388,7 +388,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
                     onChange={(e) => setFormData(prev => ({ ...prev, availableForDelivery: e.target.checked }))}
                     className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Disponible en livraison</span>
+                  <span className="ml-2 text-sm text-black">Disponible en livraison</span>
                 </label>
               </div>
             </div>
@@ -397,7 +397,7 @@ export default function EditMenuModal({ menuItem, isOpen, onClose, onSave }: Edi
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg font-medium"
+                className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-lg font-medium"
               >
                 Annuler
               </button>

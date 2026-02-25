@@ -68,8 +68,8 @@ export default function CommanderPage() {
       <section className="py-16 bg-gradient-to-b from-red-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-black-900 mb-4">
-              Comment souhaitez-vous <span className="text-red-700">commander</span> ?
+            <h1 className="text-4xl md:text-5xl font-bold text-red-700 mb-4">
+              Comment souhaitez-vous <span className="text-red-800">commander</span> ?
             </h1>
             <p className="text-xl text-black max-w-3xl mx-auto">
               Choisissez votre mode de commande préféré pour déguster nos délicieux plats
