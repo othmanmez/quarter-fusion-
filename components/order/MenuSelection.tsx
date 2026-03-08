@@ -12,6 +12,7 @@ interface MenuSelectionProps {
 export default function MenuSelection({ onNext, mode }: MenuSelectionProps) {
   const { addToCart } = useOrder();
   const [menu, setMenu] = useState<Record<string, MenuItem[]>>({});
+  const [categoryOrder, setCategoryOrder] = useState<string[]>([]); // Menu, Bucket... puis Boissons
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -31,10 +32,18 @@ export default function MenuSelection({ onNext, mode }: MenuSelectionProps) {
 
         if (data.success) {
           setMenu(data.menu);
-          // Sélectionner la première catégorie disponible
-          const categories = Object.keys(data.menu);
-          if (categories.length > 0) {
-            setSelectedCategory(categories[0]);
+          // Ordre des onglets : Menu, Bucket, etc. d'abord, Boissons en dernier
+          const categoryNames = Object.keys(data.menu);
+          const sortedNames = [...categoryNames].sort((a, b) => {
+            const aBoissons = a.toLowerCase().includes('boisson');
+            const bBoissons = b.toLowerCase().includes('boisson');
+            if (aBoissons && !bBoissons) return 1;
+            if (!aBoissons && bBoissons) return -1;
+            return 0;
+          });
+          setCategoryOrder(sortedNames);
+          if (sortedNames.length > 0) {
+            setSelectedCategory(sortedNames[0]);
           }
         } else {
           setError('Erreur lors du chargement du menu');
@@ -108,10 +117,10 @@ export default function MenuSelection({ onNext, mode }: MenuSelectionProps) {
         </p>
       </div>
 
-      {/* Navigation des catégories */}
+      {/* Navigation des catégories (Menu, Bucket... puis Boissons) */}
       <div className="border-b">
         <div className="flex overflow-x-auto">
-          {Object.keys(menu).map((category) => (
+          {(categoryOrder.length ? categoryOrder : Object.keys(menu)).map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}

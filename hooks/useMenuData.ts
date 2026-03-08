@@ -27,10 +27,17 @@ export function useMenuData(mode: 'click-and-collect' | 'livraison'): UseMenuDat
       if (data.success) {
         setMenuItems(data.items || []);
         
-        // Extract unique categories
-        const uniqueCategories: Category[] = Array.from(
-          new Map(data.items.map((item: MenuItem) => [item.category.id, item.category])).values()
-        ) as Category[];
+        // Extraire les catégories uniques, Boissons en dernier
+        const byId = new Map(data.items.map((item: MenuItem) => [item.category.id, item.category]));
+        const uniqueCategories: Category[] = Array.from(byId.values()) as Category[];
+        const sortBoissonsLast = (a: Category, b: Category) => {
+          const aBoissons = (a.slug || '').toLowerCase() === 'boissons' || (a.name || '').toLowerCase().includes('boisson');
+          const bBoissons = (b.slug || '').toLowerCase() === 'boissons' || (b.name || '').toLowerCase().includes('boisson');
+          if (aBoissons && !bBoissons) return 1;
+          if (!aBoissons && bBoissons) return -1;
+          return 0;
+        };
+        uniqueCategories.sort(sortBoissonsLast);
         setCategories(uniqueCategories);
       } else {
         throw new Error('Erreur lors du chargement du menu');

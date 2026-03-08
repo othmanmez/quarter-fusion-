@@ -59,8 +59,22 @@ export async function GET(request: NextRequest) {
         })
       : menuItems;
 
-    // Grouper par catégorie
-    const menuByCategory = normalizedItems.reduce((acc: any, item: any) => {
+    // Mettre les boissons en dernier (ordre d'affichage : Menu, Bucket, etc. puis Boissons)
+    const isBoissons = (item: any) => {
+      const slug = (item.category?.slug || '').toLowerCase();
+      const name = (item.category?.name || '').toLowerCase();
+      return slug === 'boissons' || name.includes('boisson');
+    };
+    const sortedItems = [...normalizedItems].sort((a, b) => {
+      const aBoissons = isBoissons(a);
+      const bBoissons = isBoissons(b);
+      if (aBoissons && !bBoissons) return 1;
+      if (!aBoissons && bBoissons) return -1;
+      return 0;
+    });
+
+    // Grouper par catégorie (l'ordre des clés suit l'ordre de parcours = Boissons en dernier)
+    const menuByCategory = sortedItems.reduce((acc: any, item: any) => {
       const categoryName = item.category.name;
       if (!acc[categoryName]) {
         acc[categoryName] = [];
@@ -72,7 +86,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       menu: menuByCategory,
-      items: normalizedItems,
+      items: sortedItems,
     });
   } catch (error) {
     console.error('Erreur lors de la récupération du menu:', error);
